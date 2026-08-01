@@ -31,6 +31,12 @@ interface MessageBubbleProps {
   reactions?: MessageReaction[];
   currentUserId?: string;
   onToggleReaction?: (emoji: string) => void;
+  translation?: TranslationSettings;
+}
+
+export interface TranslationSettings {
+  enabled: boolean;
+  targetLanguage: string;
 }
 
 function StatusIcon({ status }: { status: Message["status"] }) {
@@ -348,8 +354,108 @@ function LinkifiedText({ text }: { text: string }) {
   );
 }
 
-function MessageContent({ message }: { message: Message }) {
+function TranslatedText({
+  text,
+  settings,
+}: {
+  text?: string | null;
+  settings?: TranslationSettings;
+}) {
+  const [translation, setTranslation] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const source = text?.trim();
+    if (!settings?.enabled || !source) {
+      return;
+    }
+
+    let cancelled = false;
+    const cacheKey = `adsrahu:translation:${settings.targetLanguage}:${source}`;
+    const cached =
+      typeof sessionStorage !== "undefined" ? sessionStorage.getItem(cacheKey) : null;
+    if (cached) {
+      Promise.resolve().then(() => {
+        if (!cancelled) {
+          setTranslation(cached);
+          setLoading(false);
+        }
+      });
+      return;
+    }
+
+    Promise.resolve()
+      .then(() => {
+        if (!cancelled) {
+          setLoading(true);
+          setTranslation(null);
+        }
+      })
+      .then(() =>
+        fetch('/api/ai/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: source,
+            target_language: settings.targetLanguage,
+          }),
+        }),
+      )
+      .then(async (res) => {
+        const data = await res.json().catch(() => null);
+        if (!res.ok) throw new Error(data?.error ?? 'Translation failed');
+        return data?.translation as string | undefined;
+      })
+      .then((value) => {
+        const cleaned = value?.trim() || null;
+        if (cleaned && typeof sessionStorage !== "undefined") {
+          sessionStorage.setItem(cacheKey, cleaned);
+        }
+        if (!cancelled) setTranslation(cleaned);
+      })
+      .catch(() => {
+        if (!cancelled) setTranslation(null);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [settings?.enabled, settings?.targetLanguage, text]);
+
+  if (!settings?.enabled || !text?.trim()) return null;
+
+  return (
+    <div className="mt-2 rounded-lg border border-primary/20 bg-primary/10 px-2 py-1.5 text-xs">
+      <p className="mb-0.5 font-medium text-primary">
+        {loading ? 'Translating...' : `Translated to ${settings.targetLanguage}`}
+      </p>
+      {translation && (
+        <p className="whitespace-pre-wrap break-words text-foreground">
+          <LinkifiedText text={translation} />
+        </p>
+      )}
+    </div>
+  );
+}
+
+function MessageContent({
+  message,
+  translation,
+}: {
+  message: Message;
+  translation?: TranslationSettings;
+}) {
   const previewUrl = message.content_text ? firstUrl(message.content_text) : null;
+  const canTranslate =
+    message.sender_type === 'customer' &&
+    (message.content_type === 'text' ||
+      message.content_type === 'image' ||
+      message.content_type === 'video' ||
+      message.content_type === 'document' ||
+      message.content_type === 'interactive');
 
   switch (message.content_type) {
     case "text":
@@ -359,6 +465,9 @@ function MessageContent({ message }: { message: Message }) {
             <LinkifiedText text={message.content_text ?? ""} />
           </p>
           {previewUrl && <LinkPreview url={previewUrl} />}
+          {canTranslate && (
+            <TranslatedText text={message.content_text} settings={translation} />
+          )}
         </div>
       );
 
@@ -376,6 +485,9 @@ function MessageContent({ message }: { message: Message }) {
             </p>
           )}
           {previewUrl && <LinkPreview url={previewUrl} />}
+          {canTranslate && (
+            <TranslatedText text={message.content_text} settings={translation} />
+          )}
         </div>
       );
 
@@ -393,6 +505,9 @@ function MessageContent({ message }: { message: Message }) {
             </p>
           )}
           {previewUrl && <LinkPreview url={previewUrl} />}
+          {canTranslate && (
+            <TranslatedText text={message.content_text} settings={translation} />
+          )}
         </div>
       );
 
@@ -412,10 +527,15 @@ function MessageContent({ message }: { message: Message }) {
         return <MediaUnavailable label={message.content_text || "Document"} />;
       }
       return (
-        <MediaDocument
-          url={message.media_url}
-          label={message.content_text || "Document"}
-        />
+        <div>
+          <MediaDocument
+            url={message.media_url}
+            label={message.content_text || "Document"}
+          />
+          {canTranslate && (
+            <TranslatedText text={message.content_text} settings={translation} />
+          )}
+        </div>
       );
 
     case "template":
@@ -456,6 +576,9 @@ function MessageContent({ message }: { message: Message }) {
           <p className="whitespace-pre-wrap break-words text-sm">
             <LinkifiedText text={message.content_text || "[Interactive reply]"} />
           </p>
+          {canTranslate && (
+            <TranslatedText text={message.content_text} settings={translation} />
+          )}
         </div>
       );
     }
@@ -475,6 +598,7 @@ export function MessageBubble({
   reactions,
   currentUserId,
   onToggleReaction,
+  translation,
 }: MessageBubbleProps) {
   const isAgent = message.sender_type === "agent" || message.sender_type === "bot";
   const time = format(new Date(message.created_at), "HH:mm");
@@ -503,7 +627,7 @@ export function MessageBubble({
             onPrimary={isAgent}
           />
         )}
-        <MessageContent message={message} />
+        <MessageContent message={message} translation={translation} />
         <div
           className={cn(
             "mt-1 flex items-center gap-1",

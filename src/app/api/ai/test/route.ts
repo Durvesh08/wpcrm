@@ -72,6 +72,8 @@ export async function POST(request: Request) {
         isActive: true,
         autoReplyEnabled: false,
         autoReplyMaxPerConversation: 3,
+        translationEnabled: false,
+        translationTargetLanguage: 'English',
         embeddingsApiKey: null,
       })
     } catch (err) {

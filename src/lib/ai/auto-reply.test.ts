@@ -75,6 +75,8 @@ function aiConfig(overrides: Partial<AiConfig> = {}): AiConfig {
     isActive: true,
     autoReplyEnabled: true,
     autoReplyMaxPerConversation: 3,
+    translationEnabled: false,
+    translationTargetLanguage: 'English',
     embeddingsApiKey: null,
     ...overrides,
   }

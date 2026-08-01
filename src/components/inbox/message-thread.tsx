@@ -39,6 +39,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MessageBubble } from "./message-bubble";
+import type { TranslationSettings } from "./message-bubble";
 import { MessageActions } from "./message-actions";
 import {
   MessageComposer,
@@ -184,6 +185,10 @@ export function MessageThread({
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [reactions, setReactions] = useState<MessageReaction[]>([]);
+  const [translation, setTranslation] = useState<TranslationSettings>({
+    enabled: false,
+    targetLanguage: "English",
+  });
   // Purely visual spin state for the manual-refresh button. The actual
   // refetch is fire-and-forget through `onRefresh` (which bumps the
   // parent's resyncToken); the 700ms spin is just feedback so the click
@@ -228,6 +233,35 @@ export function MessageThread({
           return;
         }
         setProfiles((data as Profile[]) ?? []);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/ai/config")
+      .then(async (res) => {
+        const data = await res.json().catch(() => null);
+        if (!res.ok || !data?.configured) return null;
+        return data as {
+          translation_enabled?: boolean;
+          translation_target_language?: string;
+          has_key?: boolean;
+        };
+      })
+      .then((data) => {
+        if (cancelled || !data) return;
+        setTranslation({
+          enabled: Boolean(data.translation_enabled && data.has_key),
+          targetLanguage: data.translation_target_language || "English",
+        });
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setTranslation({ enabled: false, targetLanguage: "English" });
+        }
       });
     return () => {
       cancelled = true;
@@ -1186,6 +1220,7 @@ export function MessageThread({
                           reactions={msgReactions}
                           currentUserId={user?.id}
                           onToggleReaction={handlePillToggle}
+                          translation={translation}
                         />
                       </MessageActions>
                     );

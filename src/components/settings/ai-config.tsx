@@ -43,6 +43,20 @@ const KEY_PLACEHOLDER: Record<AiProvider, string> = {
   gemini: 'AIza...',
 };
 
+const TRANSLATION_LANGUAGES = [
+  'English',
+  'Hindi',
+  'Marathi',
+  'Gujarati',
+  'Tamil',
+  'Telugu',
+  'Kannada',
+  'Malayalam',
+  'Bengali',
+  'Punjabi',
+  'Urdu',
+];
+
 export function AiConfig() {
   const { accountId, accountRole, profileLoading } = useAuth();
   const canEdit = accountRole ? canEditSettings(accountRole) : false;
@@ -66,6 +80,9 @@ export function AiConfig() {
   const [isActive, setIsActive] = useState(false);
   const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
   const [maxPerConversation, setMaxPerConversation] = useState(3);
+  const [translationEnabled, setTranslationEnabled] = useState(false);
+  const [translationTargetLanguage, setTranslationTargetLanguage] =
+    useState('English');
 
   // Guard keyed on the account (not a bare boolean) so an in-place
   // account switch — ownership transfer, multi-account membership —
@@ -90,6 +107,8 @@ export function AiConfig() {
         setIsActive(data.is_active);
         setAutoReplyEnabled(data.auto_reply_enabled);
         setMaxPerConversation(data.auto_reply_max_per_conversation ?? 3);
+        setTranslationEnabled(data.translation_enabled ?? false);
+        setTranslationTargetLanguage(data.translation_target_language ?? 'English');
         setHasStoredKey(Boolean(data.has_key));
         setApiKey(data.has_key ? MASKED_KEY : '');
         setKeyEdited(false);
@@ -137,6 +156,8 @@ export function AiConfig() {
     is_active: isActive,
     auto_reply_enabled: autoReplyEnabled,
     auto_reply_max_per_conversation: maxPerConversation,
+    translation_enabled: translationEnabled,
+    translation_target_language: translationTargetLanguage,
   });
 
   const handleTest = async () => {
@@ -203,6 +224,8 @@ export function AiConfig() {
         setKeyEdited(false);
         setIsActive(false);
         setAutoReplyEnabled(false);
+        setTranslationEnabled(false);
+        setTranslationTargetLanguage('English');
         setSystemPrompt('');
       } else {
         const data = await res.json();
@@ -448,6 +471,56 @@ export function AiConfig() {
                 disabled={disabled || !autoReplyEnabled}
                 className="w-20"
               />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Inbox translation</CardTitle>
+            <CardDescription>
+              Automatically show translated customer messages in the inbox while
+              keeping the original WhatsApp text unchanged.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between gap-4 rounded-md border border-border p-3">
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  Auto-translate inbound messages
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Uses your selected AI provider key. Agents see both original
+                  and translated text.
+                </p>
+              </div>
+              <Switch
+                checked={translationEnabled}
+                onCheckedChange={setTranslationEnabled}
+                disabled={disabled}
+              />
+            </div>
+
+            <div className="grid gap-2 sm:max-w-xs">
+              <Label>Translate to</Label>
+              <Select
+                value={translationTargetLanguage}
+                onValueChange={(value) => {
+                  if (value) setTranslationTargetLanguage(value);
+                }}
+                disabled={disabled || !translationEnabled}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TRANSLATION_LANGUAGES.map((language) => (
+                    <SelectItem key={language} value={language}>
+                      {language}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
