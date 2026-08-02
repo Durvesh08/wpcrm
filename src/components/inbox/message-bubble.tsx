@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { cn } from "@/lib/utils";
-import type { Message, MessageReaction } from "@/types";
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { cn } from '@/lib/utils';
+import type { Message, MessageReaction } from '@/types';
 import {
   Clock,
   Check,
@@ -19,10 +19,11 @@ import {
   Play,
   FileDown,
   Link as LinkIcon,
-} from "lucide-react";
-import { format } from "date-fns";
-import { ReplyQuote } from "./reply-quote";
-import { MessageReactions } from "./message-reactions";
+  Languages,
+} from 'lucide-react';
+import { format } from 'date-fns';
+import { ReplyQuote } from './reply-quote';
+import { MessageReactions } from './message-reactions';
 
 interface MessageBubbleProps {
   message: Message;
@@ -39,17 +40,17 @@ export interface TranslationSettings {
   targetLanguage: string;
 }
 
-function StatusIcon({ status }: { status: Message["status"] }) {
+function StatusIcon({ status }: { status: Message['status'] }) {
   switch (status) {
-    case "sending":
-      return <Clock className="h-3 w-3 text-muted-foreground" />;
-    case "sent":
-      return <Check className="h-3 w-3 text-muted-foreground" />;
-    case "delivered":
-      return <CheckCheck className="h-3 w-3 text-muted-foreground" />;
-    case "read":
+    case 'sending':
+      return <Clock className="text-muted-foreground h-3 w-3" />;
+    case 'sent':
+      return <Check className="text-muted-foreground h-3 w-3" />;
+    case 'delivered':
+      return <CheckCheck className="text-muted-foreground h-3 w-3" />;
+    case 'read':
       return <CheckCheck className="h-3 w-3 text-blue-400" />;
-    case "failed":
+    case 'failed':
       return <XCircle className="h-3 w-3 text-red-400" />;
     default:
       return null;
@@ -58,21 +59,19 @@ function StatusIcon({ status }: { status: Message["status"] }) {
 
 function MediaUnavailable({ label }: { label: string }) {
   return (
-    <div className="flex items-center gap-2 rounded-lg bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
-      <ImageOff className="h-4 w-4 shrink-0 text-muted-foreground" />
+    <div className="bg-muted/40 text-muted-foreground flex items-center gap-2 rounded-lg px-3 py-2 text-xs">
+      <ImageOff className="text-muted-foreground h-4 w-4 shrink-0" />
       <span>{label} unavailable</span>
     </div>
   );
 }
 
 type MediaViewerState =
-  | { type: "image"; url: string; title: string }
-  | { type: "video"; url: string; title: string };
+  | { type: 'image'; url: string; title: string }
+  | { type: 'video'; url: string; title: string };
 
 function downloadUrlFor(url: string) {
-  return url.startsWith("/api/whatsapp/media/")
-    ? `${url}?download=1`
-    : url;
+  return url.startsWith('/api/whatsapp/media/') ? `${url}?download=1` : url;
 }
 
 function MediaViewer({
@@ -88,24 +87,28 @@ function MediaViewer({
     if (!viewer) return;
 
     const id =
-      typeof crypto !== "undefined" && "randomUUID" in crypto
+      typeof crypto !== 'undefined' && 'randomUUID' in crypto
         ? crypto.randomUUID()
         : `${Date.now()}-${Math.random()}`;
 
     stateIdRef.current = id;
-    window.history.pushState({ zovaixMediaViewer: id }, "", window.location.href);
-    document.body.style.overflow = "hidden";
+    window.history.pushState(
+      { zovaixMediaViewer: id },
+      '',
+      window.location.href
+    );
+    document.body.style.overflow = 'hidden';
 
     const handlePopState = () => {
       stateIdRef.current = null;
       onClose();
     };
 
-    window.addEventListener("popstate", handlePopState);
+    window.addEventListener('popstate', handlePopState);
 
     return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("popstate", handlePopState);
+      document.body.style.overflow = '';
+      window.removeEventListener('popstate', handlePopState);
     };
   }, [viewer, onClose]);
 
@@ -151,7 +154,7 @@ function MediaViewer({
         </a>
       </div>
       <div className="flex min-h-0 flex-1 items-center justify-center p-2 sm:p-4">
-        {viewer.type === "image" ? (
+        {viewer.type === 'image' ? (
           <img
             src={viewer.url}
             alt={viewer.title}
@@ -176,13 +179,13 @@ function MediaImage({ url, alt }: { url: string; alt: string }) {
   const [viewer, setViewer] = useState<MediaViewerState | null>(null);
 
   const handleOpen = useCallback(() => {
-    setViewer({ type: "image", url, title: alt });
+    setViewer({ type: 'image', url, title: alt });
   }, [alt, url]);
 
   if (error) {
     return (
-      <div className="flex h-40 w-60 items-center justify-center rounded-lg bg-muted">
-        <ImageOff className="h-8 w-8 text-muted-foreground" />
+      <div className="bg-muted flex h-40 w-60 items-center justify-center rounded-lg">
+        <ImageOff className="text-muted-foreground h-8 w-8" />
       </div>
     );
   }
@@ -227,8 +230,8 @@ function MediaVideo({ url }: { url: string }) {
       />
       <button
         type="button"
-        onClick={() => setViewer({ type: "video", url, title: "Shared video" })}
-        className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80"
+        onClick={() => setViewer({ type: 'video', url, title: 'Shared video' })}
+        className="absolute top-2 right-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/80"
         aria-label="Open video full screen"
         title="Open video"
       >
@@ -242,28 +245,33 @@ function MediaVideo({ url }: { url: string }) {
 function MediaAudio({ url }: { url: string }) {
   const [error, setError] = useState(false);
   if (error) return <MediaUnavailable label="Audio" />;
-  return <audio src={url} controls className="max-w-60" onError={() => setError(true)} />;
+  return (
+    <audio
+      src={url}
+      controls
+      className="max-w-60"
+      onError={() => setError(true)}
+    />
+  );
 }
 
-function MediaDocument({
-  url,
-  label,
-}: {
-  url: string;
-  label: string;
-}) {
+function MediaDocument({ url, label }: { url: string; label: string }) {
   const href = downloadUrlFor(url);
-  const extension = label.includes(".") ? label.split(".").pop()?.toUpperCase() : "FILE";
+  const extension = label.includes('.')
+    ? label.split('.').pop()?.toUpperCase()
+    : 'FILE';
 
   return (
-    <div className="w-60 rounded-xl border border-border/70 bg-background/70 p-2 shadow-sm">
+    <div className="border-border/70 bg-background/70 w-60 rounded-xl border p-2 shadow-sm">
       <div className="flex items-center gap-2">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
+        <div className="bg-primary/15 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
           <FileText className="h-5 w-5" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium">{label || "Document"}</p>
-          <p className="text-[10px] uppercase text-muted-foreground">{extension}</p>
+          <p className="truncate text-sm font-medium">{label || 'Document'}</p>
+          <p className="text-muted-foreground text-[10px] uppercase">
+            {extension}
+          </p>
         </div>
       </div>
       <div className="mt-2 grid grid-cols-2 gap-2">
@@ -271,7 +279,7 @@ function MediaDocument({
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex h-8 items-center justify-center gap-1 rounded-md bg-muted px-2 text-xs font-medium hover:bg-muted/80"
+          className="bg-muted hover:bg-muted/80 inline-flex h-8 items-center justify-center gap-1 rounded-md px-2 text-xs font-medium"
         >
           <ExternalLink className="h-3.5 w-3.5" />
           Open
@@ -279,7 +287,7 @@ function MediaDocument({
         <a
           href={href}
           download
-          className="inline-flex h-8 items-center justify-center gap-1 rounded-md bg-primary px-2 text-xs font-medium text-primary-foreground hover:bg-primary-hover"
+          className="bg-primary text-primary-foreground hover:bg-primary-hover inline-flex h-8 items-center justify-center gap-1 rounded-md px-2 text-xs font-medium"
         >
           <FileDown className="h-3.5 w-3.5" />
           Download
@@ -293,7 +301,7 @@ const URL_RE = /(https?:\/\/[^\s<]+|www\.[^\s<]+)/gi;
 const URL_ONLY_RE = /^(https?:\/\/[^\s<]+|www\.[^\s<]+)$/i;
 
 function normalizeHref(url: string) {
-  return url.startsWith("http") ? url : `https://${url}`;
+  return url.startsWith('http') ? url : `https://${url}`;
 }
 
 function firstUrl(text: string) {
@@ -304,7 +312,7 @@ function LinkPreview({ url }: { url: string }) {
   const href = normalizeHref(url);
   const domain = useMemo(() => {
     try {
-      return new URL(href).hostname.replace(/^www\./, "");
+      return new URL(href).hostname.replace(/^www\./, '');
     } catch {
       return url;
     }
@@ -316,16 +324,16 @@ function LinkPreview({ url }: { url: string }) {
       target="_blank"
       rel="noopener noreferrer"
       onClick={(event) => event.stopPropagation()}
-      className="mt-2 flex max-w-60 items-center gap-2 rounded-xl border border-border/70 bg-background/70 p-2 text-xs hover:bg-muted/70"
+      className="border-border/70 bg-background/70 hover:bg-muted/70 mt-2 flex max-w-60 items-center gap-2 rounded-xl border p-2 text-xs"
     >
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
+      <span className="bg-primary/15 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-lg">
         <LinkIcon className="h-4 w-4" />
       </span>
       <span className="min-w-0 flex-1">
         <span className="block truncate font-medium">{domain}</span>
-        <span className="block truncate text-muted-foreground">{url}</span>
+        <span className="text-muted-foreground block truncate">{url}</span>
       </span>
-      <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+      <ExternalLink className="text-muted-foreground h-3.5 w-3.5 shrink-0" />
     </a>
   );
 }
@@ -363,79 +371,99 @@ function TranslatedText({
 }) {
   const [translation, setTranslation] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const source = text?.trim();
-    if (!settings?.enabled || !source) {
-      return;
-    }
-
-    let cancelled = false;
-    const cacheKey = `zovaix:translation:${settings.targetLanguage}:${source}`;
-    const cached =
-      typeof sessionStorage !== "undefined" ? sessionStorage.getItem(cacheKey) : null;
-    if (cached) {
-      Promise.resolve().then(() => {
-        if (!cancelled) {
-          setTranslation(cached);
-          setLoading(false);
-        }
-      });
-      return;
-    }
-
-    Promise.resolve()
-      .then(() => {
-        if (!cancelled) {
-          setLoading(true);
-          setTranslation(null);
-        }
-      })
-      .then(() =>
-        fetch('/api/ai/translate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            text: source,
-            target_language: settings.targetLanguage,
-          }),
-        }),
-      )
-      .then(async (res) => {
-        const data = await res.json().catch(() => null);
-        if (!res.ok) throw new Error(data?.error ?? 'Translation failed');
-        return data?.translation as string | undefined;
-      })
-      .then((value) => {
-        const cleaned = value?.trim() || null;
-        if (cleaned && typeof sessionStorage !== "undefined") {
-          sessionStorage.setItem(cacheKey, cleaned);
-        }
-        if (!cancelled) setTranslation(cleaned);
-      })
-      .catch(() => {
-        if (!cancelled) setTranslation(null);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
+    setTranslation(null);
+    setLoading(false);
+    setError(null);
+    setVisible(false);
   }, [settings?.enabled, settings?.targetLanguage, text]);
 
   if (!settings?.enabled || !text?.trim()) return null;
 
+  const handleTranslate = async () => {
+    const source = text.trim();
+    if (!source || loading) return;
+
+    if (translation) {
+      setVisible((current) => !current);
+      return;
+    }
+
+    const cacheKey = `zovaix:translation:${settings.targetLanguage}:${source}`;
+    const cached =
+      typeof sessionStorage !== 'undefined'
+        ? sessionStorage.getItem(cacheKey)
+        : null;
+
+    if (cached) {
+      setTranslation(cached);
+      setVisible(true);
+      setError(null);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/ai/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: source,
+          target_language: settings.targetLanguage,
+        }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(data?.error ?? 'Translation failed');
+      const cleaned =
+        typeof data?.translation === 'string' ? data.translation.trim() : '';
+      if (!cleaned) throw new Error('Translation failed');
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.setItem(cacheKey, cleaned);
+      }
+      setTranslation(cleaned);
+      setVisible(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Translation failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const buttonLabel = loading
+    ? 'Translating...'
+    : translation
+      ? visible
+        ? 'Hide translation'
+        : 'Show translation'
+      : `Translate to ${settings.targetLanguage}`;
+
   return (
-    <div className="mt-2 rounded-lg border border-primary/20 bg-primary/10 px-2 py-1.5 text-xs">
-      <p className="mb-0.5 font-medium text-primary">
-        {loading ? 'Translating...' : `Translated to ${settings.targetLanguage}`}
-      </p>
-      {translation && (
-        <p className="whitespace-pre-wrap break-words text-foreground">
-          <LinkifiedText text={translation} />
-        </p>
+    <div className="mt-2 space-y-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={handleTranslate}
+          disabled={loading}
+          className="border-primary/25 bg-primary/10 text-primary hover:bg-primary/15 inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          <Languages className="h-3.5 w-3.5" />
+          {buttonLabel}
+        </button>
+      </div>
+      {error && <p className="text-[11px] text-red-400">{error}</p>}
+      {visible && translation && (
+        <div className="border-primary/20 bg-primary/10 rounded-lg border px-2 py-1.5 text-xs">
+          <p className="text-primary mb-0.5 font-medium">
+            Translated to {settings.targetLanguage}
+          </p>
+          <p className="text-foreground break-words whitespace-pre-wrap">
+            <LinkifiedText text={translation} />
+          </p>
+        </div>
       )}
     </div>
   );
@@ -448,7 +476,9 @@ function MessageContent({
   message: Message;
   translation?: TranslationSettings;
 }) {
-  const previewUrl = message.content_text ? firstUrl(message.content_text) : null;
+  const previewUrl = message.content_text
+    ? firstUrl(message.content_text)
+    : null;
   const canTranslate =
     message.sender_type === 'customer' &&
     (message.content_type === 'text' ||
@@ -458,20 +488,23 @@ function MessageContent({
       message.content_type === 'interactive');
 
   switch (message.content_type) {
-    case "text":
+    case 'text':
       return (
         <div>
-          <p className="whitespace-pre-wrap break-words text-sm">
-            <LinkifiedText text={message.content_text ?? ""} />
+          <p className="text-sm break-words whitespace-pre-wrap">
+            <LinkifiedText text={message.content_text ?? ''} />
           </p>
           {previewUrl && <LinkPreview url={previewUrl} />}
           {canTranslate && (
-            <TranslatedText text={message.content_text} settings={translation} />
+            <TranslatedText
+              text={message.content_text}
+              settings={translation}
+            />
           )}
         </div>
       );
 
-    case "image":
+    case 'image':
       return (
         <div>
           {message.media_url ? (
@@ -480,18 +513,21 @@ function MessageContent({
             <MediaUnavailable label="Image" />
           )}
           {message.content_text && (
-            <p className="mt-1 whitespace-pre-wrap break-words text-sm">
+            <p className="mt-1 text-sm break-words whitespace-pre-wrap">
               <LinkifiedText text={message.content_text} />
             </p>
           )}
           {previewUrl && <LinkPreview url={previewUrl} />}
           {canTranslate && (
-            <TranslatedText text={message.content_text} settings={translation} />
+            <TranslatedText
+              text={message.content_text}
+              settings={translation}
+            />
           )}
         </div>
       );
 
-    case "video":
+    case 'video':
       return (
         <div>
           {message.media_url ? (
@@ -500,18 +536,21 @@ function MessageContent({
             <MediaUnavailable label="Video" />
           )}
           {message.content_text && (
-            <p className="mt-1 whitespace-pre-wrap break-words text-sm">
+            <p className="mt-1 text-sm break-words whitespace-pre-wrap">
               <LinkifiedText text={message.content_text} />
             </p>
           )}
           {previewUrl && <LinkPreview url={previewUrl} />}
           {canTranslate && (
-            <TranslatedText text={message.content_text} settings={translation} />
+            <TranslatedText
+              text={message.content_text}
+              settings={translation}
+            />
           )}
         </div>
       );
 
-    case "audio":
+    case 'audio':
       return (
         <div>
           {message.media_url ? (
@@ -522,46 +561,49 @@ function MessageContent({
         </div>
       );
 
-    case "document":
+    case 'document':
       if (!message.media_url) {
-        return <MediaUnavailable label={message.content_text || "Document"} />;
+        return <MediaUnavailable label={message.content_text || 'Document'} />;
       }
       return (
         <div>
           <MediaDocument
             url={message.media_url}
-            label={message.content_text || "Document"}
+            label={message.content_text || 'Document'}
           />
           {canTranslate && (
-            <TranslatedText text={message.content_text} settings={translation} />
+            <TranslatedText
+              text={message.content_text}
+              settings={translation}
+            />
           )}
         </div>
       );
 
-    case "template":
+    case 'template':
       return (
         <div>
-          <span className="mb-1 inline-flex items-center gap-1 rounded bg-primary/20 px-1.5 py-0.5 text-[10px] font-medium text-primary">
+          <span className="bg-primary/20 text-primary mb-1 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium">
             <LayoutTemplate className="h-3 w-3" />
             Template
           </span>
           {message.content_text && (
-            <p className="mt-1 whitespace-pre-wrap break-words text-sm">
+            <p className="mt-1 text-sm break-words whitespace-pre-wrap">
               <LinkifiedText text={message.content_text} />
             </p>
           )}
         </div>
       );
 
-    case "location":
+    case 'location':
       return (
         <div className="flex items-center gap-2 text-sm">
-          <MapPin className="h-4 w-4 shrink-0 text-muted-foreground" />
-          <span>{message.content_text || "Location shared"}</span>
+          <MapPin className="text-muted-foreground h-4 w-4 shrink-0" />
+          <span>{message.content_text || 'Location shared'}</span>
         </div>
       );
 
-    case "interactive": {
+    case 'interactive': {
       // Customer tapped a reply button or list row on a message the bot
       // sent. We show the tapped option's title (already in content_text,
       // set by parseMessageContent in the webhook) with a small affordance
@@ -569,15 +611,20 @@ function MessageContent({
       // tap rather than the customer typing the same words.
       return (
         <div className="flex flex-col gap-0.5">
-          <span className="inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+          <span className="text-muted-foreground inline-flex items-center gap-1 text-[10px] font-medium tracking-wide uppercase">
             <CornerDownLeft className="h-3 w-3" />
             Button reply
           </span>
-          <p className="whitespace-pre-wrap break-words text-sm">
-            <LinkifiedText text={message.content_text || "[Interactive reply]"} />
+          <p className="text-sm break-words whitespace-pre-wrap">
+            <LinkifiedText
+              text={message.content_text || '[Interactive reply]'}
+            />
           </p>
           {canTranslate && (
-            <TranslatedText text={message.content_text} settings={translation} />
+            <TranslatedText
+              text={message.content_text}
+              settings={translation}
+            />
           )}
         </div>
       );
@@ -585,8 +632,10 @@ function MessageContent({
 
     default:
       return (
-        <p className="whitespace-pre-wrap break-words text-sm">
-          <LinkifiedText text={message.content_text || "[Unsupported message type]"} />
+        <p className="text-sm break-words whitespace-pre-wrap">
+          <LinkifiedText
+            text={message.content_text || '[Unsupported message type]'}
+          />
         </p>
       );
   }
@@ -600,24 +649,20 @@ export function MessageBubble({
   onToggleReaction,
   translation,
 }: MessageBubbleProps) {
-  const isAgent = message.sender_type === "agent" || message.sender_type === "bot";
-  const time = format(new Date(message.created_at), "HH:mm");
+  const isAgent =
+    message.sender_type === 'agent' || message.sender_type === 'bot';
+  const time = format(new Date(message.created_at), 'HH:mm');
 
   // Row alignment + width cap are owned by <MessageActions> so its hover
   // group matches the bubble's content area, not the full row.
   return (
-    <div
-      className={cn(
-        "flex flex-col",
-        isAgent ? "items-end" : "items-start",
-      )}
-    >
+    <div className={cn('flex flex-col', isAgent ? 'items-end' : 'items-start')}>
       <div
         className={cn(
-          "relative rounded-2xl px-3 py-2",
+          'relative rounded-2xl px-3 py-2',
           isAgent
-            ? "rounded-br-md bg-primary text-primary-foreground"
-            : "rounded-bl-md bg-muted text-foreground",
+            ? 'bg-primary text-primary-foreground rounded-br-md'
+            : 'bg-muted text-foreground rounded-bl-md'
         )}
       >
         {reply && (
@@ -630,18 +675,18 @@ export function MessageBubble({
         <MessageContent message={message} translation={translation} />
         <div
           className={cn(
-            "mt-1 flex items-center gap-1",
-            isAgent ? "justify-end" : "justify-start",
+            'mt-1 flex items-center gap-1',
+            isAgent ? 'justify-end' : 'justify-start'
           )}
         >
           <span
             className={cn(
-              "text-[10px]",
+              'text-[10px]',
               // Outbound bubbles sit on the primary fill, so the
               // timestamp must read against that (not the neutral
               // foreground) — otherwise it goes low-contrast in light
               // mode. Inbound bubbles use the muted surface.
-              isAgent ? "text-primary-foreground/70" : "text-muted-foreground",
+              isAgent ? 'text-primary-foreground/70' : 'text-muted-foreground'
             )}
           >
             {time}
