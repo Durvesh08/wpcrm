@@ -12,7 +12,7 @@ import { PresenceHeartbeat } from '@/components/presence/presence-heartbeat';
 // client components can't export Next's metadata object.
 
 function DashboardShellInner({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, loading, profile, profileLoading } = useAuth();
   const router = useRouter();
 
   // Sidebar drawer state — only used on mobile. On lg+ the sidebar is
@@ -26,7 +26,7 @@ function DashboardShellInner({ children }: { children: React.ReactNode }) {
     }
   }, [user, loading, router]);
 
-  if (loading) {
+  if (loading || (user && profileLoading)) {
     return (
       <div className="bg-background flex h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-3">
@@ -38,6 +38,29 @@ function DashboardShellInner({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) return null;
+
+  if (!profile) {
+    return (
+      <div className="bg-background flex h-screen items-center justify-center px-4">
+        <div className="border-border bg-card max-w-md rounded-2xl border p-6 text-center shadow-sm">
+          <h1 className="text-foreground text-lg font-semibold">
+            Workspace could not load
+          </h1>
+          <p className="text-muted-foreground mt-2 text-sm">
+            Refresh once. If this keeps happening, check the Supabase service
+            role key in Vercel environment variables.
+          </p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="bg-primary text-primary-foreground mt-5 rounded-xl px-4 py-2 text-sm font-medium"
+          >
+            Reload
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="zovaix-app-shell bg-background flex h-screen overflow-hidden">
