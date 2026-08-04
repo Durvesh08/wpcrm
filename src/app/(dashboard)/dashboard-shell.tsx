@@ -21,6 +21,45 @@ function DashboardShellInner({ children }: { children: React.ReactNode }) {
   const closeSidebar = useCallback(() => setSidebarOpen(false), []);
 
   useEffect(() => {
+    const report = (payload: Record<string, unknown>) => {
+      void fetch('/api/diagnostics/client-error', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          ...payload,
+          path: window.location.pathname,
+          userAgent: window.navigator.userAgent,
+        }),
+        keepalive: true,
+      }).catch(() => {});
+    };
+
+    const onError = (event: ErrorEvent) => {
+      report({
+        message: event.message,
+        stack: event.error?.stack,
+        source: event.filename,
+      });
+    };
+
+    const onUnhandledRejection = (event: PromiseRejectionEvent) => {
+      const reason = event.reason;
+      report({
+        message: reason instanceof Error ? reason.message : String(reason),
+        stack: reason instanceof Error ? reason.stack : undefined,
+        source: 'unhandledrejection',
+      });
+    };
+
+    window.addEventListener('error', onError);
+    window.addEventListener('unhandledrejection', onUnhandledRejection);
+    return () => {
+      window.removeEventListener('error', onError);
+      window.removeEventListener('unhandledrejection', onUnhandledRejection);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!loading && !user) {
       router.push('/login');
     }
