@@ -137,6 +137,39 @@ export default function DashboardPage() {
     };
   }, [metrics]);
 
+  const priorityStack = useMemo(() => {
+    if (!metrics || !heroSummary) return [];
+    return [
+      {
+        label: 'Answer waiting conversations',
+        value: metrics.activeConversations.current.toLocaleString(),
+        detail:
+          metrics.activeConversations.current > 0
+            ? 'Clear inbox pressure before launching new outreach.'
+            : 'No open conversation pressure right now.',
+        href: '/inbox',
+        icon: MessageSquare,
+        tone: 'emerald' as const,
+      },
+      {
+        label: 'Move revenue forward',
+        value: formatCurrency(metrics.openDealsValue, defaultCurrency),
+        detail: `${metrics.openDealsCount} open deal${metrics.openDealsCount === 1 ? '' : 's'} need stage movement.`,
+        href: '/pipelines',
+        icon: DollarSign,
+        tone: 'blue' as const,
+      },
+      {
+        label: 'Use AI for leverage',
+        value: `${heroSummary.hotLeadCount} signals`,
+        detail: 'Summarize intent, draft replies, and prepare follow-ups.',
+        href: '/agents',
+        icon: Sparkles,
+        tone: 'purple' as const,
+      },
+    ];
+  }, [defaultCurrency, heroSummary, metrics]);
+
   const greeting = useMemo(() => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Good morning';
@@ -220,29 +253,24 @@ export default function DashboardPage() {
               </span>
               <div>
                 <p className="text-foreground text-sm font-medium">
-                  AI Briefing
+                  Today’s priority stack
                 </p>
                 <p className="text-muted-foreground text-xs">
-                  Suggested actions for today
+                  Attention, money, and leverage
                 </p>
               </div>
             </div>
             <div className="mt-4 space-y-2.5">
-              <ActionSuggestion
-                title="Summarize inbox"
-                hint="Generate a quick brief for the team standup."
-                href="/inbox"
-              />
-              <ActionSuggestion
-                title="Review warm leads"
-                hint="Focus on conversations with active deal value."
-                href="/pipelines"
-              />
-              <ActionSuggestion
-                title="Create follow-up broadcast"
-                hint="Re-engage contacts who replied this week."
-                href="/broadcasts/new"
-              />
+              {priorityStack.length > 0
+                ? priorityStack.map((item) => (
+                    <MissionPriority key={item.label} {...item} />
+                  ))
+                : ['Attention', 'Revenue', 'AI leverage'].map((label) => (
+                    <div
+                      key={label}
+                      className="border-border/70 bg-background/40 h-20 animate-pulse rounded-2xl border"
+                    />
+                  ))}
             </div>
           </aside>
         </div>
@@ -393,25 +421,50 @@ function InsightChip({
   );
 }
 
-function ActionSuggestion({
-  title,
-  hint,
+function MissionPriority({
+  label,
+  value,
+  detail,
   href,
+  icon: Icon,
+  tone,
 }: {
-  title: string;
-  hint: string;
+  label: string;
+  value: string;
+  detail: string;
   href: string;
+  icon: typeof MessageSquare;
+  tone: 'emerald' | 'blue' | 'purple';
 }) {
+  const toneClass =
+    tone === 'emerald'
+      ? 'bg-emerald-500/10 text-emerald-300'
+      : tone === 'blue'
+        ? 'bg-blue-500/10 text-blue-300'
+        : 'bg-violet-500/10 text-violet-300';
+
   return (
     <Link
       href={href}
-      className="zovaix-premium-hover border-border/70 bg-background/40 flex items-start justify-between rounded-2xl border px-3 py-3"
+      className="zovaix-premium-hover border-border/70 bg-background/40 group flex items-start gap-3 rounded-2xl border px-3 py-3"
     >
-      <div className="min-w-0">
-        <p className="text-foreground text-sm font-medium">{title}</p>
-        <p className="text-muted-foreground mt-1 text-xs leading-5">{hint}</p>
-      </div>
-      <ArrowUpRight className="text-muted-foreground mt-0.5 h-4 w-4 shrink-0" />
+      <span
+        className={`mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${toneClass}`}
+      >
+        <Icon className="h-4 w-4" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="text-foreground flex items-center justify-between gap-2 text-sm font-medium">
+          <span className="truncate">{label}</span>
+          <span className="text-primary shrink-0 text-xs tabular-nums">
+            {value}
+          </span>
+        </span>
+        <span className="text-muted-foreground mt-1 block text-xs leading-5">
+          {detail}
+        </span>
+      </span>
+      <ArrowUpRight className="text-muted-foreground mt-1 h-4 w-4 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
     </Link>
   );
 }
