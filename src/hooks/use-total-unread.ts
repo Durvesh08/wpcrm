@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-import type { Conversation } from "@/types";
+import { useEffect, useRef, useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import type { Conversation } from '@/types';
 
 /**
  * Count of conversations with at least one unread inbound message for
@@ -14,6 +14,9 @@ import type { Conversation } from "@/types";
  */
 export function useTotalUnread(): number {
   const [total, setTotal] = useState(0);
+  const channelNameRef = useRef(
+    `total-unread-realtime-${Math.random().toString(36).slice(2)}`
+  );
 
   // Keep a live local mirror of {id: unread_count} so INSERT/UPDATE/DELETE
   // events can adjust the total in O(1) without refetching.
@@ -27,8 +30,8 @@ export function useTotalUnread(): number {
     // no explicit user_id filter needed here.
     (async () => {
       const { data, error } = await supabase
-        .from("conversations")
-        .select("id, unread_count");
+        .from('conversations')
+        .select('id, unread_count');
       if (cancelled || error || !data) return;
 
       const map = new Map<string, number>();
@@ -43,13 +46,13 @@ export function useTotalUnread(): number {
     })();
 
     const channel = supabase
-      .channel("total-unread-realtime")
+      .channel(channelNameRef.current)
       .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "conversations" },
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'conversations' },
         (payload) => {
           const map = countsRef.current;
-          if (payload.eventType === "DELETE") {
+          if (payload.eventType === 'DELETE') {
             const oldRow = payload.old as Partial<Conversation>;
             if (oldRow.id) map.delete(oldRow.id);
           } else {
@@ -60,7 +63,7 @@ export function useTotalUnread(): number {
           let sum = 0;
           for (const n of map.values()) if (n > 0) sum += 1;
           setTotal(sum);
-        },
+        }
       )
       .subscribe();
 
