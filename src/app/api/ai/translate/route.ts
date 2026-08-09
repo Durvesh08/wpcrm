@@ -25,13 +25,6 @@ export async function POST(request: Request) {
         { status: 400 },
       )
     }
-    if (!config.translationEnabled) {
-      return NextResponse.json(
-        { error: 'Translation is disabled.' },
-        { status: 400 },
-      )
-    }
-
     const targetLanguage =
       typeof body?.target_language === 'string' && body.target_language.trim()
         ? body.target_language.trim().slice(0, 80)

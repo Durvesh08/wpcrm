@@ -263,7 +263,7 @@ export function MessageThread({
       .then((data) => {
         if (cancelled || !data) return;
         setTranslation({
-          enabled: Boolean(data.translation_enabled && data.has_key),
+          enabled: Boolean(data.has_key),
           targetLanguage: data.translation_target_language || 'English',
         });
       })

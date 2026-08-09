@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS follow_up_reminders (
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   contact_id UUID NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,
   conversation_id UUID REFERENCES conversations(id) ON DELETE SET NULL,
+  kind TEXT NOT NULL DEFAULT 'follow_up' CHECK (kind IN ('follow_up', 'call', 'note')),
   title TEXT NOT NULL CHECK (char_length(title) <= 240),
   due_at TIMESTAMPTZ NOT NULL,
   completed_at TIMESTAMPTZ,

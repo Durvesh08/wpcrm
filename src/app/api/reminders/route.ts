@@ -7,17 +7,28 @@ function parseDueAt(value: unknown) {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
+function isMissingReminderTable(error: unknown) {
+  return typeof error === 'object' && error !== null && 'code' in error && (error as { code?: string }).code === 'PGRST205';
+}
+
+function reminderMigrationResponse() {
+  return NextResponse.json({ error: 'Calendar setup is pending. Run Supabase migration 034_follow_up_reminders.sql once, then reload.' }, { status: 503 });
+}
+
 export async function GET() {
   try {
     const ctx = await getCurrentAccount();
     const { data, error } = await ctx.supabase
       .from('follow_up_reminders')
-      .select('id, contact_id, conversation_id, title, due_at, completed_at, created_at, contacts(name, phone)')
+      .select('id, contact_id, conversation_id, kind, title, due_at, completed_at, created_at, contacts(name, phone)')
       .eq('account_id', ctx.accountId)
       .order('due_at', { ascending: true })
       .limit(100);
 
-    if (error) throw error;
+    if (error) {
+      if (isMissingReminderTable(error)) return reminderMigrationResponse();
+      throw error;
+    }
     return NextResponse.json({ reminders: data ?? [] });
   } catch (error) {
     return toErrorResponse(error);
@@ -31,6 +42,7 @@ export async function POST(request: Request) {
     const contactId = typeof body?.contactId === 'string' ? body.contactId : '';
     const conversationId = typeof body?.conversationId === 'string' ? body.conversationId : null;
     const title = typeof body?.title === 'string' ? body.title.trim().slice(0, 240) : '';
+    const kind = body?.kind === 'call' || body?.kind === 'note' ? body.kind : 'follow_up';
     const dueAt = parseDueAt(body?.dueAt);
 
     if (!contactId || !title || !dueAt) {
@@ -53,12 +65,16 @@ export async function POST(request: Request) {
         user_id: ctx.userId,
         contact_id: contactId,
         conversation_id: conversationId,
+        kind,
         title,
         due_at: dueAt.toISOString(),
       })
       .select('id, title, due_at')
       .single();
-    if (error) throw error;
+    if (error) {
+      if (isMissingReminderTable(error)) return reminderMigrationResponse();
+      throw error;
+    }
     return NextResponse.json({ reminder: data }, { status: 201 });
   } catch (error) {
     return toErrorResponse(error);
@@ -76,7 +92,10 @@ export async function PATCH(request: Request) {
       .update({ completed_at: new Date().toISOString() })
       .eq('id', id)
       .eq('account_id', ctx.accountId);
-    if (error) throw error;
+    if (error) {
+      if (isMissingReminderTable(error)) return reminderMigrationResponse();
+      throw error;
+    }
     return NextResponse.json({ ok: true });
   } catch (error) {
     return toErrorResponse(error);
