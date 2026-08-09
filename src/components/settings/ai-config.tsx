@@ -88,6 +88,7 @@ export function AiConfig() {
   const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
   const [maxPerConversation, setMaxPerConversation] = useState(3);
   const [translationEnabled, setTranslationEnabled] = useState(false);
+  const [translationAvailable, setTranslationAvailable] = useState(true);
   const [translationTargetLanguage, setTranslationTargetLanguage] =
     useState('English');
 
@@ -115,6 +116,7 @@ export function AiConfig() {
         setAutoReplyEnabled(data.auto_reply_enabled);
         setMaxPerConversation(data.auto_reply_max_per_conversation ?? 3);
         setTranslationEnabled(data.translation_enabled ?? false);
+        setTranslationAvailable(data.translation_available !== false);
         setTranslationTargetLanguage(
           data.translation_target_language ?? 'English'
         );
@@ -209,7 +211,13 @@ export function AiConfig() {
       });
       const data = await res.json();
       if (res.ok) {
-        toast.success('AI assistant saved.');
+        if (data.translation_available === false) {
+          toast.warning(
+            'AI assistant saved. Translation settings need the pending Supabase migration.'
+          );
+        } else {
+          toast.success('AI assistant saved.');
+        }
         await fetchConfig();
       } else {
         toast.error(data.error ?? 'Failed to save.');
@@ -501,6 +509,13 @@ export function AiConfig() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {!translationAvailable && (
+              <p className="rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs leading-5 text-amber-700 dark:text-amber-300">
+                Translation is temporarily unavailable because this Supabase
+                project still needs the AI translation migration. Your AI
+                assistant, Playground, and Copilot can still work normally.
+              </p>
+            )}
             <div className="border-border flex items-center justify-between gap-4 rounded-md border p-3">
               <div>
                 <p className="text-foreground text-sm font-medium">
@@ -514,7 +529,7 @@ export function AiConfig() {
               <Switch
                 checked={translationEnabled}
                 onCheckedChange={setTranslationEnabled}
-                disabled={disabled}
+                disabled={disabled || !translationAvailable}
               />
             </div>
 
@@ -525,7 +540,9 @@ export function AiConfig() {
                 onValueChange={(value) => {
                   if (value) setTranslationTargetLanguage(value);
                 }}
-                disabled={disabled || !translationEnabled}
+                disabled={
+                  disabled || !translationEnabled || !translationAvailable
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
