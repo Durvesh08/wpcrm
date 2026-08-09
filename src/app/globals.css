@@ -88,61 +88,61 @@
 
 :root,
 html[data-mode='dark'] {
-  --background: oklch(0.13 0.01 260);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.18 0.01 260);
-  --card-2: oklch(0.205 0.01 260);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.18 0.01 260);
-  --popover-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.22 0.01 260);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.22 0.01 260);
-  --muted-foreground: oklch(0.65 0.01 260);
-  --accent: oklch(0.22 0.01 260);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: oklch(0.145 0.018 220);
+  --foreground: oklch(0.97 0.005 170);
+  --card: oklch(0.18 0.02 220);
+  --card-2: oklch(0.22 0.024 220);
+  --card-foreground: oklch(0.97 0.005 170);
+  --popover: oklch(0.195 0.022 220);
+  --popover-foreground: oklch(0.97 0.005 170);
+  --secondary: oklch(0.23 0.024 220);
+  --secondary-foreground: oklch(0.97 0.005 170);
+  --muted: oklch(0.23 0.024 220);
+  --muted-foreground: oklch(0.7 0.018 200);
+  --accent: oklch(0.24 0.028 220);
+  --accent-foreground: oklch(0.97 0.005 170);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.28 0.01 260);
-  --input: oklch(0.28 0.01 260);
+  --border: oklch(0.31 0.027 220);
+  --input: oklch(0.31 0.027 220);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
-  --sidebar: oklch(0.16 0.01 260);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.22 0.01 260);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.28 0.01 260);
+  --sidebar: oklch(0.17 0.021 220);
+  --sidebar-foreground: oklch(0.97 0.005 170);
+  --sidebar-accent: oklch(0.23 0.024 220);
+  --sidebar-accent-foreground: oklch(0.97 0.005 170);
+  --sidebar-border: oklch(0.31 0.027 220);
 }
 
 html[data-mode='light'] {
-  --background: oklch(0.99 0.002 260);
-  --foreground: oklch(0.21 0.01 260);
-  --card: oklch(1 0 0);
-  --card-2: oklch(0.985 0.002 260);
-  --card-foreground: oklch(0.21 0.01 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.01 260);
-  --secondary: oklch(0.967 0.003 260);
-  --secondary-foreground: oklch(0.25 0.01 260);
-  --muted: oklch(0.967 0.003 260);
-  --muted-foreground: oklch(0.52 0.015 260);
-  --accent: oklch(0.96 0.004 260);
-  --accent-foreground: oklch(0.25 0.01 260);
+  --background: oklch(0.965 0.012 155);
+  --foreground: oklch(0.245 0.02 185);
+  --card: oklch(0.995 0.003 155);
+  --card-2: oklch(0.952 0.017 155);
+  --card-foreground: oklch(0.245 0.02 185);
+  --popover: oklch(0.995 0.003 155);
+  --popover-foreground: oklch(0.245 0.02 185);
+  --secondary: oklch(0.94 0.018 155);
+  --secondary-foreground: oklch(0.275 0.02 185);
+  --muted: oklch(0.94 0.018 155);
+  --muted-foreground: oklch(0.5 0.023 185);
+  --accent: oklch(0.925 0.022 155);
+  --accent-foreground: oklch(0.275 0.02 185);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0.004 260);
-  --input: oklch(0.922 0.004 260);
+  --border: oklch(0.875 0.025 155);
+  --input: oklch(0.875 0.025 155);
   --chart-2: oklch(0.6 0.1 260);
   --chart-3: oklch(0.7 0.06 260);
   --chart-4: oklch(0.8 0.04 260);
   --chart-5: oklch(0.87 0.03 260);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0.002 260);
-  --sidebar-foreground: oklch(0.21 0.01 260);
-  --sidebar-accent: oklch(0.96 0.004 260);
-  --sidebar-accent-foreground: oklch(0.25 0.01 260);
-  --sidebar-border: oklch(0.922 0.004 260);
+  --sidebar: oklch(0.985 0.006 155);
+  --sidebar-foreground: oklch(0.245 0.02 185);
+  --sidebar-accent: oklch(0.925 0.022 155);
+  --sidebar-accent-foreground: oklch(0.275 0.02 185);
+  --sidebar-border: oklch(0.875 0.025 155);
 }
 
 /* ---- ACCENT: primary color ---- */
@@ -160,6 +160,20 @@ html[data-theme='zovaix'] {
   --sidebar-primary: oklch(0.78 0.08 220);
   --sidebar-primary-foreground: oklch(0.12 0.01 260);
   --sidebar-ring: oklch(0.78 0.08 220);
+}
+
+html[data-theme='whatsapp'] {
+  --primary: oklch(0.64 0.15 156);
+  --primary-foreground: oklch(0.16 0.025 170);
+  --primary-hover: oklch(0.7 0.14 156);
+  --primary-soft: oklch(0.64 0.15 156 / 0.12);
+  --primary-soft-2: oklch(0.64 0.15 156 / 0.22);
+  --ring: oklch(0.64 0.15 156);
+  --chart-1: oklch(0.64 0.15 156);
+  --chart-2: oklch(0.66 0.11 190);
+  --sidebar-primary: oklch(0.64 0.15 156);
+  --sidebar-primary-foreground: oklch(0.16 0.025 170);
+  --sidebar-ring: oklch(0.64 0.15 156);
 }
 
 html[data-theme='violet'] {
@@ -315,27 +329,28 @@ html[data-theme='rose'] {
     22px 22px;
 }
 
+/* Inbox uses the familiar WhatsApp chat texture, but deliberately keeps it
+ * quiet so messages, not decoration, are the first thing an agent sees. */
+.zovaix-whatsapp-chat-surface {
+  background-color: color-mix(in oklch, var(--background) 92%, var(--primary));
+  background-image: url('/inbox-doodle.svg');
+  background-repeat: repeat;
+}
+
+html[data-mode='light'] .zovaix-whatsapp-chat-surface {
+  background-color: color-mix(in oklch, var(--background) 84%, var(--primary));
+}
+
 .zovaix-app-shell {
-  background:
-    radial-gradient(
-      circle at top,
-      color-mix(in oklch, var(--primary), transparent 92%) 0%,
-      transparent 42%
-    ),
-    linear-gradient(
-      180deg,
-      color-mix(in oklch, var(--background), black 4%) 0%,
-      var(--background) 100%
-    );
+  background: var(--background);
 }
 
 .zovaix-premium-panel {
-  background: color-mix(in oklch, var(--card) 86%, transparent);
-  border: 1px solid color-mix(in oklch, var(--border) 88%, transparent);
+  background: var(--card);
+  border: 1px solid var(--border);
   box-shadow:
-    0 1px 0 color-mix(in oklch, white 8%, transparent) inset,
-    0 24px 60px color-mix(in oklch, black 38%, transparent);
-  backdrop-filter: blur(18px);
+    0 1px 2px color-mix(in oklch, var(--foreground) 7%, transparent),
+    0 10px 26px color-mix(in oklch, var(--foreground) 6%, transparent);
 }
 
 .zovaix-premium-hover {
@@ -349,8 +364,8 @@ html[data-theme='rose'] {
 .zovaix-premium-hover:hover {
   transform: translateY(-1px);
   box-shadow:
-    0 1px 0 color-mix(in oklch, white 8%, transparent) inset,
-    0 28px 70px color-mix(in oklch, black 42%, transparent);
+    0 2px 4px color-mix(in oklch, var(--foreground) 8%, transparent),
+    0 14px 30px color-mix(in oklch, var(--foreground) 8%, transparent);
 }
 
 .zovaix-kpi-glow {
@@ -368,6 +383,22 @@ html[data-theme='rose'] {
     transparent 45%,
     color-mix(in oklch, var(--chart-2), transparent 84%)
   );
-  opacity: 0.7;
+  opacity: 0.32;
   pointer-events: none;
+}
+
+html[data-mode='dark'] .zovaix-premium-panel {
+  box-shadow:
+    0 1px 0 color-mix(in oklch, white 5%, transparent) inset,
+    0 12px 28px color-mix(in oklch, black 22%, transparent);
+}
+
+html[data-mode='dark'] .zovaix-premium-hover:hover {
+  box-shadow:
+    0 1px 0 color-mix(in oklch, white 7%, transparent) inset,
+    0 18px 34px color-mix(in oklch, black 28%, transparent);
+}
+
+html[data-mode='dark'] .zovaix-kpi-glow::before {
+  opacity: 0.48;
 }

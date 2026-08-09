@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, type ComponentType } from 'react';
+import { toast } from 'sonner';
 import {
   ArrowRight,
   Bell,
@@ -14,6 +15,7 @@ import {
   Flame,
   GitBranch,
   LogOut,
+  Loader2,
   Megaphone,
   Menu,
   MessageSquare,
@@ -60,22 +62,29 @@ const pageTitles: Record<string, string> = {
   '/flows': 'Flows',
 };
 
-const COPILOT_SUGGESTIONS: Record<
-  string,
-  Array<{ label: string; context: string; href: string }>
-> = {
+type CopilotSuggestion = {
+  id: string;
+  label: string;
+  context: string;
+  href: string;
+};
+
+const COPILOT_SUGGESTIONS: Record<string, CopilotSuggestion[]> = {
   '/dashboard': [
     {
+      id: 'daily_briefing',
       label: 'Generate daily briefing',
       context: 'Priorities, risks, and revenue moves',
       href: '/dashboard',
     },
     {
+      id: 'blocked_work',
       label: 'Highlight blocked work',
       context: 'Find conversations and deals needing action',
       href: '/dashboard',
     },
     {
+      id: 'weekly_report',
       label: 'Create weekly report',
       context: 'Turn CRM activity into an owner update',
       href: '/dashboard',
@@ -83,16 +92,19 @@ const COPILOT_SUGGESTIONS: Record<
   ],
   '/inbox': [
     {
+      id: 'summarize_unread',
       label: 'Summarize unread',
       context: 'Condense waiting conversations',
       href: '/inbox',
     },
     {
+      id: 'translate_messages',
       label: 'Translate messages',
       context: 'Detect language and prepare replies',
       href: '/inbox',
     },
     {
+      id: 'buying_signals',
       label: 'Find buying signals',
       context: 'Spot intent across recent chats',
       href: '/inbox',
@@ -100,16 +112,19 @@ const COPILOT_SUGGESTIONS: Record<
   ],
   '/contacts': [
     {
+      id: 'inactive_customers',
       label: 'Find inactive customers',
       context: 'Create a reactivation segment',
       href: '/contacts',
     },
     {
+      id: 'generate_tags',
       label: 'Generate tags',
       context: 'Cluster contacts by behavior',
       href: '/contacts',
     },
     {
+      id: 'group_contacts',
       label: 'Group contacts',
       context: 'Prepare a focused broadcast audience',
       href: '/contacts',
@@ -117,16 +132,19 @@ const COPILOT_SUGGESTIONS: Record<
   ],
   '/pipelines': [
     {
+      id: 'stalled_deals',
       label: 'Review stalled deals',
       context: 'Show deals without movement',
       href: '/pipelines',
     },
     {
+      id: 'forecast_revenue',
       label: 'Forecast revenue',
       context: 'Estimate likely close value',
       href: '/pipelines',
     },
     {
+      id: 'predict_close_rate',
       label: 'Predict close rate',
       context: 'Score active opportunities',
       href: '/pipelines',
@@ -134,16 +152,19 @@ const COPILOT_SUGGESTIONS: Record<
   ],
   '/broadcasts': [
     {
+      id: 'best_segment',
       label: 'Find best segment',
       context: 'Choose the audience most likely to reply',
       href: '/broadcasts/new',
     },
     {
+      id: 'draft_campaign',
       label: 'Draft campaign',
       context: 'Generate a concise WhatsApp broadcast',
       href: '/broadcasts/new',
     },
     {
+      id: 'review_delivery',
       label: 'Review delivery',
       context: 'Spot low-performing sends',
       href: '/broadcasts',
@@ -151,16 +172,19 @@ const COPILOT_SUGGESTIONS: Record<
   ],
   '/automations': [
     {
+      id: 'create_automation',
       label: 'Create automation',
       context: 'Turn repeated follow-up into a flow',
       href: '/automations/new',
     },
     {
+      id: 'audit_workflow',
       label: 'Audit workflow',
       context: 'Find broken or slow automations',
       href: '/automations',
     },
     {
+      id: 'today_priorities',
       label: 'Review today’s priorities',
       context: 'Suggest the next system action',
       href: '/automations',
@@ -265,6 +289,7 @@ interface HeaderProps {
 
 export function Header({ onOpenSidebar }: HeaderProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const { profile, signOut, account } = useAuth();
   const unreadNotifications = useUnreadNotifications();
   const totalUnread = useTotalUnread();
@@ -272,6 +297,12 @@ export function Header({ onOpenSidebar }: HeaderProps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [copilotOpen, setCopilotOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const [copilotLoadingId, setCopilotLoadingId] = useState<string | null>(null);
+  const [copilotResult, setCopilotResult] = useState<{
+    title: string;
+    content: string;
+    href: string;
+  } | null>(null);
 
   const initial =
     profile?.full_name?.charAt(0)?.toUpperCase() ??
@@ -305,6 +336,46 @@ export function Header({ onOpenSidebar }: HeaderProps) {
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
+
+  const runCopilot = async (item: CopilotSuggestion) => {
+    if (copilotLoadingId) return;
+    setCopilotLoadingId(item.id);
+    setCopilotResult(null);
+
+    try {
+      const response = await fetch('/api/ai/copilot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: item.id, pathname }),
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        if (data.code === 'ai_not_configured') {
+          setCopilotOpen(false);
+          router.push('/agents');
+        }
+        throw new Error(data.error ?? 'Copilot could not complete that task.');
+      }
+
+      setCopilotResult({
+        title: item.label,
+        content:
+          typeof data.result === 'string' && data.result.trim()
+            ? data.result
+            : 'The Copilot did not return a usable result. Please try again.',
+        href: item.href,
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Copilot could not complete that task.';
+      toast.error(message);
+    } finally {
+      setCopilotLoadingId(null);
+    }
+  };
 
   return (
     <header className="border-border/70 bg-background/65 sticky top-0 z-20 border-b backdrop-blur-xl">
@@ -412,7 +483,13 @@ export function Header({ onOpenSidebar }: HeaderProps) {
             </PopoverContent>
           </Popover>
 
-          <Popover open={copilotOpen} onOpenChange={setCopilotOpen}>
+          <Popover
+            open={copilotOpen}
+            onOpenChange={(open) => {
+              setCopilotOpen(open);
+              if (!open) setCopilotResult(null);
+            }}
+          >
             <PopoverTrigger
               className="zovaix-premium-panel zovaix-premium-hover focus:ring-primary/30 hidden min-w-0 items-center gap-3 rounded-2xl px-4 py-2.5 text-left focus:ring-2 focus:outline-none xl:flex xl:w-[23rem]"
               aria-label="Open AI copilot"
@@ -449,36 +526,75 @@ export function Header({ onOpenSidebar }: HeaderProps) {
                   </div>
                 </div>
               </div>
-              <div className="space-y-1 p-2">
-                {copilotSuggestions.map((item, index) => (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    onClick={() => setCopilotOpen(false)}
-                    className={cn(
-                      'group hover:bg-muted/70 flex items-start gap-3 rounded-xl px-3 py-3 transition-colors',
-                      index === 0 && 'bg-primary/8'
-                    )}
-                  >
-                    <span className="bg-card-2 text-primary border-border/70 mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-xl border">
-                      {index === 0 ? (
-                        <Flame className="h-4 w-4" />
-                      ) : (
-                        <Sparkles className="h-4 w-4" />
-                      )}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="text-foreground block text-sm font-medium">
-                        {item.label}
-                      </span>
-                      <span className="text-muted-foreground mt-0.5 block text-xs leading-5">
-                        {item.context}
-                      </span>
-                    </span>
-                    <ArrowRight className="text-muted-foreground mt-2 h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
-                  </Link>
-                ))}
-              </div>
+              {copilotResult ? (
+                <div className="p-3">
+                  <div className="border-primary/20 bg-primary/8 rounded-xl border p-4">
+                    <p className="text-foreground text-sm font-semibold">
+                      {copilotResult.title}
+                    </p>
+                    <p className="text-muted-foreground mt-2 text-sm leading-6 whitespace-pre-wrap">
+                      {copilotResult.content}
+                    </p>
+                  </div>
+                  <div className="mt-3 flex items-center justify-between gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setCopilotResult(null)}
+                      className="text-muted-foreground hover:text-foreground text-sm font-medium"
+                    >
+                      Run another
+                    </button>
+                    <Link
+                      href={copilotResult.href}
+                      onClick={() => setCopilotOpen(false)}
+                      className="bg-primary text-primary-foreground hover:bg-primary-hover inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium"
+                    >
+                      Open workspace <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-1 p-2">
+                  {copilotSuggestions.map((item, index) => {
+                    const isLoading = copilotLoadingId === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        disabled={copilotLoadingId !== null}
+                        onClick={() => void runCopilot(item)}
+                        className={cn(
+                          'group hover:bg-muted/70 flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left transition-colors disabled:cursor-wait disabled:opacity-70',
+                          index === 0 && 'bg-primary/8'
+                        )}
+                      >
+                        <span className="bg-card-2 text-primary border-border/70 mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border">
+                          {isLoading ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : index === 0 ? (
+                            <Flame className="h-4 w-4" />
+                          ) : (
+                            <Sparkles className="h-4 w-4" />
+                          )}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="text-foreground block text-sm font-medium">
+                            {item.label}
+                          </span>
+                          <span className="text-muted-foreground mt-0.5 block text-xs leading-5">
+                            {isLoading
+                              ? 'Analyzing your workspace…'
+                              : item.context}
+                          </span>
+                        </span>
+                        {!isLoading && (
+                          <ArrowRight className="text-muted-foreground mt-2 h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </PopoverContent>
           </Popover>
 
