@@ -40,15 +40,18 @@ export async function sendAccountPushNotification(
     title: string;
     body: string;
     conversationId?: string;
+    userId?: string;
   },
 ) {
   const firebaseApp = getFirebaseApp();
   if (!firebaseApp) return;
 
-  const { data, error } = await db
+  let query = db
     .from("app_push_tokens")
     .select("token")
     .eq("account_id", params.accountId);
+  if (params.userId) query = query.eq("user_id", params.userId);
+  const { data, error } = await query;
 
   if (error) {
     console.error("[push] failed to load device tokens:", error);

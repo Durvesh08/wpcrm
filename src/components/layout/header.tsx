@@ -60,6 +60,7 @@ const pageTitles: Record<string, string> = {
   '/settings': 'Settings',
   '/agents': 'AI Agents',
   '/flows': 'Flows',
+  '/calendar': 'Calendar',
 };
 
 type CopilotSuggestion = {
@@ -611,16 +612,16 @@ export function Header({ onOpenSidebar }: HeaderProps) {
             )}
           </button>
 
-          <button
-            type="button"
+          <Link
+            href="/calendar"
             className="zovaix-premium-panel zovaix-premium-hover text-muted-foreground hover:text-foreground hidden h-11 w-11 items-center justify-center rounded-2xl sm:inline-flex"
             aria-label="Calendar"
           >
             <CalendarDays className="h-4 w-4" />
-          </button>
+          </Link>
 
-          <button
-            type="button"
+          <Link
+            href="/notifications"
             className="zovaix-premium-panel zovaix-premium-hover text-muted-foreground hover:text-foreground relative inline-flex h-11 w-11 items-center justify-center rounded-2xl"
             aria-label="Notifications"
           >
@@ -630,7 +631,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
                 {unreadNotifications > 9 ? '9+' : unreadNotifications}
               </span>
             )}
-          </button>
+          </Link>
 
           <ModeToggle />
 

@@ -6,6 +6,9 @@ import { AuthProvider, useAuth } from '@/hooks/use-auth';
 import { Sidebar } from '@/components/layout/sidebar';
 import { Header } from '@/components/layout/header';
 import { PresenceHeartbeat } from '@/components/presence/presence-heartbeat';
+import { createClient } from '@/lib/supabase/client';
+import type { Notification } from '@/types';
+import { toast } from 'sonner';
 
 // Auth-gated dashboard shell. Extracted from the layout so the layout
 // itself can stay a server component and export metadata (noindex) —
@@ -58,6 +61,29 @@ function DashboardShellInner({ children }: { children: React.ReactNode }) {
       window.removeEventListener('unhandledrejection', onUnhandledRejection);
     };
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`workspace-alerts-${user.id}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}` }, (payload) => {
+        const notification = payload.new as Notification;
+        toast(notification.title, { description: notification.body || 'Open notifications to review it.' });
+      })
+      .subscribe();
+    return () => { void supabase.removeChannel(channel); };
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    const checkDueReminders = () => {
+      void fetch('/api/reminders/notify', { method: 'POST' }).catch(() => {});
+    };
+    checkDueReminders();
+    const interval = window.setInterval(checkDueReminders, 5 * 60 * 1000);
+    return () => window.clearInterval(interval);
+  }, [user]);
 
   useEffect(() => {
     if (!loading && !user) {

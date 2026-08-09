@@ -33,6 +33,7 @@ import {
 
 interface ContactSidebarProps {
   contact: Contact | null;
+  conversationId?: string;
   conversationStatus?: ConversationStatus;
   onStatusChange?: (status: ConversationStatus) => void;
   onContactUpdated?: (contact: Contact) => void;
@@ -52,6 +53,7 @@ const REMINDERS = [
 
 export function ContactSidebar({
   contact,
+  conversationId,
   conversationStatus = "open",
   onStatusChange,
   onContactUpdated,
@@ -313,15 +315,28 @@ export function ContactSidebar({
 
   const handleReminder = useCallback(
     async (days: number, hour: number) => {
+      if (!contact) return;
       setSavingReminder(true);
       const due = setMinutes(setHours(addDays(new Date(), days), hour), 0);
-      const inserted = await insertNote(
-        `Follow-up reminder: ${format(due, "MMM d, yyyy h:mm a")}`,
-      );
+      const response = await fetch('/api/reminders', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          contactId: contact.id,
+          conversationId,
+          title: `Follow up with ${contact.name || contact.phone}`,
+          dueAt: due.toISOString(),
+        }),
+      });
+      const json = await response.json().catch(() => null);
       setSavingReminder(false);
-      if (inserted) toast.success("Follow-up reminder saved");
+      if (!response.ok) {
+        toast.error(json?.error || 'Could not save follow-up reminder');
+        return;
+      }
+      toast.success(`Follow-up scheduled for ${format(due, "MMM d, yyyy h:mm a")}`);
     },
-    [insertNote],
+    [contact, conversationId],
   );
 
   if (!contact) {

@@ -669,6 +669,7 @@ export default function InboxPage() {
           <div className="hidden lg:block">
             <ContactSidebar
               contact={activeContact}
+              conversationId={activeConversation?.id}
               conversationStatus={activeConversation?.status}
               onStatusChange={handleSidebarStatusChange}
               onContactUpdated={handleActiveContactUpdated}
