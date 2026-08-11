@@ -19,7 +19,6 @@ import {
   Play,
   FileDown,
   Link as LinkIcon,
-  Languages,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ReplyQuote } from './reply-quote';
@@ -365,66 +364,50 @@ function LinkifiedText({ text }: { text: string }) {
 function TranslatedText({
   text,
   settings,
+  messageId,
 }: {
   text?: string | null;
   settings?: TranslationSettings;
+  messageId: string;
 }) {
   const [translation, setTranslation] = useState<string | null>(null);
+  const [translationLanguage, setTranslationLanguage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     setTranslation(null);
+    setTranslationLanguage(null);
     setLoading(false);
     setError(null);
     setVisible(false);
   }, [settings?.enabled, settings?.targetLanguage, text]);
 
-  if (!settings?.enabled || !text?.trim()) return null;
+  useEffect(() => {
+    const handleRequestedTranslation = (event: Event) => {
+      const detail = (event as CustomEvent<{ messageId?: string; language?: string }>).detail;
+      if (detail?.messageId !== messageId || !detail.language || loading) return;
+      void handleTranslateTo(detail.language);
+    };
+    window.addEventListener('zovaix:translate-message', handleRequestedTranslation);
+    return () => window.removeEventListener('zovaix:translate-message', handleRequestedTranslation);
+  });
 
-  const handleTranslate = async () => {
-    const source = text.trim();
+  const handleTranslateTo = async (language: string) => {
+    const source = text?.trim();
     if (!source || loading) return;
-
-    if (translation) {
-      setVisible((current) => !current);
-      return;
-    }
-
-    const cacheKey = `zovaix:translation:${settings.targetLanguage}:${source}`;
-    const cached =
-      typeof sessionStorage !== 'undefined'
-        ? sessionStorage.getItem(cacheKey)
-        : null;
-
-    if (cached) {
-      setTranslation(cached);
-      setVisible(true);
-      setError(null);
-      return;
-    }
-
     setLoading(true);
     setError(null);
     try {
       const res = await fetch('/api/ai/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          text: source,
-          target_language: settings.targetLanguage,
-        }),
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: source, target_language: language }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error ?? 'Translation failed');
-      const cleaned =
-        typeof data?.translation === 'string' ? data.translation.trim() : '';
-      if (!cleaned) throw new Error('Translation failed');
-      if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem(cacheKey, cleaned);
-      }
-      setTranslation(cleaned);
+      if (!res.ok || typeof data?.translation !== 'string') throw new Error(data?.error ?? 'Translation failed');
+      setTranslation(data.translation.trim());
+      setTranslationLanguage(language);
       setVisible(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Translation failed');
@@ -433,32 +416,16 @@ function TranslatedText({
     }
   };
 
-  const buttonLabel = loading
-    ? 'Translating...'
-    : translation
-      ? visible
-        ? 'Hide translation'
-        : 'Show translation'
-      : `Translate to ${settings.targetLanguage}`;
+  if (!settings?.enabled || !text?.trim()) return null;
 
   return (
     <div className="mt-2 space-y-2">
-      <div className="flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          onClick={handleTranslate}
-          disabled={loading}
-          className="border-primary/25 bg-primary/10 text-primary hover:bg-primary/15 inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-70"
-        >
-          <Languages className="h-3.5 w-3.5" />
-          {buttonLabel}
-        </button>
-      </div>
+      {loading && <p className="text-primary text-[11px]">Translating...</p>}
       {error && <p className="text-[11px] text-red-400">{error}</p>}
       {visible && translation && (
         <div className="border-primary/20 bg-primary/10 rounded-lg border px-2 py-1.5 text-xs">
           <p className="text-primary mb-0.5 font-medium">
-            Translated to {settings.targetLanguage}
+            Translated to {translationLanguage || settings.targetLanguage}
           </p>
           <p className="text-foreground break-words whitespace-pre-wrap">
             <LinkifiedText text={translation} />
@@ -499,6 +466,7 @@ function MessageContent({
             <TranslatedText
               text={message.content_text}
               settings={translation}
+              messageId={message.id}
             />
           )}
         </div>
@@ -522,6 +490,7 @@ function MessageContent({
             <TranslatedText
               text={message.content_text}
               settings={translation}
+              messageId={message.id}
             />
           )}
         </div>
@@ -545,6 +514,7 @@ function MessageContent({
             <TranslatedText
               text={message.content_text}
               settings={translation}
+              messageId={message.id}
             />
           )}
         </div>
@@ -575,6 +545,7 @@ function MessageContent({
             <TranslatedText
               text={message.content_text}
               settings={translation}
+              messageId={message.id}
             />
           )}
         </div>
@@ -624,6 +595,7 @@ function MessageContent({
             <TranslatedText
               text={message.content_text}
               settings={translation}
+              messageId={message.id}
             />
           )}
         </div>

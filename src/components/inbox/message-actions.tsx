@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { CornerUpLeft, Copy, SmilePlus, Trash2 } from "lucide-react";
+import { CornerUpLeft, Copy, Languages, SmilePlus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
@@ -10,6 +10,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import type { Message } from "@/types";
+import type { TranslationSettings } from "./message-bubble";
 
 // WhatsApp's own quick-reaction bar starts with these six. Picking the same
 // set keeps the affordance familiar without pulling in a 300KB emoji library.
@@ -20,6 +21,7 @@ interface MessageActionsProps {
   onReply: () => void;
   onReact: (emoji: string) => void;
   onDeleteForMe?: () => void;
+  translation?: TranslationSettings;
   children: ReactNode;
 }
 
@@ -33,6 +35,7 @@ export function MessageActions({
   onReply,
   onReact,
   onDeleteForMe,
+  translation,
   children,
 }: MessageActionsProps) {
   // Touch devices have no hover. Long-press fires `contextmenu`; we capture
@@ -40,6 +43,7 @@ export function MessageActions({
   // interacts elsewhere.
   const [touchOpen, setTouchOpen] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [translationOpen, setTranslationOpen] = useState(false);
 
   const isAgent =
     message.sender_type === "agent" || message.sender_type === "bot";
@@ -79,6 +83,30 @@ export function MessageActions({
     onDeleteForMe?.();
     setTouchOpen(false);
   };
+
+  const requestTranslation = (language: string) => {
+    window.dispatchEvent(
+      new CustomEvent("zovaix:translate-message", {
+        detail: { messageId: message.id, language },
+      }),
+    );
+    setTranslationOpen(false);
+    setTouchOpen(false);
+  };
+
+  const canTranslate = Boolean(
+    translation?.enabled &&
+      message.sender_type === "customer" &&
+      message.content_text?.trim(),
+  );
+  const languages = [
+    translation?.targetLanguage || "English",
+    "Hindi",
+    "Marathi",
+    "Gujarati",
+    "Tamil",
+    "Telugu",
+  ];
 
   // Row alignment lives here (not in MessageBubble) so the `group/actions`
   // hover region matches the bubble's content width — hovering empty space
@@ -140,6 +168,25 @@ export function MessageActions({
         >
           <CornerUpLeft className="h-3.5 w-3.5" />
         </button>
+        {canTranslate && (
+          <Popover open={translationOpen} onOpenChange={setTranslationOpen}>
+            <PopoverTrigger
+              className="flex h-5 w-5 items-center justify-center rounded-full text-popover-foreground hover:bg-muted hover:text-foreground"
+              aria-label="Translate message"
+              title="Translate"
+            >
+              <Languages className="h-3.5 w-3.5" />
+            </PopoverTrigger>
+            <PopoverContent className="w-40 p-1.5" sideOffset={6}>
+              <p className="px-2 py-1 text-[11px] font-medium text-muted-foreground">Translate to</p>
+              {[...new Set(languages)].map((language) => (
+                <button key={language} type="button" onClick={() => requestTranslation(language)} className="hover:bg-muted flex w-full rounded-md px-2 py-1.5 text-left text-sm">
+                  {language}
+                </button>
+              ))}
+            </PopoverContent>
+          </Popover>
+        )}
         <button
           type="button"
           onClick={handleCopy}

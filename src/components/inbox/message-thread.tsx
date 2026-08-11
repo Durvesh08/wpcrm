@@ -1260,6 +1260,7 @@ export function MessageThread({
                           if (emoji) void postReaction(msg.id, emoji);
                         }}
                         onDeleteForMe={() => handleDeleteForMe(msg.id)}
+                        translation={translation}
                       >
                         <MessageBubble
                           message={msg}

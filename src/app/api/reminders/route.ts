@@ -12,7 +12,7 @@ function isMissingReminderTable(error: unknown) {
 }
 
 function reminderMigrationResponse() {
-  return NextResponse.json({ error: 'Calendar setup is pending. Run Supabase migration 034_follow_up_reminders.sql once, then reload.' }, { status: 503 });
+  return NextResponse.json({ error: 'Calendar setup is pending. Run Supabase migration 035_calendar_repair.sql once, then reload.' }, { status: 503 });
 }
 
 export async function GET() {

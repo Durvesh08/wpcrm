@@ -70,6 +70,23 @@ type CopilotSuggestion = {
   href: string;
 };
 
+function CopilotBrief({ content }: { content: string }) {
+  return (
+    <div className="space-y-3">
+      {content.split('\n').filter(Boolean).map((line, index) => {
+        const value = line.replace(/\*\*/g, '').trim();
+        if (value.startsWith('## ')) {
+          return <p key={`${value}-${index}`} className="border-border/70 border-t pt-3 text-[11px] font-semibold tracking-[0.15em] text-primary uppercase">{value.slice(3)}</p>;
+        }
+        if (value.startsWith('# ')) {
+          return <h3 key={`${value}-${index}`} className="text-base font-semibold text-foreground">{value.slice(2)}</h3>;
+        }
+        return <p key={`${value}-${index}`} className="text-sm leading-6 text-muted-foreground">{value.replace(/^[-*]\s*/, '')}</p>;
+      })}
+    </div>
+  );
+}
+
 const COPILOT_SUGGESTIONS: Record<string, CopilotSuggestion[]> = {
   '/dashboard': [
     {
@@ -392,9 +409,6 @@ export function Header({ onOpenSidebar }: HeaderProps) {
           </button>
 
           <div className="hidden min-w-0 md:block">
-            <p className="text-muted-foreground truncate text-[11px] font-medium tracking-[0.22em] uppercase">
-              {account?.name ?? 'Workspace'}
-            </p>
             <h1 className="text-foreground truncate text-lg font-semibold">
               {title}
             </h1>
@@ -510,7 +524,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
             <PopoverContent
               align="end"
               sideOffset={10}
-              className="border-primary/15 bg-popover/98 shadow-primary/10 w-[25rem] gap-0 rounded-2xl border p-0 shadow-2xl backdrop-blur-xl"
+              className="border-primary/15 bg-popover/98 shadow-primary/10 w-[min(34rem,calc(100vw-2rem))] gap-0 overflow-hidden rounded-2xl border p-0 shadow-2xl backdrop-blur-xl"
             >
               <div className="border-border/70 border-b p-4">
                 <div className="flex items-center gap-3">
@@ -528,14 +542,10 @@ export function Header({ onOpenSidebar }: HeaderProps) {
                 </div>
               </div>
               {copilotResult ? (
-                <div className="p-3">
-                  <div className="border-primary/20 bg-primary/8 rounded-xl border p-4">
-                    <p className="text-foreground text-sm font-semibold">
-                      {copilotResult.title}
-                    </p>
-                    <p className="text-muted-foreground mt-2 text-sm leading-6 whitespace-pre-wrap">
-                      {copilotResult.content}
-                    </p>
+                <div className="max-h-[34rem] overflow-y-auto p-4">
+                  <div className="border-primary/20 bg-primary/6 rounded-xl border p-4">
+                    <div className="mb-3 flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /><p className="text-sm font-semibold text-foreground">{copilotResult.title}</p></div>
+                    <CopilotBrief content={copilotResult.content} />
                   </div>
                   <div className="mt-3 flex items-center justify-between gap-3">
                     <button
