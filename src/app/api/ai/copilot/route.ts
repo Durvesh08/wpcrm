@@ -8,6 +8,7 @@ import {
 import { loadAiConfig } from '@/lib/ai/config';
 import { generateReply } from '@/lib/ai/generate';
 import { AiError } from '@/lib/ai/types';
+import { claimManagedAiCredit, MANAGED_AI_LIMITS } from '@/lib/ai/managed-usage';
 
 const ACTIONS = [
   'daily_briefing',
@@ -247,6 +248,15 @@ export async function POST(request: Request) {
         },
         { status: 400 }
       );
+    }
+    if (config.managedAi) {
+      const hasCredit = await claimManagedAiCredit(supabase, userId, 'copilot');
+      if (!hasCredit) {
+        return NextResponse.json({
+          error: `Your included AI Copilot allowance of ${MANAGED_AI_LIMITS.copilot} requests has been used. Add your own API key in AI Agents to continue.`,
+          code: 'managed_copilot_limit_reached',
+        }, { status: 429 });
+      }
     }
 
     const { snapshot } = await buildWorkspaceSnapshot(supabase);

@@ -80,6 +80,7 @@ export function AiConfig() {
   const [keyEdited, setKeyEdited] = useState(false);
   const [showKey, setShowKey] = useState(false);
   const [hasStoredKey, setHasStoredKey] = useState(false);
+  const [usePlatformAi, setUsePlatformAi] = useState(false);
   const [embeddingsKey, setEmbeddingsKey] = useState('');
   const [embeddingsKeyEdited, setEmbeddingsKeyEdited] = useState(false);
   const [hasStoredEmbeddingsKey, setHasStoredEmbeddingsKey] = useState(false);
@@ -121,6 +122,7 @@ export function AiConfig() {
           data.translation_target_language ?? 'English'
         );
         setHasStoredKey(Boolean(data.has_key));
+        setUsePlatformAi(data.platform_ai_enabled === true);
         setApiKey(data.has_key ? MASKED_KEY : '');
         setKeyEdited(false);
         setHasStoredEmbeddingsKey(Boolean(data.has_embeddings_key));
@@ -169,6 +171,7 @@ export function AiConfig() {
     auto_reply_max_per_conversation: maxPerConversation,
     translation_enabled: translationEnabled,
     translation_target_language: translationTargetLanguage,
+    platform_ai_enabled: usePlatformAi,
   });
 
   const handleTest = async () => {
@@ -198,7 +201,7 @@ export function AiConfig() {
       toast.error('Enter a model name.');
       return;
     }
-    if (!configured && !keyEdited) {
+    if (!usePlatformAi && !configured && !keyEdited) {
       toast.error('Enter your API key.');
       return;
     }
@@ -269,7 +272,7 @@ export function AiConfig() {
     <div>
       <SettingsPanelHead
         title="Agent setup"
-        description="Bring your own OpenAI, Anthropic, or Google Gemini key. ZOVAIX calls the provider directly with your key — no per-seat AI fees, and your data stays yours. This powers AI-drafted replies in the inbox, the auto-reply bot, and the Playground."
+        description="Use included ZOVAIX Gemini replies for your plan, or connect your own OpenAI, Anthropic, or Google Gemini key for unrestricted use."
       />
 
       {!canEdit && (
@@ -290,13 +293,17 @@ export function AiConfig() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="border-primary/20 bg-primary/5 flex items-center justify-between gap-4 rounded-xl border p-3">
+              <div><p className="text-sm font-medium">Included ZOVAIX AI</p><p className="mt-0.5 text-xs text-muted-foreground">1,000 automated replies and 50 Copilot requests with the workspace Gemini key.</p></div>
+              <Switch checked={usePlatformAi} onCheckedChange={setUsePlatformAi} disabled={disabled} />
+            </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label>Provider</Label>
                 <Select
                   value={provider}
                   onValueChange={(v) => handleProviderChange(v as AiProvider)}
-                  disabled={disabled}
+                  disabled={disabled || usePlatformAi}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -322,12 +329,12 @@ export function AiConfig() {
                   value={model}
                   onChange={(e) => setModel(e.target.value)}
                   placeholder={AI_PROVIDER_DEFAULT_MODEL[provider]}
-                  disabled={disabled}
+                  disabled={disabled || usePlatformAi}
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
+            {!usePlatformAi && <div className="space-y-2">
               <Label htmlFor="ai-key">API key</Label>
               <div className="flex gap-2">
                 <div className="relative flex-1">
@@ -375,7 +382,7 @@ export function AiConfig() {
                   Test key
                 </Button>
               </div>
-            </div>
+            </div>}
 
             <div className="space-y-2">
               <Label htmlFor="ai-embeddings-key">

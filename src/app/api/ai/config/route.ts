@@ -12,7 +12,6 @@ import {
 import { encrypt, decrypt } from '@/lib/whatsapp/encryption';
 import { validateAiCredentials } from '@/lib/ai/validate';
 import { embedTexts } from '@/lib/ai/embeddings';
-import { isMissingAiTranslationColumns } from '@/lib/ai/config';
 import { AiError, type AiProvider } from '@/lib/ai/types';
 import { isAiProvider } from '@/lib/ai/defaults';
 
@@ -21,9 +20,14 @@ function bad(message: string) {
 }
 
 const CONFIG_COLUMNS =
-  'provider, model, system_prompt, is_active, auto_reply_enabled, auto_reply_max_per_conversation, translation_enabled, translation_target_language, api_key, embeddings_api_key';
+  'provider, model, system_prompt, is_active, auto_reply_enabled, auto_reply_max_per_conversation, translation_enabled, translation_target_language, api_key, embeddings_api_key, platform_ai_enabled';
 const LEGACY_CONFIG_COLUMNS =
   'provider, model, system_prompt, is_active, auto_reply_enabled, auto_reply_max_per_conversation, api_key, embeddings_api_key';
+
+function hasMissingOptionalAiColumns(error: unknown) {
+  const candidate = error as { code?: string; message?: string } | null;
+  return Boolean(candidate && (candidate.code === '42703' || candidate.code === 'PGRST204') && (candidate.message?.includes('translation_') || candidate.message?.includes('platform_ai_enabled')));
+}
 
 /**
  * GET /api/ai/config
@@ -44,8 +48,9 @@ export async function GET() {
       .eq('account_id', accountId)
       .maybeSingle();
 
-    const translationAvailable = !isMissingAiTranslationColumns(error);
-    if (!translationAvailable) {
+    const optionalColumnsAvailable = !hasMissingOptionalAiColumns(error);
+    const translationAvailable = optionalColumnsAvailable;
+    if (!optionalColumnsAvailable) {
       ({ data, error } = await supabase
         .from('ai_configs')
         .select(LEGACY_CONFIG_COLUMNS)
@@ -69,6 +74,7 @@ export async function GET() {
       embeddings_api_key,
       translation_enabled,
       translation_target_language,
+      platform_ai_enabled,
       ...safe
     } = data;
     return NextResponse.json({
@@ -76,6 +82,7 @@ export async function GET() {
       has_key: !!api_key,
       has_embeddings_key: !!embeddings_api_key,
       translation_available: translationAvailable,
+      platform_ai_enabled: platform_ai_enabled === true,
       translation_enabled: translation_enabled ?? false,
       translation_target_language: translation_target_language ?? 'English',
       ...safe,
@@ -107,11 +114,12 @@ export async function POST(request: Request) {
     const body = await request.json().catch(() => null);
     if (!body || typeof body !== 'object') return bad('Invalid request body');
 
-    const provider = body.provider as AiProvider;
+    const usePlatformAi = body.platform_ai_enabled === true;
+    const provider = (usePlatformAi ? 'gemini' : body.provider) as AiProvider;
     if (!isAiProvider(provider)) {
       return bad('provider must be "openai", "anthropic", or "gemini"');
     }
-    const model = typeof body.model === 'string' ? body.model.trim() : '';
+    const model = usePlatformAi ? 'gemini-2.5-flash' : typeof body.model === 'string' ? body.model.trim() : '';
     if (!model) return bad('model is required');
 
     const systemPrompt =
@@ -143,14 +151,29 @@ export async function POST(request: Request) {
     const clearEmbeddingsKey = body.embeddings_api_key === null;
 
     // Reuse the stored key when the form didn't send a fresh one.
-    const { data: existing } = await supabase
+    let { data: existing, error: existingError } = await supabase
       .from('ai_configs')
-      .select('id, provider, model, api_key')
+      .select('id, provider, model, api_key, platform_ai_enabled')
       .eq('account_id', accountId)
       .maybeSingle();
+    const platformColumnAvailable = !hasMissingOptionalAiColumns(existingError);
+    if (!platformColumnAvailable) {
+      ({ data: existing, error: existingError } = await supabase
+        .from('ai_configs')
+        .select('id, provider, model, api_key')
+        .eq('account_id', accountId)
+        .maybeSingle());
+    }
+    if (existingError) return bad('Could not load AI configuration.');
+    if (usePlatformAi && !platformColumnAvailable) {
+      return bad('Included ZOVAIX AI needs Supabase migration 036_managed_ai_credits.sql before it can be enabled.');
+    }
 
     let apiKeyPlain: string;
-    if (rawKey) {
+    if (usePlatformAi) {
+      apiKeyPlain = process.env.ZOVAIX_GEMINI_API_KEY?.trim() ?? '';
+      if (!apiKeyPlain) return bad('ZOVAIX_GEMINI_API_KEY is not configured on the server.');
+    } else if (rawKey) {
       apiKeyPlain = rawKey;
     } else if (existing?.api_key) {
       try {
@@ -172,7 +195,8 @@ export async function POST(request: Request) {
       !existing ||
       rawKey !== '' ||
       provider !== existing.provider ||
-      model !== existing.model;
+      model !== existing.model ||
+      usePlatformAi !== (existing.platform_ai_enabled === true);
 
     if (credentialsChanged) {
       try {
@@ -217,7 +241,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const encryptedKey = rawKey ? encrypt(rawKey) : null;
+    const encryptedKey = usePlatformAi ? encrypt('zovaix-managed-key') : rawKey ? encrypt(rawKey) : null;
     const shared: Record<string, unknown> = {
       provider,
       model,
@@ -227,6 +251,7 @@ export async function POST(request: Request) {
       auto_reply_max_per_conversation: maxPer,
       translation_enabled: translationEnabled,
       translation_target_language: translationTargetLanguage,
+      platform_ai_enabled: usePlatformAi,
     };
     if (rawEmbeddingsKey) {
       shared.embeddings_api_key = encrypt(rawEmbeddingsKey);
@@ -236,6 +261,7 @@ export async function POST(request: Request) {
     const {
       translation_enabled: _translationEnabled,
       translation_target_language: _translationTargetLanguage,
+      platform_ai_enabled: _platformAiEnabled,
       ...legacyShared
     } = shared;
 
@@ -249,7 +275,7 @@ export async function POST(request: Request) {
         .from('ai_configs')
         .update(update)
         .eq('account_id', accountId);
-      if (isMissingAiTranslationColumns(upErr)) {
+      if (hasMissingOptionalAiColumns(upErr)) {
         translationAvailable = false;
         const legacyUpdate = encryptedKey
           ? { ...legacyShared, api_key: encryptedKey }
@@ -274,7 +300,7 @@ export async function POST(request: Request) {
         ...shared,
       };
       let { error: insErr } = await supabase.from('ai_configs').insert(insert);
-      if (isMissingAiTranslationColumns(insErr)) {
+      if (hasMissingOptionalAiColumns(insErr)) {
         translationAvailable = false;
         ({ error: insErr } = await supabase.from('ai_configs').insert({
           account_id: accountId,

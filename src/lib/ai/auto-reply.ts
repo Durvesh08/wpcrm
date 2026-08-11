@@ -5,6 +5,7 @@ import { retrieveKnowledge } from './knowledge'
 import { generateReply } from './generate'
 import { buildSystemPrompt } from './defaults'
 import { latestUserMessage } from './query'
+import { claimManagedAiCredit } from './managed-usage'
 import { engineSendText } from '@/lib/flows/meta-send'
 
 interface DispatchArgs {
@@ -46,6 +47,14 @@ export async function dispatchInboundToAiReply(
 
     const config = await loadAiConfig(db, accountId)
     if (!config || !config.autoReplyEnabled) return
+
+    if (config.managedAi) {
+      const hasCredit = await claimManagedAiCredit(db, configOwnerUserId, 'auto_reply')
+      if (!hasCredit) {
+        console.info('[ai auto-reply] managed AI allowance reached')
+        return
+      }
+    }
 
     // Deterministic, user-configured responders win over the LLM — the
     // caller already excludes messages a Flow consumed. Message-level

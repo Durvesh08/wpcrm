@@ -13,10 +13,11 @@ interface AiConfigRow {
   translation_enabled?: boolean;
   translation_target_language?: string | null;
   embeddings_api_key: string | null;
+  platform_ai_enabled?: boolean;
 }
 
 const CONFIG_COLUMNS =
-  'provider, model, api_key, system_prompt, is_active, auto_reply_enabled, auto_reply_max_per_conversation, translation_enabled, translation_target_language, embeddings_api_key';
+  'provider, model, api_key, system_prompt, is_active, auto_reply_enabled, auto_reply_max_per_conversation, translation_enabled, translation_target_language, embeddings_api_key, platform_ai_enabled';
 const LEGACY_CONFIG_COLUMNS =
   'provider, model, api_key, system_prompt, is_active, auto_reply_enabled, auto_reply_max_per_conversation, embeddings_api_key';
 
@@ -33,6 +34,11 @@ export function isMissingAiTranslationColumns(error: unknown): boolean {
     typeof candidate.message === 'string' &&
     candidate.message.includes('translation_')
   );
+}
+
+function isMissingManagedAiColumn(error: unknown): boolean {
+  const candidate = error as { code?: string; message?: string } | null;
+  return Boolean(candidate && (candidate.code === '42703' || candidate.code === 'PGRST204') && candidate.message?.includes('platform_ai_enabled'));
 }
 
 /**
@@ -58,7 +64,7 @@ export async function loadAiConfig(
     .eq('account_id', accountId)
     .maybeSingle();
 
-  if (isMissingAiTranslationColumns(error)) {
+  if (isMissingAiTranslationColumns(error) || isMissingManagedAiColumn(error)) {
     ({ data, error } = await db
       .from('ai_configs')
       .select(LEGACY_CONFIG_COLUMNS)
@@ -78,6 +84,13 @@ export async function loadAiConfig(
   // rather than letting decrypt() throw on null.
   if (!row.api_key) return null;
 
+  const managedAi = row.platform_ai_enabled === true;
+  const platformKey = process.env.ZOVAIX_GEMINI_API_KEY?.trim();
+  if (managedAi && !platformKey) {
+    console.error('[ai config] ZOVAIX_GEMINI_API_KEY is missing for managed AI');
+    return null;
+  }
+
   // The embeddings key is optional and independent of the chat key —
   // a corrupt/undecryptable one should downgrade to lexical KB, not
   // take down draft/auto-reply, so decrypt failures are swallowed here.
@@ -96,9 +109,9 @@ export async function loadAiConfig(
   }
 
   return {
-    provider: row.provider,
-    model: row.model,
-    apiKey: decrypt(row.api_key),
+    provider: managedAi ? 'gemini' : row.provider,
+    model: managedAi ? 'gemini-2.5-flash' : row.model,
+    apiKey: managedAi ? platformKey! : decrypt(row.api_key),
     systemPrompt: row.system_prompt,
     isActive: row.is_active,
     autoReplyEnabled: row.auto_reply_enabled,
@@ -106,6 +119,7 @@ export async function loadAiConfig(
     translationEnabled: row.translation_enabled ?? false,
     translationTargetLanguage: row.translation_target_language ?? 'English',
     embeddingsApiKey,
+    managedAi,
   };
 }
 

@@ -27,6 +27,8 @@ export interface AiConfig {
    *  knowledge base is embedded and semantic retrieval turns on; when
    *  null, retrieval falls back to lexical full-text search. */
   embeddingsApiKey: string | null
+  /** Uses the ZOVAIX-managed Gemini key and included plan credits. */
+  managedAi?: boolean
 }
 
 /** A single conversation turn in the shape both providers accept. */
