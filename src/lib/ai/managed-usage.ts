@@ -1,6 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-const UNLIMITED_EMAIL = 'rpyadsrahufin25@gmail.com';
 const AUTO_REPLY_LIMIT = 1000;
 const COPILOT_LIMIT = 50;
 const TRANSLATION_LIMIT = 230;
@@ -12,14 +11,6 @@ export async function claimManagedAiCredit(
   userId: string,
   kind: ManagedAiCreditKind,
 ): Promise<boolean> {
-  const { data: profile } = await db
-    .from('profiles')
-    .select('email')
-    .eq('user_id', userId)
-    .maybeSingle();
-
-  if (profile?.email?.trim().toLowerCase() === UNLIMITED_EMAIL) return true;
-
   const limit =
     kind === 'auto_reply'
       ? AUTO_REPLY_LIMIT

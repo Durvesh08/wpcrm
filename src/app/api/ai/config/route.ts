@@ -25,7 +25,6 @@ const CONFIG_COLUMNS =
   'provider, model, system_prompt, is_active, auto_reply_enabled, auto_reply_max_per_conversation, translation_enabled, translation_target_language, api_key, embeddings_api_key, platform_ai_enabled';
 const LEGACY_CONFIG_COLUMNS =
   'provider, model, system_prompt, is_active, auto_reply_enabled, auto_reply_max_per_conversation, api_key, embeddings_api_key';
-const UNLIMITED_MANAGED_AI_EMAIL = 'rpyadsrahufin25@gmail.com';
 
 function hasMissingOptionalAiColumns(error: unknown) {
   const candidate = error as { code?: string; message?: string } | null;
@@ -110,13 +109,7 @@ async function loadManagedAiCredits(supabase: SupabaseClient, userId: string) {
     translation: MANAGED_AI_LIMITS.translation,
   };
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('email')
-    .eq('user_id', userId)
-    .maybeSingle();
-  const unlimited =
-    profile?.email?.trim().toLowerCase() === UNLIMITED_MANAGED_AI_EMAIL;
+  const unlimited = false;
 
   const { data, error } = await supabase
     .from('ai_usage_credits')
