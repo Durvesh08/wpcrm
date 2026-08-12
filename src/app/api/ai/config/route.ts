@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import {
   getCurrentAccount,
   requireRole,
@@ -12,6 +13,7 @@ import {
 import { encrypt, decrypt } from '@/lib/whatsapp/encryption';
 import { validateAiCredentials } from '@/lib/ai/validate';
 import { embedTexts } from '@/lib/ai/embeddings';
+import { MANAGED_AI_LIMITS } from '@/lib/ai/managed-usage';
 import { AiError, type AiProvider } from '@/lib/ai/types';
 import { isAiProvider } from '@/lib/ai/defaults';
 
@@ -23,6 +25,7 @@ const CONFIG_COLUMNS =
   'provider, model, system_prompt, is_active, auto_reply_enabled, auto_reply_max_per_conversation, translation_enabled, translation_target_language, api_key, embeddings_api_key, platform_ai_enabled';
 const LEGACY_CONFIG_COLUMNS =
   'provider, model, system_prompt, is_active, auto_reply_enabled, auto_reply_max_per_conversation, api_key, embeddings_api_key';
+const UNLIMITED_MANAGED_AI_EMAIL = 'rpyadsrahufin25@gmail.com';
 
 function hasMissingOptionalAiColumns(error: unknown) {
   const candidate = error as { code?: string; message?: string } | null;
@@ -38,7 +41,7 @@ function hasMissingOptionalAiColumns(error: unknown) {
  */
 export async function GET() {
   try {
-    const { supabase, accountId } = await getCurrentAccount();
+    const { supabase, accountId, userId } = await getCurrentAccount();
 
     let { data, error } = await supabase
       .from('ai_configs')
@@ -66,7 +69,14 @@ export async function GET() {
       );
     }
 
-    if (!data) return NextResponse.json({ configured: false });
+    const managedCredits = await loadManagedAiCredits(supabase, userId);
+
+    if (!data) {
+      return NextResponse.json({
+        configured: false,
+        managed_ai_credits: managedCredits,
+      });
+    }
     // The keys are selected only to derive the has_* flags; neither is
     // returned to the client.
     const {
@@ -85,11 +95,66 @@ export async function GET() {
       platform_ai_enabled: platform_ai_enabled === true,
       translation_enabled: translation_enabled ?? false,
       translation_target_language: translation_target_language ?? 'English',
+      managed_ai_credits: managedCredits,
       ...safe,
     });
   } catch (err) {
     return toErrorResponse(err);
   }
+}
+
+async function loadManagedAiCredits(supabase: SupabaseClient, userId: string) {
+  const limits = {
+    auto_reply: MANAGED_AI_LIMITS.autoReply,
+    copilot: MANAGED_AI_LIMITS.copilot,
+  };
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('email')
+    .eq('user_id', userId)
+    .maybeSingle();
+  const unlimited =
+    profile?.email?.trim().toLowerCase() === UNLIMITED_MANAGED_AI_EMAIL;
+
+  const { data, error } = await supabase
+    .from('ai_usage_credits')
+    .select('managed_auto_reply_count, managed_copilot_count')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (error) {
+    const candidate = error as { code?: string; message?: string };
+    const missingCreditsMigration =
+      candidate.code === '42P01' ||
+      candidate.code === 'PGRST205' ||
+      candidate.message?.includes('ai_usage_credits');
+    if (!missingCreditsMigration) {
+      console.error('[ai/config GET] credit usage fetch error:', error);
+    }
+    return {
+      available: false,
+      unlimited,
+      limits,
+      used: { auto_reply: 0, copilot: 0 },
+      remaining: { auto_reply: limits.auto_reply, copilot: limits.copilot },
+    };
+  }
+
+  const autoReplyUsed = Math.max(0, data?.managed_auto_reply_count ?? 0);
+  const copilotUsed = Math.max(0, data?.managed_copilot_count ?? 0);
+  return {
+    available: true,
+    unlimited,
+    limits,
+    used: { auto_reply: autoReplyUsed, copilot: copilotUsed },
+    remaining: {
+      auto_reply: unlimited
+        ? null
+        : Math.max(0, limits.auto_reply - autoReplyUsed),
+      copilot: unlimited ? null : Math.max(0, limits.copilot - copilotUsed),
+    },
+  };
 }
 
 /**

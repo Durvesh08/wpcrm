@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 import { toast } from 'sonner';
 import {
   Loader2,
@@ -9,6 +10,8 @@ import {
   Trash2,
   Eye,
   EyeOff,
+  MessageSquareReply,
+  BotMessageSquare,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { canEditSettings } from '@/lib/auth/roles';
@@ -64,6 +67,14 @@ const TRANSLATION_LANGUAGES = [
   'Urdu',
 ];
 
+type ManagedAiCredits = {
+  available: boolean;
+  unlimited: boolean;
+  limits: { auto_reply: number; copilot: number };
+  used: { auto_reply: number; copilot: number };
+  remaining: { auto_reply: number | null; copilot: number | null };
+};
+
 export function AiConfig() {
   const { accountId, accountRole, profileLoading } = useAuth();
   const canEdit = accountRole ? canEditSettings(accountRole) : false;
@@ -90,6 +101,8 @@ export function AiConfig() {
   const [maxPerConversation, setMaxPerConversation] = useState(3);
   const [translationEnabled, setTranslationEnabled] = useState(false);
   const [translationAvailable, setTranslationAvailable] = useState(true);
+  const [managedCredits, setManagedCredits] =
+    useState<ManagedAiCredits | null>(null);
   const [translationTargetLanguage, setTranslationTargetLanguage] =
     useState('English');
 
@@ -128,6 +141,9 @@ export function AiConfig() {
         setHasStoredEmbeddingsKey(Boolean(data.has_embeddings_key));
         setEmbeddingsKey(data.has_embeddings_key ? MASKED_KEY : '');
         setEmbeddingsKeyEdited(false);
+      }
+      if (data.managed_ai_credits) {
+        setManagedCredits(data.managed_ai_credits);
       }
     } catch {
       toast.error('Failed to load AI configuration');
@@ -294,9 +310,47 @@ export function AiConfig() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="border-primary/20 bg-primary/5 flex items-center justify-between gap-4 rounded-xl border p-3">
-              <div><p className="text-sm font-medium">Included ZOVAIX AI</p><p className="mt-0.5 text-xs text-muted-foreground">1,000 automated replies and 50 Copilot requests with the workspace Gemini key.</p></div>
-              <Switch checked={usePlatformAi} onCheckedChange={setUsePlatformAi} disabled={disabled} />
+              <div>
+                <p className="text-sm font-medium">Included ZOVAIX AI</p>
+                <p className="text-muted-foreground mt-0.5 text-xs">
+                  1,000 automated replies and 50 Copilot requests with the
+                  workspace Gemini key.
+                </p>
+              </div>
+              <Switch
+                checked={usePlatformAi}
+                onCheckedChange={setUsePlatformAi}
+                disabled={disabled}
+              />
             </div>
+            {managedCredits && (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <CreditMeter
+                  icon={<MessageSquareReply className="h-4 w-4" />}
+                  label="Automated replies"
+                  used={managedCredits.used.auto_reply}
+                  limit={managedCredits.limits.auto_reply}
+                  remaining={managedCredits.remaining.auto_reply}
+                  unlimited={managedCredits.unlimited}
+                  available={managedCredits.available}
+                />
+                <CreditMeter
+                  icon={<BotMessageSquare className="h-4 w-4" />}
+                  label="AI Copilot"
+                  used={managedCredits.used.copilot}
+                  limit={managedCredits.limits.copilot}
+                  remaining={managedCredits.remaining.copilot}
+                  unlimited={managedCredits.unlimited}
+                  available={managedCredits.available}
+                />
+              </div>
+            )}
+            {managedCredits && !managedCredits.available && (
+              <p className="rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs leading-5 text-amber-700 dark:text-amber-300">
+                Included AI usage will appear after running the pending
+                Supabase migration 036_managed_ai_credits.sql.
+              </p>
+            )}
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label>Provider</Label>
@@ -601,6 +655,61 @@ export function AiConfig() {
           </Button>
         </div>
       </div>
+    </div>
+  );
+}
+
+function CreditMeter({
+  icon,
+  label,
+  used,
+  limit,
+  remaining,
+  unlimited,
+  available,
+}: {
+  icon: ReactNode;
+  label: string;
+  used: number;
+  limit: number;
+  remaining: number | null;
+  unlimited: boolean;
+  available: boolean;
+}) {
+  const percent =
+    limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
+  const valueText = unlimited
+    ? `${used.toLocaleString()} used · Unlimited`
+    : `${used.toLocaleString()} used · ${Math.max(0, remaining ?? 0).toLocaleString()} left`;
+
+  return (
+    <div className="border-border bg-background/60 rounded-lg border p-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <span className="bg-primary/10 text-primary grid h-8 w-8 place-items-center rounded-md">
+            {icon}
+          </span>
+          <div>
+            <p className="text-sm font-medium">{label}</p>
+            <p className="text-muted-foreground text-xs">
+              {available ? valueText : 'Waiting for migration'}
+            </p>
+          </div>
+        </div>
+        {!unlimited && available && (
+          <span className="text-muted-foreground text-xs font-medium">
+            {percent}%
+          </span>
+        )}
+      </div>
+      {!unlimited && available && (
+        <div className="bg-muted mt-3 h-2 overflow-hidden rounded-full">
+          <div
+            className="bg-primary h-full rounded-full transition-all"
+            style={{ width: `${percent}%` }}
+          />
+        </div>
+      )}
     </div>
   );
 }
