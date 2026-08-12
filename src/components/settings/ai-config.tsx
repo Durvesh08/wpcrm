@@ -12,6 +12,7 @@ import {
   EyeOff,
   MessageSquareReply,
   BotMessageSquare,
+  Languages,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { canEditSettings } from '@/lib/auth/roles';
@@ -70,9 +71,13 @@ const TRANSLATION_LANGUAGES = [
 type ManagedAiCredits = {
   available: boolean;
   unlimited: boolean;
-  limits: { auto_reply: number; copilot: number };
-  used: { auto_reply: number; copilot: number };
-  remaining: { auto_reply: number | null; copilot: number | null };
+  limits: { auto_reply: number; copilot: number; translation: number };
+  used: { auto_reply: number; copilot: number; translation: number };
+  remaining: {
+    auto_reply: number | null;
+    copilot: number | null;
+    translation: number | null;
+  };
 };
 
 export function AiConfig() {
@@ -313,8 +318,8 @@ export function AiConfig() {
               <div>
                 <p className="text-sm font-medium">Included ZOVAIX AI</p>
                 <p className="text-muted-foreground mt-0.5 text-xs">
-                  1,000 automated replies and 50 manual AI requests with the
-                  workspace Gemini key.
+                  1,000 automated replies, 50 Copilot/playground/draft
+                  requests, and 230 translations with the workspace Gemini key.
                 </p>
               </div>
               <Switch
@@ -324,7 +329,7 @@ export function AiConfig() {
               />
             </div>
             {managedCredits && (
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-3 md:grid-cols-3">
                 <CreditMeter
                   icon={<MessageSquareReply className="h-4 w-4" />}
                   label="Automated replies"
@@ -336,10 +341,19 @@ export function AiConfig() {
                 />
                 <CreditMeter
                   icon={<BotMessageSquare className="h-4 w-4" />}
-                  label="Manual AI requests"
+                  label="Copilot & drafts"
                   used={managedCredits.used.copilot}
                   limit={managedCredits.limits.copilot}
                   remaining={managedCredits.remaining.copilot}
+                  unlimited={managedCredits.unlimited}
+                  available={managedCredits.available}
+                />
+                <CreditMeter
+                  icon={<Languages className="h-4 w-4" />}
+                  label="Translations"
+                  used={managedCredits.used.translation}
+                  limit={managedCredits.limits.translation}
+                  remaining={managedCredits.remaining.translation}
                   unlimited={managedCredits.unlimited}
                   available={managedCredits.available}
                 />
@@ -348,7 +362,8 @@ export function AiConfig() {
             {managedCredits && !managedCredits.available && (
               <p className="rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs leading-5 text-amber-700 dark:text-amber-300">
                 Included AI usage will appear after running the pending
-                Supabase migration 036_managed_ai_credits.sql.
+                Supabase migrations 036_managed_ai_credits.sql and
+                037_managed_ai_translation_credits.sql.
               </p>
             )}
             <div className="grid gap-4 sm:grid-cols-2">

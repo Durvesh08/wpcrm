@@ -107,6 +107,7 @@ async function loadManagedAiCredits(supabase: SupabaseClient, userId: string) {
   const limits = {
     auto_reply: MANAGED_AI_LIMITS.autoReply,
     copilot: MANAGED_AI_LIMITS.copilot,
+    translation: MANAGED_AI_LIMITS.translation,
   };
 
   const { data: profile } = await supabase
@@ -119,7 +120,9 @@ async function loadManagedAiCredits(supabase: SupabaseClient, userId: string) {
 
   const { data, error } = await supabase
     .from('ai_usage_credits')
-    .select('managed_auto_reply_count, managed_copilot_count')
+    .select(
+      'managed_auto_reply_count, managed_copilot_count, managed_translation_count'
+    )
     .eq('user_id', userId)
     .maybeSingle();
 
@@ -128,6 +131,8 @@ async function loadManagedAiCredits(supabase: SupabaseClient, userId: string) {
     const missingCreditsMigration =
       candidate.code === '42P01' ||
       candidate.code === 'PGRST205' ||
+      candidate.code === '42703' ||
+      candidate.code === 'PGRST204' ||
       candidate.message?.includes('ai_usage_credits');
     if (!missingCreditsMigration) {
       console.error('[ai/config GET] credit usage fetch error:', error);
@@ -136,23 +141,35 @@ async function loadManagedAiCredits(supabase: SupabaseClient, userId: string) {
       available: false,
       unlimited,
       limits,
-      used: { auto_reply: 0, copilot: 0 },
-      remaining: { auto_reply: limits.auto_reply, copilot: limits.copilot },
+      used: { auto_reply: 0, copilot: 0, translation: 0 },
+      remaining: {
+        auto_reply: limits.auto_reply,
+        copilot: limits.copilot,
+        translation: limits.translation,
+      },
     };
   }
 
   const autoReplyUsed = Math.max(0, data?.managed_auto_reply_count ?? 0);
   const copilotUsed = Math.max(0, data?.managed_copilot_count ?? 0);
+  const translationUsed = Math.max(0, data?.managed_translation_count ?? 0);
   return {
     available: true,
     unlimited,
     limits,
-    used: { auto_reply: autoReplyUsed, copilot: copilotUsed },
+    used: {
+      auto_reply: autoReplyUsed,
+      copilot: copilotUsed,
+      translation: translationUsed,
+    },
     remaining: {
       auto_reply: unlimited
         ? null
         : Math.max(0, limits.auto_reply - autoReplyUsed),
       copilot: unlimited ? null : Math.max(0, limits.copilot - copilotUsed),
+      translation: unlimited
+        ? null
+        : Math.max(0, limits.translation - translationUsed),
     },
   };
 }

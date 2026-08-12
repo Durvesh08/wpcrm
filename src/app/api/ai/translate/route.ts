@@ -32,12 +32,12 @@ export async function POST(request: Request) {
         : config.translationTargetLanguage
 
     if (config.managedAi) {
-      const hasCredit = await claimManagedAiCredit(supabase, userId, 'copilot')
+      const hasCredit = await claimManagedAiCredit(supabase, userId, 'translation')
       if (!hasCredit) {
         return NextResponse.json(
           {
-            error: `Your included AI allowance of ${MANAGED_AI_LIMITS.copilot} manual requests has been used. Add your own API key in AI Agents to continue.`,
-            code: 'managed_copilot_limit_reached',
+            error: `Your included translation allowance of ${MANAGED_AI_LIMITS.translation} messages has been used. Add your own API key in AI Agents to continue.`,
+            code: 'managed_translation_limit_reached',
           },
           { status: 402 },
         )
