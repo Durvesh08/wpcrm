@@ -7,6 +7,7 @@ import { generateReply } from '@/lib/ai/generate'
 import { buildSystemPrompt } from '@/lib/ai/defaults'
 import { latestUserMessage } from '@/lib/ai/query'
 import { AiError, type ChatMessage } from '@/lib/ai/types'
+import { claimManagedAiCredit, MANAGED_AI_LIMITS } from '@/lib/ai/managed-usage'
 
 // Keep the tested transcript bounded, mirroring the live context window.
 const MAX_TURNS = 20
@@ -83,6 +84,19 @@ export async function POST(request: Request) {
       mode: 'auto_reply',
       knowledge,
     })
+
+    if (config.managedAi) {
+      const hasCredit = await claimManagedAiCredit(supabase, userId, 'copilot')
+      if (!hasCredit) {
+        return NextResponse.json(
+          {
+            error: `Your included AI allowance of ${MANAGED_AI_LIMITS.copilot} manual requests has been used. Add your own API key in AI Agents to continue.`,
+            code: 'managed_copilot_limit_reached',
+          },
+          { status: 402 },
+        )
+      }
+    }
 
     const { text, handoff } = await generateReply({ config, systemPrompt, messages })
     return NextResponse.json({ reply: text, handoff })

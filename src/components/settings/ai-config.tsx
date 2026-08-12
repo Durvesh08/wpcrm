@@ -313,7 +313,7 @@ export function AiConfig() {
               <div>
                 <p className="text-sm font-medium">Included ZOVAIX AI</p>
                 <p className="text-muted-foreground mt-0.5 text-xs">
-                  1,000 automated replies and 50 Copilot requests with the
+                  1,000 automated replies and 50 manual AI requests with the
                   workspace Gemini key.
                 </p>
               </div>
@@ -336,7 +336,7 @@ export function AiConfig() {
                 />
                 <CreditMeter
                   icon={<BotMessageSquare className="h-4 w-4" />}
-                  label="AI Copilot"
+                  label="Manual AI requests"
                   used={managedCredits.used.copilot}
                   limit={managedCredits.limits.copilot}
                   remaining={managedCredits.remaining.copilot}

@@ -8,6 +8,7 @@ import { generateReply } from '@/lib/ai/generate'
 import { buildSystemPrompt } from '@/lib/ai/defaults'
 import { latestUserMessage } from '@/lib/ai/query'
 import { AiError } from '@/lib/ai/types'
+import { claimManagedAiCredit, MANAGED_AI_LIMITS } from '@/lib/ai/managed-usage'
 
 /**
  * POST /api/ai/draft  (agent+)
@@ -101,6 +102,19 @@ export async function POST(request: Request) {
       mode: 'draft',
       knowledge,
     })
+
+    if (config.managedAi) {
+      const hasCredit = await claimManagedAiCredit(supabase, userId, 'copilot')
+      if (!hasCredit) {
+        return NextResponse.json(
+          {
+            error: `Your included AI allowance of ${MANAGED_AI_LIMITS.copilot} manual requests has been used. Add your own API key in AI Agents to continue.`,
+            code: 'managed_copilot_limit_reached',
+          },
+          { status: 402 },
+        )
+      }
+    }
 
     const { text } = await generateReply({ config, systemPrompt, messages })
     return NextResponse.json({ draft: text })

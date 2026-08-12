@@ -4,6 +4,7 @@ import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from '@/lib/rate-limit
 import { loadAiConfig } from '@/lib/ai/config'
 import { generateReply } from '@/lib/ai/generate'
 import { AiError } from '@/lib/ai/types'
+import { claimManagedAiCredit, MANAGED_AI_LIMITS } from '@/lib/ai/managed-usage'
 
 export async function POST(request: Request) {
   try {
@@ -29,6 +30,19 @@ export async function POST(request: Request) {
       typeof body?.target_language === 'string' && body.target_language.trim()
         ? body.target_language.trim().slice(0, 80)
         : config.translationTargetLanguage
+
+    if (config.managedAi) {
+      const hasCredit = await claimManagedAiCredit(supabase, userId, 'copilot')
+      if (!hasCredit) {
+        return NextResponse.json(
+          {
+            error: `Your included AI allowance of ${MANAGED_AI_LIMITS.copilot} manual requests has been used. Add your own API key in AI Agents to continue.`,
+            code: 'managed_copilot_limit_reached',
+          },
+          { status: 402 },
+        )
+      }
+    }
 
     const result = await generateReply({
       config,
