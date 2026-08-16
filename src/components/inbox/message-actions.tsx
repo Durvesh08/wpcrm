@@ -95,9 +95,7 @@ export function MessageActions({
   };
 
   const canTranslate = Boolean(
-    translation?.enabled &&
-      message.sender_type === "customer" &&
-      message.content_text?.trim(),
+    translation?.enabled && message.content_text?.trim(),
   );
   const languages = [
     translation?.targetLanguage || "English",

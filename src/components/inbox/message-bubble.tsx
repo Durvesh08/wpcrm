@@ -447,7 +447,7 @@ function MessageContent({
     ? firstUrl(message.content_text)
     : null;
   const canTranslate =
-    message.sender_type === 'customer' &&
+    Boolean(message.content_text?.trim()) &&
     (message.content_type === 'text' ||
       message.content_type === 'image' ||
       message.content_type === 'video' ||

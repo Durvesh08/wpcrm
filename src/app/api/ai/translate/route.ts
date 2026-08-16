@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { requireRole, toErrorResponse } from '@/lib/auth/account'
 import { checkRateLimit, rateLimitResponse, RATE_LIMITS } from '@/lib/rate-limit'
-import { claimManagedAiCredit, MANAGED_AI_LIMITS } from '@/lib/ai/managed-usage'
 
 const GOOGLE_TRANSLATE_ENDPOINT =
   'https://translation.googleapis.com/language/translate/v2'
@@ -72,17 +71,6 @@ export async function POST(request: Request) {
           code: 'unsupported_translation_language',
         },
         { status: 400 },
-      )
-    }
-
-    const hasCredit = await claimManagedAiCredit(supabase, userId, 'translation')
-    if (!hasCredit) {
-      return NextResponse.json(
-        {
-          error: `Your included translation allowance of ${MANAGED_AI_LIMITS.translation} messages has been used.`,
-          code: 'managed_translation_limit_reached',
-        },
-        { status: 402 },
       )
     }
 

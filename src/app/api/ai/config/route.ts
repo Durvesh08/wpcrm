@@ -52,6 +52,9 @@ export async function GET() {
 
     const optionalColumnsAvailable = !hasMissingOptionalAiColumns(error);
     const translationAvailable = optionalColumnsAvailable;
+    const googleTranslateConfigured = Boolean(
+      process.env.GOOGLE_TRANSLATE_API_KEY?.trim()
+    );
     if (!optionalColumnsAvailable) {
       ({ data, error } = await supabase
         .from('ai_configs')
@@ -73,6 +76,10 @@ export async function GET() {
     if (!data) {
       return NextResponse.json({
         configured: false,
+        translation_available: translationAvailable,
+        translation_enabled: googleTranslateConfigured,
+        translation_target_language: 'English',
+        google_translate_configured: googleTranslateConfigured,
         managed_ai_credits: managedCredits,
       });
     }
@@ -91,8 +98,9 @@ export async function GET() {
       has_key: !!api_key,
       has_embeddings_key: !!embeddings_api_key,
       translation_available: translationAvailable,
+      google_translate_configured: googleTranslateConfigured,
       platform_ai_enabled: platform_ai_enabled === true,
-      translation_enabled: translation_enabled ?? false,
+      translation_enabled: translation_enabled ?? googleTranslateConfigured,
       translation_target_language: translation_target_language ?? 'English',
       managed_ai_credits: managedCredits,
       ...safe,

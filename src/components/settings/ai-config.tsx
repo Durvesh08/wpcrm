@@ -12,7 +12,6 @@ import {
   EyeOff,
   MessageSquareReply,
   BotMessageSquare,
-  Languages,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { canEditSettings } from '@/lib/auth/roles';
@@ -106,6 +105,8 @@ export function AiConfig() {
   const [maxPerConversation, setMaxPerConversation] = useState(3);
   const [translationEnabled, setTranslationEnabled] = useState(false);
   const [translationAvailable, setTranslationAvailable] = useState(true);
+  const [googleTranslateConfigured, setGoogleTranslateConfigured] =
+    useState(false);
   const [managedCredits, setManagedCredits] =
     useState<ManagedAiCredits | null>(null);
   const [translationTargetLanguage, setTranslationTargetLanguage] =
@@ -136,6 +137,7 @@ export function AiConfig() {
         setMaxPerConversation(data.auto_reply_max_per_conversation ?? 3);
         setTranslationEnabled(data.translation_enabled ?? false);
         setTranslationAvailable(data.translation_available !== false);
+        setGoogleTranslateConfigured(data.google_translate_configured === true);
         setTranslationTargetLanguage(
           data.translation_target_language ?? 'English'
         );
@@ -146,6 +148,13 @@ export function AiConfig() {
         setHasStoredEmbeddingsKey(Boolean(data.has_embeddings_key));
         setEmbeddingsKey(data.has_embeddings_key ? MASKED_KEY : '');
         setEmbeddingsKeyEdited(false);
+      } else {
+        setTranslationEnabled(data.translation_enabled ?? false);
+        setTranslationAvailable(data.translation_available !== false);
+        setGoogleTranslateConfigured(data.google_translate_configured === true);
+        setTranslationTargetLanguage(
+          data.translation_target_language ?? 'English'
+        );
       }
       if (data.managed_ai_credits) {
         setManagedCredits(data.managed_ai_credits);
@@ -319,7 +328,8 @@ export function AiConfig() {
                 <p className="text-sm font-medium">Included ZOVAIX AI</p>
                 <p className="text-muted-foreground mt-0.5 text-xs">
                   1,000 automated replies, 50 Copilot/playground/draft
-                  requests, and 230 Google-powered inbox translations.
+                  requests. Inbox translation uses your Google Translate key
+                  without a CRM message limit.
                 </p>
               </div>
               <Switch
@@ -329,7 +339,7 @@ export function AiConfig() {
               />
             </div>
             {managedCredits && (
-              <div className="grid gap-3 md:grid-cols-3">
+              <div className="grid gap-3 md:grid-cols-2">
                 <CreditMeter
                   icon={<MessageSquareReply className="h-4 w-4" />}
                   label="Automated replies"
@@ -348,22 +358,12 @@ export function AiConfig() {
                   unlimited={managedCredits.unlimited}
                   available={managedCredits.available}
                 />
-                <CreditMeter
-                  icon={<Languages className="h-4 w-4" />}
-                  label="Translations"
-                  used={managedCredits.used.translation}
-                  limit={managedCredits.limits.translation}
-                  remaining={managedCredits.remaining.translation}
-                  unlimited={managedCredits.unlimited}
-                  available={managedCredits.available}
-                />
               </div>
             )}
             {managedCredits && !managedCredits.available && (
               <p className="rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs leading-5 text-amber-700 dark:text-amber-300">
                 Included AI usage will appear after running the pending
-                Supabase migrations 036_managed_ai_credits.sql and
-                037_managed_ai_translation_credits.sql.
+                Supabase migration 036_managed_ai_credits.sql.
               </p>
             )}
             <div className="grid gap-4 sm:grid-cols-2">
@@ -602,11 +602,25 @@ export function AiConfig() {
                   tap Translate on any message they want to read in another
                   language.
                 </p>
+                <p className="text-muted-foreground mt-1 text-[11px]">
+                  Google key:{' '}
+                  <span
+                    className={
+                      googleTranslateConfigured
+                        ? 'text-emerald-500'
+                        : 'text-amber-500'
+                    }
+                  >
+                    {googleTranslateConfigured ? 'connected' : 'not configured'}
+                  </span>
+                </p>
               </div>
               <Switch
                 checked={translationEnabled}
                 onCheckedChange={setTranslationEnabled}
-                disabled={disabled || !translationAvailable}
+                disabled={
+                  disabled || !translationAvailable || !googleTranslateConfigured
+                }
               />
             </div>
 
