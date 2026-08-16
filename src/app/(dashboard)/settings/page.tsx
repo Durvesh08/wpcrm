@@ -11,6 +11,7 @@ import { ProfileForm } from '@/components/settings/profile-form';
 import { SecurityPanel } from '@/components/settings/security-panel';
 import { AppearancePanel } from '@/components/settings/appearance-panel';
 import { WhatsAppConfig } from '@/components/settings/whatsapp-config';
+import { TranslationSettings } from '@/components/settings/translation-settings';
 import { TemplateManager } from '@/components/settings/template-manager';
 import { FieldsAndTagsPanel } from '@/components/settings/fields-and-tags-panel';
 import { DealsSettings } from '@/components/settings/deals-settings';
@@ -62,6 +63,8 @@ export default function SettingsPage() {
         return <AppearancePanel />;
       case 'whatsapp':
         return <WhatsAppConfig />;
+      case 'translation':
+        return <TranslationSettings />;
       case 'templates':
         return <TemplateManager />;
       case 'fields':

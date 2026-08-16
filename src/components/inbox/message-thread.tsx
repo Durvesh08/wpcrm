@@ -250,20 +250,20 @@ export function MessageThread({
 
   useEffect(() => {
     let cancelled = false;
-    fetch('/api/ai/config')
+    fetch('/api/translation/config')
       .then(async (res) => {
         const data = await res.json().catch(() => null);
-        if (!res.ok || data?.translation_available === false) return null;
+        if (!res.ok || data?.available === false) return null;
         return data as {
-          translation_enabled?: boolean;
-          translation_target_language?: string;
+          enabled?: boolean;
+          target_language?: string;
         };
       })
       .then((data) => {
         if (cancelled || !data) return;
         setTranslation({
-          enabled: Boolean(data.translation_enabled),
-          targetLanguage: data.translation_target_language || 'English',
+          enabled: Boolean(data.enabled),
+          targetLanguage: data.target_language || 'English',
         });
       })
       .catch(() => {

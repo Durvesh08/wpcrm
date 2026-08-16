@@ -131,23 +131,23 @@ async function loadTranslationTargetLanguage(
   accountId: string,
 ) {
   const { data, error } = await supabase
-    .from('ai_configs')
-    .select('translation_target_language')
+    .from('translation_settings')
+    .select('target_language')
     .eq('account_id', accountId)
     .maybeSingle()
 
   if (error) {
     const candidate = error as { code?: string; message?: string }
-    const missingTranslationColumn =
-      candidate.code === '42703' ||
-      candidate.code === 'PGRST204' ||
-      candidate.message?.includes('translation_target_language')
-    if (!missingTranslationColumn) {
+    const missingTranslationSettings =
+      candidate.code === '42P01' ||
+      candidate.code === 'PGRST205' ||
+      candidate.message?.includes('translation_settings')
+    if (!missingTranslationSettings) {
       console.error('[google translate] target language load failed:', error)
     }
   }
 
-  return data?.translation_target_language || 'English'
+  return data?.target_language || 'English'
 }
 
 function languageToCode(language: string) {

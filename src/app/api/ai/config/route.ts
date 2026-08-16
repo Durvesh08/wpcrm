@@ -22,13 +22,13 @@ function bad(message: string) {
 }
 
 const CONFIG_COLUMNS =
-  'provider, model, system_prompt, is_active, auto_reply_enabled, auto_reply_max_per_conversation, translation_enabled, translation_target_language, api_key, embeddings_api_key, platform_ai_enabled';
+  'provider, model, system_prompt, is_active, auto_reply_enabled, auto_reply_max_per_conversation, api_key, embeddings_api_key, platform_ai_enabled';
 const LEGACY_CONFIG_COLUMNS =
   'provider, model, system_prompt, is_active, auto_reply_enabled, auto_reply_max_per_conversation, api_key, embeddings_api_key';
 
 function hasMissingOptionalAiColumns(error: unknown) {
   const candidate = error as { code?: string; message?: string } | null;
-  return Boolean(candidate && (candidate.code === '42703' || candidate.code === 'PGRST204') && (candidate.message?.includes('translation_') || candidate.message?.includes('platform_ai_enabled')));
+  return Boolean(candidate && (candidate.code === '42703' || candidate.code === 'PGRST204') && candidate.message?.includes('platform_ai_enabled'));
 }
 
 /**
@@ -51,10 +51,6 @@ export async function GET() {
       .maybeSingle();
 
     const optionalColumnsAvailable = !hasMissingOptionalAiColumns(error);
-    const translationAvailable = optionalColumnsAvailable;
-    const googleTranslateConfigured = Boolean(
-      process.env.GOOGLE_TRANSLATE_API_KEY?.trim()
-    );
     if (!optionalColumnsAvailable) {
       ({ data, error } = await supabase
         .from('ai_configs')
@@ -76,10 +72,6 @@ export async function GET() {
     if (!data) {
       return NextResponse.json({
         configured: false,
-        translation_available: translationAvailable,
-        translation_enabled: googleTranslateConfigured,
-        translation_target_language: 'English',
-        google_translate_configured: googleTranslateConfigured,
         managed_ai_credits: managedCredits,
       });
     }
@@ -88,8 +80,6 @@ export async function GET() {
     const {
       api_key,
       embeddings_api_key,
-      translation_enabled,
-      translation_target_language,
       platform_ai_enabled,
       ...safe
     } = data;
@@ -97,11 +87,7 @@ export async function GET() {
       configured: true,
       has_key: !!api_key,
       has_embeddings_key: !!embeddings_api_key,
-      translation_available: translationAvailable,
-      google_translate_configured: googleTranslateConfigured,
       platform_ai_enabled: platform_ai_enabled === true,
-      translation_enabled: translation_enabled ?? googleTranslateConfigured,
-      translation_target_language: translation_target_language ?? 'English',
       managed_ai_credits: managedCredits,
       ...safe,
     });
@@ -114,7 +100,6 @@ async function loadManagedAiCredits(supabase: SupabaseClient, userId: string) {
   const limits = {
     auto_reply: MANAGED_AI_LIMITS.autoReply,
     copilot: MANAGED_AI_LIMITS.copilot,
-    translation: MANAGED_AI_LIMITS.translation,
   };
 
   const unlimited = false;
@@ -122,7 +107,7 @@ async function loadManagedAiCredits(supabase: SupabaseClient, userId: string) {
   const { data, error } = await supabase
     .from('ai_usage_credits')
     .select(
-      'managed_auto_reply_count, managed_copilot_count, managed_translation_count'
+      'managed_auto_reply_count, managed_copilot_count'
     )
     .eq('user_id', userId)
     .maybeSingle();
@@ -142,18 +127,16 @@ async function loadManagedAiCredits(supabase: SupabaseClient, userId: string) {
       available: false,
       unlimited,
       limits,
-      used: { auto_reply: 0, copilot: 0, translation: 0 },
+      used: { auto_reply: 0, copilot: 0 },
       remaining: {
         auto_reply: limits.auto_reply,
         copilot: limits.copilot,
-        translation: limits.translation,
       },
     };
   }
 
   const autoReplyUsed = Math.max(0, data?.managed_auto_reply_count ?? 0);
   const copilotUsed = Math.max(0, data?.managed_copilot_count ?? 0);
-  const translationUsed = Math.max(0, data?.managed_translation_count ?? 0);
   return {
     available: true,
     unlimited,
@@ -161,16 +144,12 @@ async function loadManagedAiCredits(supabase: SupabaseClient, userId: string) {
     used: {
       auto_reply: autoReplyUsed,
       copilot: copilotUsed,
-      translation: translationUsed,
     },
     remaining: {
       auto_reply: unlimited
         ? null
         : Math.max(0, limits.auto_reply - autoReplyUsed),
       copilot: unlimited ? null : Math.max(0, limits.copilot - copilotUsed),
-      translation: unlimited
-        ? null
-        : Math.max(0, limits.translation - translationUsed),
     },
   };
 }
@@ -211,13 +190,6 @@ export async function POST(request: Request) {
         : null;
     const isActive = body.is_active === true;
     const autoReplyEnabled = body.auto_reply_enabled === true;
-    const translationEnabled = body.translation_enabled === true;
-    const translationTargetLanguage =
-      typeof body.translation_target_language === 'string' &&
-      body.translation_target_language.trim()
-        ? body.translation_target_language.trim().slice(0, 80)
-        : 'English';
-
     let maxPer = Number(body.auto_reply_max_per_conversation);
     if (!Number.isFinite(maxPer)) maxPer = 3;
     maxPer = Math.min(20, Math.max(1, Math.floor(maxPer)));
@@ -291,8 +263,6 @@ export async function POST(request: Request) {
           isActive,
           autoReplyEnabled,
           autoReplyMaxPerConversation: maxPer,
-          translationEnabled,
-          translationTargetLanguage,
           embeddingsApiKey: null,
         });
       } catch (err) {
@@ -332,8 +302,6 @@ export async function POST(request: Request) {
       is_active: isActive,
       auto_reply_enabled: autoReplyEnabled,
       auto_reply_max_per_conversation: maxPer,
-      translation_enabled: translationEnabled,
-      translation_target_language: translationTargetLanguage,
       platform_ai_enabled: usePlatformAi,
     };
     if (rawEmbeddingsKey) {
@@ -341,14 +309,9 @@ export async function POST(request: Request) {
     } else if (clearEmbeddingsKey) {
       shared.embeddings_api_key = null;
     }
-    const {
-      translation_enabled: _translationEnabled,
-      translation_target_language: _translationTargetLanguage,
-      platform_ai_enabled: _platformAiEnabled,
-      ...legacyShared
-    } = shared;
+    const { platform_ai_enabled: _platformAiEnabled, ...legacyShared } = shared;
 
-    let translationAvailable = true;
+    let platformAiAvailable = true;
 
     if (existing) {
       const update = encryptedKey
@@ -359,7 +322,7 @@ export async function POST(request: Request) {
         .update(update)
         .eq('account_id', accountId);
       if (hasMissingOptionalAiColumns(upErr)) {
-        translationAvailable = false;
+        platformAiAvailable = false;
         const legacyUpdate = encryptedKey
           ? { ...legacyShared, api_key: encryptedKey }
           : legacyShared;
@@ -384,7 +347,7 @@ export async function POST(request: Request) {
       };
       let { error: insErr } = await supabase.from('ai_configs').insert(insert);
       if (hasMissingOptionalAiColumns(insErr)) {
-        translationAvailable = false;
+        platformAiAvailable = false;
         ({ error: insErr } = await supabase.from('ai_configs').insert({
           account_id: accountId,
           created_by: userId,
@@ -403,7 +366,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      translation_available: translationAvailable,
+      platform_ai_available: platformAiAvailable,
     });
   } catch (err) {
     return toErrorResponse(err);

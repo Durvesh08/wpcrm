@@ -53,29 +53,14 @@ const KEY_PLACEHOLDER: Record<AiProvider, string> = {
   gemini: 'AIza...',
 };
 
-const TRANSLATION_LANGUAGES = [
-  'English',
-  'Hindi',
-  'Marathi',
-  'Gujarati',
-  'Tamil',
-  'Telugu',
-  'Kannada',
-  'Malayalam',
-  'Bengali',
-  'Punjabi',
-  'Urdu',
-];
-
 type ManagedAiCredits = {
   available: boolean;
   unlimited: boolean;
-  limits: { auto_reply: number; copilot: number; translation: number };
-  used: { auto_reply: number; copilot: number; translation: number };
+  limits: { auto_reply: number; copilot: number };
+  used: { auto_reply: number; copilot: number };
   remaining: {
     auto_reply: number | null;
     copilot: number | null;
-    translation: number | null;
   };
 };
 
@@ -103,14 +88,8 @@ export function AiConfig() {
   const [isActive, setIsActive] = useState(false);
   const [autoReplyEnabled, setAutoReplyEnabled] = useState(false);
   const [maxPerConversation, setMaxPerConversation] = useState(3);
-  const [translationEnabled, setTranslationEnabled] = useState(false);
-  const [translationAvailable, setTranslationAvailable] = useState(true);
-  const [googleTranslateConfigured, setGoogleTranslateConfigured] =
-    useState(false);
   const [managedCredits, setManagedCredits] =
     useState<ManagedAiCredits | null>(null);
-  const [translationTargetLanguage, setTranslationTargetLanguage] =
-    useState('English');
 
   // Guard keyed on the account (not a bare boolean) so an in-place
   // account switch — ownership transfer, multi-account membership —
@@ -135,12 +114,6 @@ export function AiConfig() {
         setIsActive(data.is_active);
         setAutoReplyEnabled(data.auto_reply_enabled);
         setMaxPerConversation(data.auto_reply_max_per_conversation ?? 3);
-        setTranslationEnabled(data.translation_enabled ?? false);
-        setTranslationAvailable(data.translation_available !== false);
-        setGoogleTranslateConfigured(data.google_translate_configured === true);
-        setTranslationTargetLanguage(
-          data.translation_target_language ?? 'English'
-        );
         setHasStoredKey(Boolean(data.has_key));
         setUsePlatformAi(data.platform_ai_enabled === true);
         setApiKey(data.has_key ? MASKED_KEY : '');
@@ -148,13 +121,6 @@ export function AiConfig() {
         setHasStoredEmbeddingsKey(Boolean(data.has_embeddings_key));
         setEmbeddingsKey(data.has_embeddings_key ? MASKED_KEY : '');
         setEmbeddingsKeyEdited(false);
-      } else {
-        setTranslationEnabled(data.translation_enabled ?? false);
-        setTranslationAvailable(data.translation_available !== false);
-        setGoogleTranslateConfigured(data.google_translate_configured === true);
-        setTranslationTargetLanguage(
-          data.translation_target_language ?? 'English'
-        );
       }
       if (data.managed_ai_credits) {
         setManagedCredits(data.managed_ai_credits);
@@ -199,8 +165,6 @@ export function AiConfig() {
     is_active: isActive,
     auto_reply_enabled: autoReplyEnabled,
     auto_reply_max_per_conversation: maxPerConversation,
-    translation_enabled: translationEnabled,
-    translation_target_language: translationTargetLanguage,
     platform_ai_enabled: usePlatformAi,
   });
 
@@ -244,9 +208,9 @@ export function AiConfig() {
       });
       const data = await res.json();
       if (res.ok) {
-        if (data.translation_available === false) {
+        if (data.platform_ai_available === false) {
           toast.warning(
-            'AI assistant saved. Translation settings need the pending Supabase migration.'
+            'AI assistant saved. Included ZOVAIX AI needs the pending Supabase migration.'
           );
         } else {
           toast.success('AI assistant saved.');
@@ -274,8 +238,6 @@ export function AiConfig() {
         setKeyEdited(false);
         setIsActive(false);
         setAutoReplyEnabled(false);
-        setTranslationEnabled(false);
-        setTranslationTargetLanguage('English');
         setSystemPrompt('');
       } else {
         const data = await res.json();
@@ -572,80 +534,6 @@ export function AiConfig() {
                 disabled={disabled || !autoReplyEnabled}
                 className="w-20"
               />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Inbox translation</CardTitle>
-            <CardDescription>
-              Let agents translate individual customer messages on demand while
-              keeping the original WhatsApp text unchanged.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {!translationAvailable && (
-              <p className="rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs leading-5 text-amber-700 dark:text-amber-300">
-                Translation is temporarily unavailable because this Supabase
-                project still needs the translation settings migration. Your AI
-                assistant, Playground, and Copilot can still work normally.
-              </p>
-            )}
-            <div className="border-border flex items-center justify-between gap-4 rounded-md border p-3">
-              <div>
-                <p className="text-foreground text-sm font-medium">
-                  Enable inbox translation
-                </p>
-                <p className="text-muted-foreground text-xs">
-                  Uses Google Cloud Translation from your server key. Agents can
-                  tap Translate on any message they want to read in another
-                  language.
-                </p>
-                <p className="text-muted-foreground mt-1 text-[11px]">
-                  Google key:{' '}
-                  <span
-                    className={
-                      googleTranslateConfigured
-                        ? 'text-emerald-500'
-                        : 'text-amber-500'
-                    }
-                  >
-                    {googleTranslateConfigured ? 'connected' : 'not configured'}
-                  </span>
-                </p>
-              </div>
-              <Switch
-                checked={translationEnabled}
-                onCheckedChange={setTranslationEnabled}
-                disabled={
-                  disabled || !translationAvailable || !googleTranslateConfigured
-                }
-              />
-            </div>
-
-            <div className="grid gap-2 sm:max-w-xs">
-              <Label>Translate to</Label>
-              <Select
-                value={translationTargetLanguage}
-                onValueChange={(value) => {
-                  if (value) setTranslationTargetLanguage(value);
-                }}
-                disabled={
-                  disabled || !translationEnabled || !translationAvailable
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {TRANSLATION_LANGUAGES.map((language) => (
-                    <SelectItem key={language} value={language}>
-                      {language}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
           </CardContent>
         </Card>

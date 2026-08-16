@@ -10,31 +10,14 @@ interface AiConfigRow {
   is_active: boolean;
   auto_reply_enabled: boolean;
   auto_reply_max_per_conversation: number;
-  translation_enabled?: boolean;
-  translation_target_language?: string | null;
   embeddings_api_key: string | null;
   platform_ai_enabled?: boolean;
 }
 
 const CONFIG_COLUMNS =
-  'provider, model, api_key, system_prompt, is_active, auto_reply_enabled, auto_reply_max_per_conversation, translation_enabled, translation_target_language, embeddings_api_key, platform_ai_enabled';
+  'provider, model, api_key, system_prompt, is_active, auto_reply_enabled, auto_reply_max_per_conversation, embeddings_api_key, platform_ai_enabled';
 const LEGACY_CONFIG_COLUMNS =
   'provider, model, api_key, system_prompt, is_active, auto_reply_enabled, auto_reply_max_per_conversation, embeddings_api_key';
-
-/**
- * Translation settings were introduced after the first AI migration. Keep the
- * core assistant usable for installations whose database has not run that
- * optional migration yet; callers receive translation defaults in that case.
- */
-export function isMissingAiTranslationColumns(error: unknown): boolean {
-  if (!error || typeof error !== 'object') return false;
-  const candidate = error as { code?: string; message?: string };
-  return (
-    (candidate.code === '42703' || candidate.code === 'PGRST204') &&
-    typeof candidate.message === 'string' &&
-    candidate.message.includes('translation_')
-  );
-}
 
 function isMissingManagedAiColumn(error: unknown): boolean {
   const candidate = error as { code?: string; message?: string } | null;
@@ -64,7 +47,7 @@ export async function loadAiConfig(
     .eq('account_id', accountId)
     .maybeSingle();
 
-  if (isMissingAiTranslationColumns(error) || isMissingManagedAiColumn(error)) {
+  if (isMissingManagedAiColumn(error)) {
     ({ data, error } = await db
       .from('ai_configs')
       .select(LEGACY_CONFIG_COLUMNS)
@@ -116,8 +99,6 @@ export async function loadAiConfig(
     isActive: row.is_active,
     autoReplyEnabled: row.auto_reply_enabled,
     autoReplyMaxPerConversation: row.auto_reply_max_per_conversation,
-    translationEnabled: row.translation_enabled ?? false,
-    translationTargetLanguage: row.translation_target_language ?? 'English',
     embeddingsApiKey,
     managedAi,
   };

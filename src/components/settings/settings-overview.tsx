@@ -196,6 +196,11 @@ export function SettingsOverview({
             }`,
     },
     {
+      section: 'translation',
+      loading: false,
+      subtitle: 'Google message translation',
+    },
+    {
       section: 'deals',
       loading: false,
       subtitle: `${defaultCurrency} — ${currencyLabel}`,
