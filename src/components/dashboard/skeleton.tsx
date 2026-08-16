@@ -6,14 +6,21 @@ import { cn } from '@/lib/utils'
  * its data fetches.
  */
 export function Skeleton({ className }: { className?: string }) {
-  return <div className={cn('animate-pulse rounded-md bg-muted', className)} />
+  return (
+    <div
+      className={cn(
+        'animate-pulse rounded-md bg-gradient-to-r from-muted via-card-2 to-muted',
+        className
+      )}
+    />
+  )
 }
 
 export function SkeletonCard({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        'rounded-xl border border-border bg-card p-5',
+        'zovaix-premium-panel rounded-[24px] p-5',
         className,
       )}
     >

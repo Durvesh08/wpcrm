@@ -396,7 +396,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
   };
 
   return (
-    <header className="border-border/70 bg-background/65 sticky top-0 z-20 border-b backdrop-blur-xl">
+    <header className="border-border/70 bg-background/72 sticky top-0 z-20 border-b shadow-sm shadow-black/5 backdrop-blur-xl">
       <div className="flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-7">
         <div className="flex min-w-0 items-center gap-3">
           <button
@@ -418,7 +418,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
         <div className="flex min-w-0 flex-1 items-center justify-end gap-2 lg:gap-3">
           <Popover open={searchOpen} onOpenChange={setSearchOpen}>
             <PopoverTrigger
-              className="zovaix-premium-panel zovaix-premium-hover focus:ring-primary/30 hidden min-w-0 flex-1 items-center gap-3 rounded-2xl px-4 py-2.5 text-left focus:ring-2 focus:outline-none md:flex md:max-w-xl"
+              className="zovaix-glass-panel zovaix-premium-hover focus:ring-primary/30 hidden min-w-0 flex-1 items-center gap-3 rounded-2xl px-4 py-2.5 text-left focus:ring-2 focus:outline-none md:flex md:max-w-xl"
               aria-label="Open command center"
             >
               <Search className="text-muted-foreground h-4 w-4 shrink-0" />
@@ -506,10 +506,10 @@ export function Header({ onOpenSidebar }: HeaderProps) {
             }}
           >
             <PopoverTrigger
-              className="zovaix-premium-panel zovaix-premium-hover focus:ring-primary/30 hidden min-w-0 items-center gap-3 rounded-2xl px-4 py-2.5 text-left focus:ring-2 focus:outline-none xl:flex xl:w-[23rem]"
+              className="zovaix-glass-panel zovaix-premium-hover focus:ring-primary/30 hidden min-w-0 items-center gap-3 rounded-2xl px-4 py-2.5 text-left focus:ring-2 focus:outline-none xl:flex xl:w-[23rem]"
               aria-label="Open AI copilot"
             >
-              <span className="bg-primary/12 text-primary inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl">
+              <span className="zovaix-icon-tile inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-primary-foreground">
                 <Sparkles className="h-4 w-4" />
               </span>
               <div className="min-w-0 flex-1">
@@ -544,7 +544,14 @@ export function Header({ onOpenSidebar }: HeaderProps) {
               {copilotResult ? (
                 <div className="max-h-[34rem] overflow-y-auto p-4">
                   <div className="border-primary/20 bg-primary/6 rounded-xl border p-4">
-                    <div className="mb-3 flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /><p className="text-sm font-semibold text-foreground">{copilotResult.title}</p></div>
+                    <div className="mb-3 flex items-center gap-2">
+                      <span className="zovaix-icon-tile inline-flex h-8 w-8 items-center justify-center rounded-xl text-primary-foreground">
+                        <Sparkles className="h-4 w-4" />
+                      </span>
+                      <p className="text-foreground text-sm font-semibold">
+                        {copilotResult.title}
+                      </p>
+                    </div>
                     <CopilotBrief content={copilotResult.content} />
                   </div>
                   <div className="mt-3 flex items-center justify-between gap-3">
@@ -611,7 +618,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
 
           <button
             type="button"
-            className="zovaix-premium-panel zovaix-premium-hover text-muted-foreground hover:text-foreground relative inline-flex h-11 w-11 items-center justify-center rounded-2xl"
+            className="zovaix-glass-panel zovaix-premium-hover text-muted-foreground hover:text-foreground relative inline-flex h-11 w-11 items-center justify-center rounded-2xl"
             aria-label="Tasks"
           >
             <CheckSquare className="h-4 w-4" />

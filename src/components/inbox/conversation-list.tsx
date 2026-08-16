@@ -224,22 +224,22 @@ export function ConversationList({
     // w-full on mobile so the list occupies the whole viewport when it's
     // the single pane showing; fixed 320px on desktop where it shares the
     // row with the thread + contact sidebar.
-    <div className="flex h-full w-full flex-col border-r border-border bg-card lg:w-80">
+    <div className="flex h-full w-full flex-col border-r border-border/70 bg-card/75 backdrop-blur-xl lg:w-80">
       {/* Search + Filter */}
-      <div className="space-y-2 border-b border-border p-3">
+      <div className="space-y-2 border-b border-border/70 bg-card/55 p-3">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={search}
             onChange={handleSearchChange}
             placeholder="Search conversations..."
-            className="border-border bg-muted pl-9 text-sm text-foreground placeholder-muted-foreground focus:border-primary/50"
+            className="h-10 rounded-xl border-border bg-background/70 pl-9 text-sm text-foreground shadow-sm placeholder-muted-foreground focus:border-primary/50"
           />
         </div>
 
         <div className="flex flex-wrap items-center gap-1">
           <DropdownMenu>
-            <DropdownMenuTrigger className="inline-flex items-center justify-center h-7 gap-1 px-2 text-xs text-muted-foreground hover:text-foreground rounded-md hover:bg-muted">
+            <DropdownMenuTrigger className="inline-flex h-7 items-center justify-center gap-1 rounded-lg border border-border/70 bg-background/50 px-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground">
                 {activeFilter?.label ?? "All"}
                 <ChevronDown className="h-3 w-3" />
             </DropdownMenuTrigger>
@@ -268,7 +268,7 @@ export function ConversationList({
             <DropdownMenu>
               <DropdownMenuTrigger
                 className={cn(
-                  "inline-flex items-center justify-center h-7 gap-1 px-2 text-xs rounded-md hover:bg-muted",
+                  "inline-flex h-7 items-center justify-center gap-1 rounded-lg border border-border/70 bg-background/50 px-2 text-xs hover:bg-muted",
                   selectedTagIds.length > 0
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
@@ -310,7 +310,7 @@ export function ConversationList({
             <DropdownMenu>
               <DropdownMenuTrigger
                 className={cn(
-                  "inline-flex max-w-40 items-center justify-center h-7 gap-1 px-2 text-xs rounded-md hover:bg-muted",
+                  "inline-flex h-7 max-w-40 items-center justify-center gap-1 rounded-lg border border-border/70 bg-background/50 px-2 text-xs hover:bg-muted",
                   selectedCompany
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
@@ -407,7 +407,7 @@ export function ConversationList({
             <p className="text-sm text-muted-foreground">No conversations found</p>
           </div>
         ) : (
-          <div className="flex flex-col">
+          <div className="flex flex-col gap-1 p-2">
             {filtered.map((conv) => (
               <ConversationItem
                 key={conv.id}
@@ -452,17 +452,24 @@ function ConversationItem({
     <button
       onClick={handleClick}
       className={cn(
-        "flex w-full items-start gap-3 px-3 py-3 text-left transition-colors hover:bg-muted/50",
-        isActive && "border-l-2 border-primary bg-muted/70"
+        "group flex w-full items-start gap-3 rounded-2xl border border-transparent px-3 py-3 text-left transition-all hover:border-border/70 hover:bg-muted/50",
+        isActive && "border-primary/30 bg-primary/10 shadow-primary/10 shadow-sm"
       )}
     >
       {/* Avatar */}
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-medium text-foreground">
+      <div
+        className={cn(
+          "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border text-sm font-semibold text-foreground shadow-sm",
+          isActive
+            ? "border-primary/25 bg-primary/15 text-primary"
+            : "border-border/70 bg-muted"
+        )}
+      >
         {contact?.avatar_url ? (
           <img
             src={contact.avatar_url}
             alt={displayName}
-            className="h-10 w-10 rounded-full object-cover"
+            className="h-10 w-10 rounded-2xl object-cover"
           />
         ) : (
           initials
@@ -478,7 +485,9 @@ function ConversationItem({
             )}
             <span className="truncate">{displayName}</span>
           </span>
-          <span className="shrink-0 text-[10px] text-muted-foreground">{timeAgo}</span>
+          <span className="shrink-0 text-[10px] text-muted-foreground">
+            {timeAgo}
+          </span>
         </div>
         {conversation.chat_label && (
           <div className="mt-1">

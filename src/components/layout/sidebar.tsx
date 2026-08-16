@@ -171,7 +171,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
       <aside
         className={cn(
           // Mobile: fixed drawer that slides in from the left.
-          'border-border/70 bg-sidebar/85 fixed inset-y-0 left-0 z-40 flex h-full w-72 flex-col border-r backdrop-blur-xl',
+          'border-border/70 bg-sidebar/90 fixed inset-y-0 left-0 z-40 flex h-full w-72 flex-col border-r shadow-2xl shadow-black/10 backdrop-blur-xl',
           'transition-transform duration-200 ease-out will-change-transform',
           open ? 'translate-x-0' : '-translate-x-full',
           // Desktop: static, always visible — reset all the mobile framing.
@@ -183,7 +183,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
             close button is hidden since the sidebar is always-visible. */}
         <div className="border-border/70 flex shrink-0 items-center justify-between gap-2 border-b px-4 py-4">
           <Link href="/dashboard" className="flex min-w-0 items-center gap-2">
-            <div className="border-primary/25 shadow-primary/15 relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-2xl border bg-black shadow-lg">
+            <div className="border-primary/25 shadow-primary/15 relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-2xl border bg-black shadow-lg transition-transform duration-300 hover:scale-[1.03]">
               <Image
                 src="/zovaix-logo.png"
                 alt=""
@@ -213,7 +213,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
 
         {/* Main navigation */}
         <nav className="flex-1 overflow-y-auto px-3 py-4">
-          <div className="border-border/70 bg-card/55 mb-5 rounded-2xl border p-3">
+          <div className="zovaix-glass-panel mb-5 rounded-2xl p-3">
             <p className="text-muted-foreground text-[11px] font-medium tracking-[0.22em] uppercase">
               Favorites
             </p>
@@ -230,7 +230,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
                     className={cn(
                       'flex items-center justify-between rounded-xl px-3 py-2 text-sm transition-colors',
                       active
-                        ? 'bg-primary/12 text-primary'
+                        ? 'bg-primary/12 text-primary shadow-primary/10 shadow-sm'
                         : 'text-muted-foreground hover:bg-card-2 hover:text-foreground'
                     )}
                   >
@@ -267,17 +267,17 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
                     href={item.href}
                     className={cn(
                       // Taller on mobile so fingers can hit the row reliably (≥44px).
-                      'group flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition-all lg:py-2.5',
+                      'group flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition-all duration-200 lg:py-2.5',
                       isActive
                         ? 'bg-primary/12 text-primary shadow-primary/10 shadow-sm'
-                        : 'text-muted-foreground hover:bg-card-2 hover:text-foreground'
+                        : 'text-muted-foreground hover:bg-card-2 hover:translate-x-0.5 hover:text-foreground'
                     )}
                   >
                     <span
                       className={cn(
-                        'flex h-9 w-9 items-center justify-center rounded-xl border transition-colors',
+                        'flex h-9 w-9 items-center justify-center rounded-xl border transition-all',
                         isActive
-                          ? 'border-primary/25 bg-primary/12'
+                          ? 'zovaix-icon-tile text-primary-foreground'
                           : 'bg-card/50 group-hover:border-border/70 group-hover:bg-card border-transparent'
                       )}
                     >
@@ -328,14 +328,14 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
                       'flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition-all lg:py-2.5',
                       isActive
                         ? 'bg-primary/12 text-primary'
-                        : 'text-muted-foreground hover:bg-card-2 hover:text-foreground'
+                        : 'text-muted-foreground hover:bg-card-2 hover:translate-x-0.5 hover:text-foreground'
                     )}
                   >
                     <span
                       className={cn(
                         'flex h-9 w-9 items-center justify-center rounded-xl border',
                         isActive
-                          ? 'border-primary/25 bg-primary/12'
+                          ? 'zovaix-icon-tile text-primary-foreground'
                           : 'bg-card/50 border-transparent'
                       )}
                     >

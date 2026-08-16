@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { UserPlus, Briefcase, Radio, Zap } from 'lucide-react';
+import { UserPlus, BriefcaseBusiness, RadioTower, WandSparkles } from 'lucide-react';
 import type { ComponentType } from 'react';
 
 // Quick-action shortcuts. Each navigates to the page that owns the
@@ -25,19 +25,19 @@ const ACTIONS: Action[] = [
   {
     label: 'New Deal',
     href: '/pipelines',
-    icon: Briefcase,
+    icon: BriefcaseBusiness,
     tint: 'text-blue-400',
   },
   {
     label: 'New Broadcast',
     href: '/broadcasts/new',
-    icon: Radio,
+    icon: RadioTower,
     tint: 'text-amber-400',
   },
   {
     label: 'New Automation',
     href: '/automations/new',
-    icon: Zap,
+    icon: WandSparkles,
     tint: 'text-primary',
   },
 ];
@@ -51,10 +51,10 @@ export function QuickActions() {
           <Link
             key={a.href}
             href={a.href}
-            className="zovaix-premium-panel zovaix-premium-hover group flex items-center gap-3 rounded-[22px] px-4 py-4"
+            className="zovaix-glass-panel zovaix-premium-hover group flex items-center gap-3 rounded-[22px] px-4 py-4"
           >
             <div
-              className={`bg-card-2 border-border/70 flex h-10 w-10 items-center justify-center rounded-xl border ${a.tint}`}
+              className={`zovaix-icon-tile flex h-10 w-10 items-center justify-center rounded-xl text-primary-foreground ${a.tint}`}
             >
               <Icon className="h-4 w-4" />
             </div>

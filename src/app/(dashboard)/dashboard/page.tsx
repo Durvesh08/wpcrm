@@ -179,8 +179,9 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 lg:space-y-7">
-      <section className="zovaix-premium-panel rounded-[28px] px-5 py-5 sm:px-6 sm:py-6 lg:px-7 lg:py-7">
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.35fr)_22rem]">
+      <section className="zovaix-premium-panel zovaix-enter relative overflow-hidden rounded-[28px] px-5 py-5 sm:px-6 sm:py-6 lg:px-7 lg:py-7">
+        <div className="zovaix-soft-grid pointer-events-none absolute inset-0 opacity-35" />
+        <div className="relative grid gap-5 xl:grid-cols-[minmax(0,1.35fr)_22rem]">
           <div className="space-y-5">
             <div className="flex flex-wrap items-center gap-2">
               <span className="border-primary/20 bg-primary/10 text-primary rounded-full border px-3 py-1 text-[11px] font-medium tracking-[0.22em] uppercase">
@@ -246,9 +247,9 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <aside className="border-border/70 bg-card/60 rounded-[24px] border p-4 sm:p-5">
+          <aside className="zovaix-glass-panel rounded-[24px] p-4 sm:p-5">
             <div className="flex items-center gap-2">
-              <span className="bg-primary/12 text-primary inline-flex h-10 w-10 items-center justify-center rounded-2xl">
+              <span className="zovaix-icon-tile inline-flex h-10 w-10 items-center justify-center rounded-2xl text-primary-foreground">
                 <Sparkles className="h-4 w-4" />
               </span>
               <div>
@@ -359,7 +360,7 @@ export default function DashboardPage() {
         <ActivityFeed items={activity} loading={activityLoading} />
         <section className="zovaix-premium-panel rounded-[24px] p-5">
           <div className="flex items-center gap-2">
-            <span className="bg-primary/12 text-primary inline-flex h-10 w-10 items-center justify-center rounded-2xl">
+            <span className="zovaix-icon-tile inline-flex h-10 w-10 items-center justify-center rounded-2xl text-primary-foreground">
               <Bot className="h-4 w-4" />
             </span>
             <div>
