@@ -253,17 +253,16 @@ export function MessageThread({
     fetch('/api/ai/config')
       .then(async (res) => {
         const data = await res.json().catch(() => null);
-        if (!res.ok || !data?.configured) return null;
+        if (!res.ok || data?.translation_available === false) return null;
         return data as {
           translation_enabled?: boolean;
           translation_target_language?: string;
-          has_key?: boolean;
         };
       })
       .then((data) => {
         if (cancelled || !data) return;
         setTranslation({
-          enabled: Boolean(data.has_key),
+          enabled: Boolean(data.translation_enabled),
           targetLanguage: data.translation_target_language || 'English',
         });
       })

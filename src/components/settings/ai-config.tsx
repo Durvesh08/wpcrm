@@ -319,7 +319,7 @@ export function AiConfig() {
                 <p className="text-sm font-medium">Included ZOVAIX AI</p>
                 <p className="text-muted-foreground mt-0.5 text-xs">
                   1,000 automated replies, 50 Copilot/playground/draft
-                  requests, and 230 translations with the workspace Gemini key.
+                  requests, and 230 Google-powered inbox translations.
                 </p>
               </div>
               <Switch
@@ -588,7 +588,7 @@ export function AiConfig() {
             {!translationAvailable && (
               <p className="rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs leading-5 text-amber-700 dark:text-amber-300">
                 Translation is temporarily unavailable because this Supabase
-                project still needs the AI translation migration. Your AI
+                project still needs the translation settings migration. Your AI
                 assistant, Playground, and Copilot can still work normally.
               </p>
             )}
@@ -598,8 +598,9 @@ export function AiConfig() {
                   Enable inbox translation
                 </p>
                 <p className="text-muted-foreground text-xs">
-                  Uses your selected AI provider key. Agents can tap Translate
-                  on any message they want to read in another language.
+                  Uses Google Cloud Translation from your server key. Agents can
+                  tap Translate on any message they want to read in another
+                  language.
                 </p>
               </div>
               <Switch
