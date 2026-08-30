@@ -58,6 +58,40 @@ import { GatedButton } from '@/components/ui/gated-button';
 import { Checkbox } from '@/components/ui/checkbox';
 
 const PAGE_SIZE = 25;
+const LEAD_STAGE_LABELS: Record<string, string> = {
+  new_lead: 'New Lead',
+  cold: 'Cold',
+  warm: 'Warm',
+  hot: 'Hot',
+  qualified: 'Qualified',
+  sales_ready: 'Sales Ready',
+  customer: 'Customer',
+};
+
+const LEAD_STAGE_CLASSES: Record<string, string> = {
+  new_lead: 'border-sky-500/25 bg-sky-500/10 text-sky-600 dark:text-sky-300',
+  cold: 'border-slate-500/25 bg-slate-500/10 text-slate-600 dark:text-slate-300',
+  warm: 'border-amber-500/25 bg-amber-500/10 text-amber-700 dark:text-amber-300',
+  hot: 'border-rose-500/25 bg-rose-500/10 text-rose-600 dark:text-rose-300',
+  qualified: 'border-emerald-500/25 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300',
+  sales_ready: 'border-primary/25 bg-primary/10 text-primary',
+  customer: 'border-violet-500/25 bg-violet-500/10 text-violet-600 dark:text-violet-300',
+};
+
+function leadStageLabel(stage?: string | null) {
+  return LEAD_STAGE_LABELS[stage || 'new_lead'] ?? 'New Lead';
+}
+
+function leadStageClass(stage?: string | null) {
+  return LEAD_STAGE_CLASSES[stage || 'new_lead'] ?? LEAD_STAGE_CLASSES.new_lead;
+}
+
+function scoreTone(score?: number | null) {
+  const value = score ?? 0;
+  if (value >= 80) return 'text-emerald-600 dark:text-emerald-300';
+  if (value >= 50) return 'text-amber-600 dark:text-amber-300';
+  return 'text-muted-foreground';
+}
 
 interface ContactWithTags extends Contact {
   tags?: Tag[];
@@ -542,10 +576,12 @@ export default function ContactsPage() {
               </TableHead>
               <TableHead className="text-muted-foreground">Name</TableHead>
               <TableHead className="text-muted-foreground">Phone</TableHead>
+              <TableHead className="text-muted-foreground hidden xl:table-cell">Stage</TableHead>
+              <TableHead className="text-muted-foreground hidden xl:table-cell">Score</TableHead>
               <TableHead className="text-muted-foreground hidden md:table-cell">Email</TableHead>
               <TableHead className="text-muted-foreground hidden lg:table-cell">Company</TableHead>
               <TableHead className="text-muted-foreground hidden md:table-cell">Tags</TableHead>
-              <TableHead className="text-muted-foreground hidden lg:table-cell">Created</TableHead>
+              <TableHead className="text-muted-foreground hidden 2xl:table-cell">Next follow-up</TableHead>
               <TableHead className="text-muted-foreground w-12" />
             </TableRow>
           </TableHeader>
@@ -605,6 +641,16 @@ export default function ContactsPage() {
                   <TableCell className="text-muted-foreground font-mono text-xs">
                     {contact.phone}
                   </TableCell>
+                  <TableCell className="hidden xl:table-cell">
+                    <span
+                      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold ${leadStageClass(contact.lead_stage)}`}
+                    >
+                      {leadStageLabel(contact.lead_stage)}
+                    </span>
+                  </TableCell>
+                  <TableCell className={`hidden xl:table-cell text-sm font-semibold ${scoreTone(contact.lead_score)}`}>
+                    {contact.lead_score ?? 0}/100
+                  </TableCell>
                   <TableCell className="text-muted-foreground hidden md:table-cell text-sm">
                     {contact.email || <span className="text-muted-foreground">-</span>}
                   </TableCell>
@@ -636,12 +682,17 @@ export default function ContactsPage() {
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="text-muted-foreground text-xs hidden lg:table-cell">
-                    {new Date(contact.created_at).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}
+                  <TableCell className="text-muted-foreground text-xs hidden 2xl:table-cell">
+                    {contact.next_follow_up_at ? (
+                      new Date(contact.next_follow_up_at).toLocaleString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                      })
+                    ) : (
+                      <span className="text-muted-foreground">-</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
