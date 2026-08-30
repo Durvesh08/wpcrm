@@ -57,10 +57,11 @@ type ManagedAiCredits = {
   available: boolean;
   unlimited: boolean;
   limits: { auto_reply: number; copilot: number };
-  used: { auto_reply: number; copilot: number };
+  used: { auto_reply: number; copilot: number; total?: number };
   remaining: {
     auto_reply: number | null;
     copilot: number | null;
+    total?: number | null;
   };
 };
 
@@ -290,9 +291,18 @@ export function AiConfig() {
                 <p className="text-sm font-medium">Included ZOVAIX AI</p>
                 <p className="text-muted-foreground mt-0.5 text-xs">
                   1,000 automated replies, 50 Copilot/playground/draft
-                  requests. Inbox translation uses your Google Translate key
-                  without a CRM message limit.
+                  requests, including lead extraction. Meta WhatsApp charges
+                  remain separate from ZOVAIX AI usage.
                 </p>
+                {managedCredits && (
+                  <p className="mt-1 text-xs font-medium text-primary">
+                    Total included usage:{' '}
+                    {(managedCredits.used.total ?? 0).toLocaleString()} used ·{' '}
+                    {managedCredits.remaining.total == null
+                      ? 'Unlimited'
+                      : `${managedCredits.remaining.total.toLocaleString()} left`}
+                  </p>
+                )}
               </div>
               <Switch
                 checked={usePlatformAi}
@@ -313,7 +323,7 @@ export function AiConfig() {
                 />
                 <CreditMeter
                   icon={<BotMessageSquare className="h-4 w-4" />}
-                  label="Copilot & drafts"
+                  label="Assistant actions"
                   used={managedCredits.used.copilot}
                   limit={managedCredits.limits.copilot}
                   remaining={managedCredits.remaining.copilot}

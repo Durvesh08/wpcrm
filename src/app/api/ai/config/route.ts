@@ -127,10 +127,11 @@ async function loadManagedAiCredits(supabase: SupabaseClient, userId: string) {
       available: false,
       unlimited,
       limits,
-      used: { auto_reply: 0, copilot: 0 },
+      used: { auto_reply: 0, copilot: 0, total: 0 },
       remaining: {
         auto_reply: limits.auto_reply,
         copilot: limits.copilot,
+        total: limits.auto_reply + limits.copilot,
       },
     };
   }
@@ -144,12 +145,19 @@ async function loadManagedAiCredits(supabase: SupabaseClient, userId: string) {
     used: {
       auto_reply: autoReplyUsed,
       copilot: copilotUsed,
+      total: autoReplyUsed + copilotUsed,
     },
     remaining: {
       auto_reply: unlimited
         ? null
         : Math.max(0, limits.auto_reply - autoReplyUsed),
       copilot: unlimited ? null : Math.max(0, limits.copilot - copilotUsed),
+      total: unlimited
+        ? null
+        : Math.max(
+            0,
+            limits.auto_reply + limits.copilot - autoReplyUsed - copilotUsed
+          ),
     },
   };
 }
