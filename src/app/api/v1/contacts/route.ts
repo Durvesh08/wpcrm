@@ -10,6 +10,7 @@
 
 import { requireApiKey } from '@/lib/auth/api-context';
 import { ok, okList, fail, toApiErrorResponse } from '@/lib/api/v1/respond';
+import { calculateLeadScore } from '@/lib/contacts/lead-scoring';
 import {
   parseListParams,
   keysetFilter,
@@ -175,6 +176,12 @@ export async function POST(request: Request) {
       next_follow_up_at: optionalDateString(body, 'next_follow_up_at'),
       conversation_summary: optionalString(body, 'conversation_summary'),
     };
+
+    if (leadScore === undefined && leadStage === undefined) {
+      const priority = calculateLeadScore(input);
+      input.lead_score = priority.score;
+      input.lead_stage = priority.stage;
+    }
 
     const { id, created } = await findOrCreateContact(
       ctx.supabase,

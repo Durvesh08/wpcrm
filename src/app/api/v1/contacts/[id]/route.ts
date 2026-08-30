@@ -10,6 +10,7 @@
 
 import { requireApiKey } from '@/lib/auth/api-context';
 import { ok, fail, toApiErrorResponse } from '@/lib/api/v1/respond';
+import { calculateLeadScore } from '@/lib/contacts/lead-scoring';
 import {
   CONTACT_LEAD_STAGES,
   CONTACT_SCALAR_FIELDS,
@@ -107,6 +108,25 @@ export async function PATCH(
         return fail('bad_request', "'lead_stage' is not supported", 400);
       }
       updates.lead_stage = value;
+    }
+
+    if (body.auto_score === true) {
+      const priority = calculateLeadScore({
+        requirement: (updates.requirement as string | null | undefined) ?? existing.requirement,
+        problem: (updates.problem as string | null | undefined) ?? existing.problem,
+        desired_outcome:
+          (updates.desired_outcome as string | null | undefined) ?? existing.desired_outcome,
+        budget: (updates.budget as string | null | undefined) ?? existing.budget,
+        timeline: (updates.timeline as string | null | undefined) ?? existing.timeline,
+        decision_maker:
+          (updates.decision_maker as string | null | undefined) ?? existing.decision_maker,
+        next_follow_up_at:
+          (updates.next_follow_up_at as string | null | undefined) ?? existing.next_follow_up_at,
+        conversation_summary:
+          (updates.conversation_summary as string | null | undefined) ?? existing.conversation_summary,
+      });
+      updates.lead_score = priority.score;
+      updates.lead_stage = priority.stage;
     }
 
     if (Object.keys(updates).length > 0) {

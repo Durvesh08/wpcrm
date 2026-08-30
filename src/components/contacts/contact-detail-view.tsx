@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/hooks/use-auth';
 import { formatCurrency } from '@/lib/currency';
+import { calculateLeadScore, type LeadStage } from '@/lib/contacts/lead-scoring';
 import { toast } from 'sonner';
 import type { Contact, Tag, ContactTag, ContactNote, CustomField, ContactCustomValue, Deal, MessageTemplate } from '@/types';
 import {
@@ -42,16 +43,8 @@ import {
   UserCheck,
   MapPin,
   CalendarClock,
+  Sparkles,
 } from 'lucide-react';
-
-type LeadStage =
-  | 'new_lead'
-  | 'cold'
-  | 'warm'
-  | 'hot'
-  | 'qualified'
-  | 'sales_ready'
-  | 'customer';
 
 type ProfileOption = {
   user_id: string;
@@ -324,6 +317,22 @@ export function ContactDetailView({
       onUpdated();
     }
     setSavingDetails(false);
+  }
+
+  function recalculateLeadPriority() {
+    const result = calculateLeadScore({
+      requirement: editRequirement,
+      problem: editProblem,
+      desired_outcome: editDesiredOutcome,
+      budget: editBudget,
+      timeline: editTimeline,
+      decision_maker: editDecisionMaker,
+      next_follow_up_at: fromDateTimeLocal(editNextFollowUpAt),
+      conversation_summary: editConversationSummary,
+    });
+    setEditLeadScore(String(result.score));
+    setEditLeadStage(result.stage);
+    toast.success('Lead priority recalculated');
   }
 
   async function toggleTag(tagId: string) {
@@ -650,7 +659,17 @@ export function ContactDetailView({
                         </select>
                       </div>
                       <div className="space-y-1.5">
-                        <Label className="text-muted-foreground text-xs">Lead score</Label>
+                        <div className="flex items-center justify-between gap-2">
+                          <Label className="text-muted-foreground text-xs">Lead score</Label>
+                          <button
+                            type="button"
+                            onClick={recalculateLeadPriority}
+                            className="inline-flex items-center gap-1 text-[11px] font-medium text-primary hover:text-primary/80"
+                          >
+                            <Sparkles className="size-3" />
+                            Recalculate
+                          </button>
+                        </div>
                         <Input
                           type="number"
                           min={0}
