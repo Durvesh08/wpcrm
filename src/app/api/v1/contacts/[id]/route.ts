@@ -11,11 +11,22 @@
 import { requireApiKey } from '@/lib/auth/api-context';
 import { ok, fail, toApiErrorResponse } from '@/lib/api/v1/respond';
 import {
+  CONTACT_LEAD_STAGES,
+  CONTACT_SCALAR_FIELDS,
   getContactById,
   setContactTags,
   resolveAuditUserId,
   ContactError,
+  type ContactLeadStage,
 } from '@/lib/api/v1/contacts';
+
+function isNullableString(value: unknown) {
+  return value === null || typeof value === 'string';
+}
+
+function isDateField(field: string) {
+  return field === 'last_contacted_at' || field === 'next_follow_up_at';
+}
 
 export async function GET(
   request: Request,
@@ -57,14 +68,45 @@ export async function PATCH(
     // untouched); `null` clears it, a string sets it, and any other
     // type is a 400 rather than a silently-ignored no-op.
     const updates: Record<string, unknown> = {};
-    for (const field of ['name', 'email', 'company'] as const) {
+    for (const field of CONTACT_SCALAR_FIELDS) {
       if (!(field in body)) continue;
       const value = body[field];
-      if (value === null || typeof value === 'string') {
-        updates[field] = value;
-      } else {
+      if (!isNullableString(value)) {
         return fail('bad_request', `'${field}' must be a string or null`, 400);
       }
+      if (typeof value === 'string' && isDateField(field)) {
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) {
+          return fail('bad_request', `'${field}' must be a valid date string`, 400);
+        }
+        updates[field] = date.toISOString();
+      } else {
+        updates[field] = value;
+      }
+    }
+
+    if ('lead_score' in body) {
+      const value = body.lead_score;
+      if (value === null) {
+        updates.lead_score = 0;
+      } else {
+        const score = typeof value === 'number' ? value : Number(value);
+        if (!Number.isFinite(score)) {
+          return fail('bad_request', "'lead_score' must be a number between 0 and 100", 400);
+        }
+        updates.lead_score = Math.max(0, Math.min(100, Math.round(score)));
+      }
+    }
+
+    if ('lead_stage' in body) {
+      const value = body.lead_stage;
+      if (
+        typeof value !== 'string' ||
+        !CONTACT_LEAD_STAGES.includes(value as ContactLeadStage)
+      ) {
+        return fail('bad_request', "'lead_stage' is not supported", 400);
+      }
+      updates.lead_stage = value;
     }
 
     if (Object.keys(updates).length > 0) {

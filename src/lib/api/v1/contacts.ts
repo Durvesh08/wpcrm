@@ -16,6 +16,39 @@ import { sanitizePhoneForMeta, isValidE164 } from '@/lib/whatsapp/phone-utils';
 /** Row select that embeds the contact's tags for serialization. */
 export const CONTACT_SELECT = '*, contact_tags(tags(*))';
 
+export const CONTACT_SCALAR_FIELDS = [
+  'name',
+  'email',
+  'company',
+  'lead_source',
+  'industry',
+  'business_type',
+  'requirement',
+  'problem',
+  'desired_outcome',
+  'budget',
+  'timeline',
+  'location',
+  'decision_maker',
+  'assigned_user_id',
+  'last_contacted_at',
+  'next_follow_up_at',
+  'conversation_summary',
+] as const;
+
+export const CONTACT_LEAD_STAGES = [
+  'new_lead',
+  'cold',
+  'warm',
+  'hot',
+  'qualified',
+  'sales_ready',
+  'customer',
+] as const;
+
+export type ContactScalarField = (typeof CONTACT_SCALAR_FIELDS)[number];
+export type ContactLeadStage = (typeof CONTACT_LEAD_STAGES)[number];
+
 export interface ApiContact {
   id: string;
   phone: string;
@@ -23,6 +56,22 @@ export interface ApiContact {
   email: string | null;
   company: string | null;
   avatar_url: string | null;
+  lead_source: string | null;
+  lead_score: number;
+  lead_stage: ContactLeadStage;
+  industry: string | null;
+  business_type: string | null;
+  requirement: string | null;
+  problem: string | null;
+  desired_outcome: string | null;
+  budget: string | null;
+  timeline: string | null;
+  location: string | null;
+  decision_maker: string | null;
+  assigned_user_id: string | null;
+  last_contacted_at: string | null;
+  next_follow_up_at: string | null;
+  conversation_summary: string | null;
   tags: { id: string; name: string; color: string }[];
   created_at: string;
   updated_at: string;
@@ -40,6 +89,16 @@ export class ContactError extends Error {
 
 type RawTagJoin = { tags: { id: string; name: string; color: string } | null };
 
+function nullableString(row: Record<string, unknown>, key: string) {
+  return (row[key] as string | null | undefined) ?? null;
+}
+
+function parseLeadStage(value: unknown): ContactLeadStage {
+  return CONTACT_LEAD_STAGES.includes(value as ContactLeadStage)
+    ? (value as ContactLeadStage)
+    : 'new_lead';
+}
+
 /** Flatten a `CONTACT_SELECT` row into the public contact shape. */
 export function serializeContact(row: Record<string, unknown>): ApiContact {
   const joins = (row.contact_tags as RawTagJoin[] | undefined) ?? [];
@@ -50,6 +109,22 @@ export function serializeContact(row: Record<string, unknown>): ApiContact {
     email: (row.email as string | null) ?? null,
     company: (row.company as string | null) ?? null,
     avatar_url: (row.avatar_url as string | null) ?? null,
+    lead_source: nullableString(row, 'lead_source'),
+    lead_score: Number(row.lead_score ?? 0),
+    lead_stage: parseLeadStage(row.lead_stage),
+    industry: nullableString(row, 'industry'),
+    business_type: nullableString(row, 'business_type'),
+    requirement: nullableString(row, 'requirement'),
+    problem: nullableString(row, 'problem'),
+    desired_outcome: nullableString(row, 'desired_outcome'),
+    budget: nullableString(row, 'budget'),
+    timeline: nullableString(row, 'timeline'),
+    location: nullableString(row, 'location'),
+    decision_maker: nullableString(row, 'decision_maker'),
+    assigned_user_id: nullableString(row, 'assigned_user_id'),
+    last_contacted_at: nullableString(row, 'last_contacted_at'),
+    next_follow_up_at: nullableString(row, 'next_follow_up_at'),
+    conversation_summary: nullableString(row, 'conversation_summary'),
     tags: joins
       .map((j) => j.tags)
       .filter((t): t is NonNullable<RawTagJoin['tags']> => t != null)
@@ -98,6 +173,22 @@ export interface ContactInput {
   name?: string | null;
   email?: string | null;
   company?: string | null;
+  lead_source?: string | null;
+  lead_score?: number | null;
+  lead_stage?: ContactLeadStage | null;
+  industry?: string | null;
+  business_type?: string | null;
+  requirement?: string | null;
+  problem?: string | null;
+  desired_outcome?: string | null;
+  budget?: string | null;
+  timeline?: string | null;
+  location?: string | null;
+  decision_maker?: string | null;
+  assigned_user_id?: string | null;
+  last_contacted_at?: string | null;
+  next_follow_up_at?: string | null;
+  conversation_summary?: string | null;
 }
 
 /**
@@ -132,6 +223,22 @@ export async function findOrCreateContact(
       name: input.name ?? sanitized,
       email: input.email ?? null,
       company: input.company ?? null,
+      lead_source: input.lead_source ?? null,
+      lead_score: input.lead_score ?? 0,
+      lead_stage: input.lead_stage ?? 'new_lead',
+      industry: input.industry ?? null,
+      business_type: input.business_type ?? null,
+      requirement: input.requirement ?? null,
+      problem: input.problem ?? null,
+      desired_outcome: input.desired_outcome ?? null,
+      budget: input.budget ?? null,
+      timeline: input.timeline ?? null,
+      location: input.location ?? null,
+      decision_maker: input.decision_maker ?? null,
+      assigned_user_id: input.assigned_user_id ?? null,
+      last_contacted_at: input.last_contacted_at ?? null,
+      next_follow_up_at: input.next_follow_up_at ?? null,
+      conversation_summary: input.conversation_summary ?? null,
     })
     .select('id')
     .single();

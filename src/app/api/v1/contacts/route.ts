@@ -17,12 +17,15 @@ import {
 } from '@/lib/api/v1/pagination';
 import {
   CONTACT_SELECT,
+  CONTACT_LEAD_STAGES,
   serializeContact,
   findOrCreateContact,
   setContactTags,
   getContactById,
   resolveAuditUserId,
   ContactError,
+  type ContactInput,
+  type ContactLeadStage,
 } from '@/lib/api/v1/contacts';
 
 // PostgREST filter values are comma/paren-delimited; strip anything
@@ -30,6 +33,36 @@ import {
 // term. Leaves the characters a phone or name legitimately contains.
 function sanitizeSearch(raw: string): string {
   return raw.replace(/[^\p{L}\p{N} +@.\-_]/gu, '').trim();
+}
+
+function optionalString(body: Record<string, unknown>, key: string) {
+  if (!(key in body)) return undefined;
+  const value = body[key];
+  if (value === null) return null;
+  return typeof value === 'string' ? value : undefined;
+}
+
+function optionalDateString(body: Record<string, unknown>, key: string) {
+  const value = optionalString(body, key);
+  if (!value) return value;
+  return Number.isNaN(new Date(value).getTime()) ? undefined : new Date(value).toISOString();
+}
+
+function optionalLeadScore(body: Record<string, unknown>) {
+  if (!('lead_score' in body)) return undefined;
+  const value = body.lead_score;
+  if (value === null) return null;
+  const number = typeof value === 'number' ? value : Number(value);
+  return Number.isFinite(number) ? Math.max(0, Math.min(100, Math.round(number))) : undefined;
+}
+
+function optionalLeadStage(body: Record<string, unknown>) {
+  if (!('lead_stage' in body)) return undefined;
+  const value = body.lead_stage;
+  if (value === null) return null;
+  return CONTACT_LEAD_STAGES.includes(value as ContactLeadStage)
+    ? (value as ContactLeadStage)
+    : undefined;
 }
 
 export async function GET(request: Request) {
@@ -111,17 +144,43 @@ export async function POST(request: Request) {
     }
 
     const auditUserId = await resolveAuditUserId(ctx.supabase, ctx.accountId);
+    const leadScore = optionalLeadScore(body);
+    const leadStage = optionalLeadStage(body);
+    if ('lead_score' in body && leadScore === undefined) {
+      return fail('bad_request', "'lead_score' must be a number between 0 and 100", 400);
+    }
+    if ('lead_stage' in body && leadStage === undefined) {
+      return fail('bad_request', "'lead_stage' is not supported", 400);
+    }
+
+    const input: ContactInput = {
+      phone,
+      name: optionalString(body, 'name'),
+      email: optionalString(body, 'email'),
+      company: optionalString(body, 'company'),
+      lead_source: optionalString(body, 'lead_source'),
+      lead_score: leadScore,
+      lead_stage: leadStage,
+      industry: optionalString(body, 'industry'),
+      business_type: optionalString(body, 'business_type'),
+      requirement: optionalString(body, 'requirement'),
+      problem: optionalString(body, 'problem'),
+      desired_outcome: optionalString(body, 'desired_outcome'),
+      budget: optionalString(body, 'budget'),
+      timeline: optionalString(body, 'timeline'),
+      location: optionalString(body, 'location'),
+      decision_maker: optionalString(body, 'decision_maker'),
+      assigned_user_id: optionalString(body, 'assigned_user_id'),
+      last_contacted_at: optionalDateString(body, 'last_contacted_at'),
+      next_follow_up_at: optionalDateString(body, 'next_follow_up_at'),
+      conversation_summary: optionalString(body, 'conversation_summary'),
+    };
 
     const { id, created } = await findOrCreateContact(
       ctx.supabase,
       ctx.accountId,
       auditUserId,
-      {
-        phone,
-        name: typeof body.name === 'string' ? body.name : undefined,
-        email: typeof body.email === 'string' ? body.email : undefined,
-        company: typeof body.company === 'string' ? body.company : undefined,
-      }
+      input
     );
 
     if (Array.isArray(body.tags)) {

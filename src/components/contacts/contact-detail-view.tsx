@@ -38,7 +38,48 @@ import {
   X,
   DollarSign,
   LayoutTemplate,
+  Target,
+  UserCheck,
+  MapPin,
+  CalendarClock,
 } from 'lucide-react';
+
+type LeadStage =
+  | 'new_lead'
+  | 'cold'
+  | 'warm'
+  | 'hot'
+  | 'qualified'
+  | 'sales_ready'
+  | 'customer';
+
+type ProfileOption = {
+  user_id: string;
+  full_name: string | null;
+  email: string | null;
+};
+
+const LEAD_STAGES: Array<{ value: LeadStage; label: string }> = [
+  { value: 'new_lead', label: 'New Lead' },
+  { value: 'cold', label: 'Cold' },
+  { value: 'warm', label: 'Warm' },
+  { value: 'hot', label: 'Hot' },
+  { value: 'qualified', label: 'Qualified' },
+  { value: 'sales_ready', label: 'Sales Ready' },
+  { value: 'customer', label: 'Customer' },
+];
+
+function toDateTimeLocal(value?: string | null) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const offset = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+}
+
+function fromDateTimeLocal(value: string) {
+  return value ? new Date(value).toISOString() : null;
+}
 
 interface ContactDetailViewProps {
   open: boolean;
@@ -71,6 +112,23 @@ export function ContactDetailView({
   const [editPhone, setEditPhone] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editCompany, setEditCompany] = useState('');
+  const [editLeadSource, setEditLeadSource] = useState('');
+  const [editLeadScore, setEditLeadScore] = useState('0');
+  const [editLeadStage, setEditLeadStage] = useState<LeadStage>('new_lead');
+  const [editIndustry, setEditIndustry] = useState('');
+  const [editBusinessType, setEditBusinessType] = useState('');
+  const [editRequirement, setEditRequirement] = useState('');
+  const [editProblem, setEditProblem] = useState('');
+  const [editDesiredOutcome, setEditDesiredOutcome] = useState('');
+  const [editBudget, setEditBudget] = useState('');
+  const [editTimeline, setEditTimeline] = useState('');
+  const [editLocation, setEditLocation] = useState('');
+  const [editDecisionMaker, setEditDecisionMaker] = useState('');
+  const [editAssignedUserId, setEditAssignedUserId] = useState('');
+  const [editLastContactedAt, setEditLastContactedAt] = useState('');
+  const [editNextFollowUpAt, setEditNextFollowUpAt] = useState('');
+  const [editConversationSummary, setEditConversationSummary] = useState('');
+  const [teamMembers, setTeamMembers] = useState<ProfileOption[]>([]);
   const [savingDetails, setSavingDetails] = useState(false);
 
   // Tags tab
@@ -110,9 +168,33 @@ export function ContactDetailView({
       setEditPhone(data.phone);
       setEditEmail(data.email ?? '');
       setEditCompany(data.company ?? '');
+      setEditLeadSource(data.lead_source ?? '');
+      setEditLeadScore(String(data.lead_score ?? 0));
+      setEditLeadStage((data.lead_stage as LeadStage | null) ?? 'new_lead');
+      setEditIndustry(data.industry ?? '');
+      setEditBusinessType(data.business_type ?? '');
+      setEditRequirement(data.requirement ?? '');
+      setEditProblem(data.problem ?? '');
+      setEditDesiredOutcome(data.desired_outcome ?? '');
+      setEditBudget(data.budget ?? '');
+      setEditTimeline(data.timeline ?? '');
+      setEditLocation(data.location ?? '');
+      setEditDecisionMaker(data.decision_maker ?? '');
+      setEditAssignedUserId(data.assigned_user_id ?? '');
+      setEditLastContactedAt(toDateTimeLocal(data.last_contacted_at));
+      setEditNextFollowUpAt(toDateTimeLocal(data.next_follow_up_at));
+      setEditConversationSummary(data.conversation_summary ?? '');
     }
     setLoading(false);
   }, [contactId, supabase]);
+
+  const fetchTeamMembers = useCallback(async () => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('user_id, full_name, email')
+      .order('full_name');
+    setTeamMembers((data ?? []) as ProfileOption[]);
+  }, [supabase]);
 
   const fetchTags = useCallback(async () => {
     if (!contactId) return;
@@ -184,8 +266,9 @@ export function ContactDetailView({
       fetchNotes();
       fetchCustomFields();
       fetchDeals();
+      fetchTeamMembers();
     }
-  }, [open, contactId, fetchContact, fetchTags, fetchNotes, fetchCustomFields, fetchDeals]);
+  }, [open, contactId, fetchContact, fetchTags, fetchNotes, fetchCustomFields, fetchDeals, fetchTeamMembers]);
 
   async function copyPhone() {
     if (!contact) return;
@@ -200,6 +283,11 @@ export function ContactDetailView({
       return;
     }
 
+    const leadScore = Math.max(
+      0,
+      Math.min(100, Number.parseInt(editLeadScore || '0', 10) || 0)
+    );
+
     setSavingDetails(true);
     const { error } = await supabase
       .from('contacts')
@@ -208,6 +296,22 @@ export function ContactDetailView({
         phone: editPhone.trim(),
         email: editEmail.trim() || null,
         company: editCompany.trim() || null,
+        lead_source: editLeadSource.trim() || null,
+        lead_score: leadScore,
+        lead_stage: editLeadStage,
+        industry: editIndustry.trim() || null,
+        business_type: editBusinessType.trim() || null,
+        requirement: editRequirement.trim() || null,
+        problem: editProblem.trim() || null,
+        desired_outcome: editDesiredOutcome.trim() || null,
+        budget: editBudget.trim() || null,
+        timeline: editTimeline.trim() || null,
+        location: editLocation.trim() || null,
+        decision_maker: editDecisionMaker.trim() || null,
+        assigned_user_id: editAssignedUserId || null,
+        last_contacted_at: fromDateTimeLocal(editLastContactedAt),
+        next_follow_up_at: fromDateTimeLocal(editNextFollowUpAt),
+        conversation_summary: editConversationSummary.trim() || null,
         updated_at: new Date().toISOString(),
       })
       .eq('id', contactId);
@@ -385,7 +489,7 @@ export function ContactDetailView({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="bg-popover border-border text-popover-foreground sm:max-w-lg w-full p-0"
+        className="bg-popover border-border text-popover-foreground sm:max-w-2xl w-full p-0"
       >
         {loading || !contact ? (
           <div className="flex items-center justify-center h-full">
@@ -524,6 +628,182 @@ export function ContactDetailView({
                       onChange={(e) => setEditCompany(e.target.value)}
                       className="bg-muted border-border text-foreground h-8 text-sm"
                     />
+                  </div>
+                  <div className="rounded-xl border border-border/70 bg-muted/30 p-3">
+                    <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
+                      <Target className="size-4 text-primary" />
+                      Lead profile
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div className="space-y-1.5">
+                        <Label className="text-muted-foreground text-xs">Lead stage</Label>
+                        <select
+                          value={editLeadStage}
+                          onChange={(e) => setEditLeadStage(e.target.value as LeadStage)}
+                          className="h-8 w-full rounded-md border border-border bg-background px-2 text-sm text-foreground outline-none focus:border-primary"
+                        >
+                          {LEAD_STAGES.map((stage) => (
+                            <option key={stage.value} value={stage.value}>
+                              {stage.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-muted-foreground text-xs">Lead score</Label>
+                        <Input
+                          type="number"
+                          min={0}
+                          max={100}
+                          value={editLeadScore}
+                          onChange={(e) => setEditLeadScore(e.target.value)}
+                          className="bg-background border-border text-foreground h-8 text-sm"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-muted-foreground text-xs">Lead source</Label>
+                        <Input
+                          value={editLeadSource}
+                          onChange={(e) => setEditLeadSource(e.target.value)}
+                          placeholder="Meta ads, referral, website"
+                          className="bg-background border-border text-foreground h-8 text-sm"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-muted-foreground text-xs">Industry</Label>
+                        <Input
+                          value={editIndustry}
+                          onChange={(e) => setEditIndustry(e.target.value)}
+                          className="bg-background border-border text-foreground h-8 text-sm"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-muted-foreground text-xs">Business type</Label>
+                        <Input
+                          value={editBusinessType}
+                          onChange={(e) => setEditBusinessType(e.target.value)}
+                          className="bg-background border-border text-foreground h-8 text-sm"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-muted-foreground text-xs">Decision maker</Label>
+                        <Input
+                          value={editDecisionMaker}
+                          onChange={(e) => setEditDecisionMaker(e.target.value)}
+                          className="bg-background border-border text-foreground h-8 text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-border/70 bg-muted/30 p-3">
+                    <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
+                      <UserCheck className="size-4 text-primary" />
+                      Requirement and fit
+                    </div>
+                    <div className="grid gap-3">
+                      <div className="space-y-1.5">
+                        <Label className="text-muted-foreground text-xs">Requirement</Label>
+                        <Textarea
+                          value={editRequirement}
+                          onChange={(e) => setEditRequirement(e.target.value)}
+                          className="min-h-20 bg-background border-border text-foreground text-sm"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-muted-foreground text-xs">Problem</Label>
+                        <Textarea
+                          value={editProblem}
+                          onChange={(e) => setEditProblem(e.target.value)}
+                          className="min-h-20 bg-background border-border text-foreground text-sm"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-muted-foreground text-xs">Desired outcome</Label>
+                        <Textarea
+                          value={editDesiredOutcome}
+                          onChange={(e) => setEditDesiredOutcome(e.target.value)}
+                          className="min-h-20 bg-background border-border text-foreground text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-border/70 bg-muted/30 p-3">
+                    <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
+                      <CalendarClock className="size-4 text-primary" />
+                      Ownership and next step
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div className="space-y-1.5">
+                        <Label className="text-muted-foreground text-xs">Assigned team member</Label>
+                        <select
+                          value={editAssignedUserId}
+                          onChange={(e) => setEditAssignedUserId(e.target.value)}
+                          className="h-8 w-full rounded-md border border-border bg-background px-2 text-sm text-foreground outline-none focus:border-primary"
+                        >
+                          <option value="">Unassigned</option>
+                          {teamMembers.map((member) => (
+                            <option key={member.user_id} value={member.user_id}>
+                              {member.full_name || member.email || 'Team member'}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-muted-foreground text-xs">Location</Label>
+                        <div className="relative">
+                          <MapPin className="absolute left-2 top-2 size-4 text-muted-foreground" />
+                          <Input
+                            value={editLocation}
+                            onChange={(e) => setEditLocation(e.target.value)}
+                            className="bg-background border-border text-foreground h-8 pl-8 text-sm"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-muted-foreground text-xs">Budget</Label>
+                        <Input
+                          value={editBudget}
+                          onChange={(e) => setEditBudget(e.target.value)}
+                          className="bg-background border-border text-foreground h-8 text-sm"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-muted-foreground text-xs">Timeline</Label>
+                        <Input
+                          value={editTimeline}
+                          onChange={(e) => setEditTimeline(e.target.value)}
+                          placeholder="This month, Q4, urgent"
+                          className="bg-background border-border text-foreground h-8 text-sm"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-muted-foreground text-xs">Last contacted</Label>
+                        <Input
+                          type="datetime-local"
+                          value={editLastContactedAt}
+                          onChange={(e) => setEditLastContactedAt(e.target.value)}
+                          className="bg-background border-border text-foreground h-8 text-sm"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-muted-foreground text-xs">Next follow-up</Label>
+                        <Input
+                          type="datetime-local"
+                          value={editNextFollowUpAt}
+                          onChange={(e) => setEditNextFollowUpAt(e.target.value)}
+                          className="bg-background border-border text-foreground h-8 text-sm"
+                        />
+                      </div>
+                    </div>
+                    <div className="mt-3 space-y-1.5">
+                      <Label className="text-muted-foreground text-xs">Conversation summary</Label>
+                      <Textarea
+                        value={editConversationSummary}
+                        onChange={(e) => setEditConversationSummary(e.target.value)}
+                        placeholder="Short sales summary, objection, and next move"
+                        className="min-h-24 bg-background border-border text-foreground text-sm"
+                      />
+                    </div>
                   </div>
                   <Button
                     onClick={saveDetails}

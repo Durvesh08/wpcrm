@@ -98,6 +98,30 @@ export interface Contact {
   email?: string;
   company?: string;
   avatar_url?: string;
+  lead_source?: string | null;
+  lead_score?: number | null;
+  lead_stage?:
+    | 'new_lead'
+    | 'cold'
+    | 'warm'
+    | 'hot'
+    | 'qualified'
+    | 'sales_ready'
+    | 'customer'
+    | null;
+  industry?: string | null;
+  business_type?: string | null;
+  requirement?: string | null;
+  problem?: string | null;
+  desired_outcome?: string | null;
+  budget?: string | null;
+  timeline?: string | null;
+  location?: string | null;
+  decision_maker?: string | null;
+  assigned_user_id?: string | null;
+  last_contacted_at?: string | null;
+  next_follow_up_at?: string | null;
+  conversation_summary?: string | null;
   created_at: string;
   updated_at: string;
   /** Hydrated by queries that embed `contact_tags(tags(*))` (e.g. the
