@@ -123,6 +123,7 @@ export function ContactDetailView({
   const [editConversationSummary, setEditConversationSummary] = useState('');
   const [teamMembers, setTeamMembers] = useState<ProfileOption[]>([]);
   const [savingDetails, setSavingDetails] = useState(false);
+  const [extractingProfile, setExtractingProfile] = useState(false);
 
   // Tags tab
   const [allTags, setAllTags] = useState<Tag[]>([]);
@@ -145,6 +146,30 @@ export function ContactDetailView({
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loadingDeals, setLoadingDeals] = useState(false);
 
+  function applyContactToForm(data: Contact) {
+    setContact(data);
+    setEditName(data.name ?? '');
+    setEditPhone(data.phone);
+    setEditEmail(data.email ?? '');
+    setEditCompany(data.company ?? '');
+    setEditLeadSource(data.lead_source ?? '');
+    setEditLeadScore(String(data.lead_score ?? 0));
+    setEditLeadStage((data.lead_stage as LeadStage | null) ?? 'new_lead');
+    setEditIndustry(data.industry ?? '');
+    setEditBusinessType(data.business_type ?? '');
+    setEditRequirement(data.requirement ?? '');
+    setEditProblem(data.problem ?? '');
+    setEditDesiredOutcome(data.desired_outcome ?? '');
+    setEditBudget(data.budget ?? '');
+    setEditTimeline(data.timeline ?? '');
+    setEditLocation(data.location ?? '');
+    setEditDecisionMaker(data.decision_maker ?? '');
+    setEditAssignedUserId(data.assigned_user_id ?? '');
+    setEditLastContactedAt(toDateTimeLocal(data.last_contacted_at));
+    setEditNextFollowUpAt(toDateTimeLocal(data.next_follow_up_at));
+    setEditConversationSummary(data.conversation_summary ?? '');
+  }
+
   const fetchContact = useCallback(async () => {
     if (!contactId) return;
     setLoading(true);
@@ -156,27 +181,7 @@ export function ContactDetailView({
       .single();
 
     if (data) {
-      setContact(data);
-      setEditName(data.name ?? '');
-      setEditPhone(data.phone);
-      setEditEmail(data.email ?? '');
-      setEditCompany(data.company ?? '');
-      setEditLeadSource(data.lead_source ?? '');
-      setEditLeadScore(String(data.lead_score ?? 0));
-      setEditLeadStage((data.lead_stage as LeadStage | null) ?? 'new_lead');
-      setEditIndustry(data.industry ?? '');
-      setEditBusinessType(data.business_type ?? '');
-      setEditRequirement(data.requirement ?? '');
-      setEditProblem(data.problem ?? '');
-      setEditDesiredOutcome(data.desired_outcome ?? '');
-      setEditBudget(data.budget ?? '');
-      setEditTimeline(data.timeline ?? '');
-      setEditLocation(data.location ?? '');
-      setEditDecisionMaker(data.decision_maker ?? '');
-      setEditAssignedUserId(data.assigned_user_id ?? '');
-      setEditLastContactedAt(toDateTimeLocal(data.last_contacted_at));
-      setEditNextFollowUpAt(toDateTimeLocal(data.next_follow_up_at));
-      setEditConversationSummary(data.conversation_summary ?? '');
+      applyContactToForm(data);
     }
     setLoading(false);
   }, [contactId, supabase]);
@@ -333,6 +338,27 @@ export function ContactDetailView({
     setEditLeadScore(String(result.score));
     setEditLeadStage(result.stage);
     toast.success('Lead priority recalculated');
+  }
+
+  async function extractProfileFromChat() {
+    if (!contactId) return;
+    setExtractingProfile(true);
+    const response = await fetch(`/api/contacts/${contactId}/extract`, {
+      method: 'POST',
+    });
+    const json = await response.json().catch(() => null);
+    setExtractingProfile(false);
+
+    if (!response.ok) {
+      toast.error(json?.error ?? 'Failed to extract lead data');
+      return;
+    }
+
+    if (json?.contact) {
+      applyContactToForm(json.contact as Contact);
+    }
+    toast.success('Lead profile filled from chat');
+    onUpdated();
   }
 
   async function toggleTag(tagId: string) {
@@ -641,7 +667,22 @@ export function ContactDetailView({
                   <div className="rounded-xl border border-border/70 bg-muted/30 p-3">
                     <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
                       <Target className="size-4 text-primary" />
-                      Lead profile
+                      <span className="flex-1">Lead profile</span>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={extractProfileFromChat}
+                        disabled={extractingProfile}
+                        className="h-8 border-border text-xs"
+                      >
+                        {extractingProfile ? (
+                          <Loader2 className="size-3.5 animate-spin" />
+                        ) : (
+                          <Sparkles className="size-3.5" />
+                        )}
+                        Fill from chat
+                      </Button>
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2">
                       <div className="space-y-1.5">
