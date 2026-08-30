@@ -16,22 +16,29 @@ import {
 } from 'date-fns';
 import {
   CalendarDays,
+  CalendarX2,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
   Clock3,
+  Link as LinkIcon,
+  MapPin,
   MessageSquare,
   PhoneCall,
   Plus,
+  RotateCcw,
   Sparkles,
   StickyNote,
+  UserRound,
+  Video,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 
-type Kind = 'follow_up' | 'call' | 'note';
+type Kind = 'follow_up' | 'call' | 'whatsapp' | 'meeting' | 'note';
+type Status = 'scheduled' | 'completed' | 'cancelled' | 'no_show';
 type Reminder = {
   id: string;
   contact_id: string;
@@ -41,35 +48,61 @@ type Reminder = {
   due_at: string;
   completed_at: string | null;
   contacts: { name: string | null; phone: string | null } | null;
+  status?: Status;
+  assigned_user_id?: string | null;
+  meeting_location?: string | null;
+  meeting_url?: string | null;
+  reminder_minutes_before?: number;
+  cancelled_at?: string | null;
+  no_show_at?: string | null;
+  completed_notes?: string | null;
 };
 type ContactOption = { id: string; name: string | null; phone: string };
+type ProfileOption = { user_id: string; full_name: string | null; email: string | null };
 
 const kindLabel: Record<Kind, string> = {
   follow_up: 'Follow-up',
   call: 'Call',
+  whatsapp: 'WhatsApp follow-up',
+  meeting: 'Meeting',
   note: 'Note',
 };
 const kindIcon: Record<Kind, typeof Clock3> = {
   follow_up: Clock3,
   call: PhoneCall,
+  whatsapp: MessageSquare,
+  meeting: Video,
   note: StickyNote,
 };
 const kindTone: Record<Kind, string> = {
   follow_up: 'bg-primary/12 text-primary border-primary/20',
   call: 'bg-sky-500/12 text-sky-400 border-sky-500/20',
+  whatsapp: 'bg-emerald-500/12 text-emerald-400 border-emerald-500/20',
+  meeting: 'bg-violet-500/12 text-violet-400 border-violet-500/20',
   note: 'bg-amber-500/12 text-amber-400 border-amber-500/20',
+};
+const statusLabel: Record<Status, string> = {
+  scheduled: 'Scheduled',
+  completed: 'Completed',
+  cancelled: 'Cancelled',
+  no_show: 'No-show',
 };
 
 export default function CalendarPage() {
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [contacts, setContacts] = useState<ContactOption[]>([]);
+  const [profiles, setProfiles] = useState<ProfileOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [month, setMonth] = useState(startOfMonth(new Date()));
   const [selectedDay, setSelectedDay] = useState(new Date());
   const [kind, setKind] = useState<Kind>('follow_up');
   const [contactId, setContactId] = useState('');
+  const [assignedUserId, setAssignedUserId] = useState('');
   const [title, setTitle] = useState('');
   const [time, setTime] = useState('10:00');
+  const [meetingLocation, setMeetingLocation] = useState('');
+  const [meetingUrl, setMeetingUrl] = useState('');
+  const [reminderMinutesBefore, setReminderMinutesBefore] = useState('30');
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
@@ -96,6 +129,11 @@ export default function CalendarPage() {
       .order('name')
       .limit(150)
       .then(({ data }) => setContacts((data ?? []) as ContactOption[]));
+    void supabase
+      .from('profiles')
+      .select('user_id, full_name, email')
+      .order('full_name')
+      .then(({ data }) => setProfiles((data ?? []) as ProfileOption[]));
   }, []);
 
   const days = useMemo(
@@ -113,6 +151,18 @@ export default function CalendarPage() {
     [reminders, selectedDay]
   );
   const openEvents = reminders.filter((item) => !item.completed_at).length;
+  const scheduledEvents = reminders.filter(
+    (item) => (item.status ?? (item.completed_at ? 'completed' : 'scheduled')) === 'scheduled'
+  ).length;
+  const overdueEvents = reminders.filter((item) => {
+    const status = item.status ?? (item.completed_at ? 'completed' : 'scheduled');
+    return status === 'scheduled' && parseISO(item.due_at).getTime() < Date.now();
+  }).length;
+
+  const assigneeName = (userId?: string | null) => {
+    const profile = profiles.find((item) => item.user_id === userId);
+    return profile?.full_name || profile?.email || 'Unassigned';
+  };
 
   const save = async () => {
     if (!contactId) return toast.error('Choose a contact first');
@@ -127,6 +177,10 @@ export default function CalendarPage() {
         kind,
         title,
         dueAt: dueAt.toISOString(),
+        assignedUserId,
+        meetingLocation,
+        meetingUrl,
+        reminderMinutesBefore: Number(reminderMinutesBefore) || 30,
       }),
     });
     const json = await response.json().catch(() => null);
@@ -137,23 +191,49 @@ export default function CalendarPage() {
     }
     toast.success(`${kindLabel[kind]} added to calendar`);
     setTitle('');
+    setMeetingLocation('');
+    setMeetingUrl('');
     void load();
   };
 
-  const complete = async (id: string) => {
+  const updateStatus = async (id: string, status: Status) => {
     const response = await fetch('/api/reminders', {
       method: 'PATCH',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ id }),
+      body: JSON.stringify({ id, status }),
     });
-    if (!response.ok) return toast.error('Could not complete item');
+    if (!response.ok) return toast.error('Could not update item');
     setReminders((current) =>
       current.map((item) =>
         item.id === id
-          ? { ...item, completed_at: new Date().toISOString() }
+          ? {
+              ...item,
+              status,
+              completed_at: status === 'completed' ? new Date().toISOString() : null,
+              cancelled_at: status === 'cancelled' ? new Date().toISOString() : null,
+              no_show_at: status === 'no_show' ? new Date().toISOString() : null,
+            }
           : item
       )
     );
+  };
+
+  const reschedule = async (item: Reminder) => {
+    const nextTime = window.prompt(
+      'New time for this date, for example 15:30',
+      format(parseISO(item.due_at), 'HH:mm')
+    );
+    if (!nextTime) return;
+    const nextDueAt = new Date(`${format(selectedDay, 'yyyy-MM-dd')}T${nextTime}:00`);
+    if (Number.isNaN(nextDueAt.getTime())) return toast.error('Use valid time like 15:30');
+    const response = await fetch('/api/reminders', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ id: item.id, dueAt: nextDueAt.toISOString() }),
+    });
+    if (!response.ok) return toast.error('Could not reschedule item');
+    toast.success('Calendar item rescheduled');
+    void load();
   };
 
   return (
@@ -167,8 +247,8 @@ export default function CalendarPage() {
             Calendar
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Schedule contact calls, notes, and follow-ups directly where the
-            team plans the day.
+            Book calls, meetings, WhatsApp follow-ups, and next-step tasks with
+            owner, reminder, reschedule, cancel, and no-show tracking.
           </p>
         </div>
         <Link href="/inbox">
@@ -177,6 +257,32 @@ export default function CalendarPage() {
             Open inbox
           </Button>
         </Link>
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-3">
+        {[
+          { label: 'Scheduled', value: scheduledEvents, icon: CalendarDays },
+          { label: 'Overdue', value: overdueEvents, icon: Clock3 },
+          { label: 'Today', value: reminders.filter((item) => isToday(parseISO(item.due_at))).length, icon: Sparkles },
+        ].map((metric) => {
+          const Icon = metric.icon;
+          return (
+            <div
+              key={metric.label}
+              className="zovaix-glass-panel rounded-2xl border border-border/70 p-4"
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+                  {metric.label}
+                </p>
+                <Icon className="h-4 w-4 text-primary" />
+              </div>
+              <p className="mt-2 text-2xl font-semibold text-foreground">
+                {metric.value}
+              </p>
+            </div>
+          );
+        })}
       </div>
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_22rem]">
@@ -196,9 +302,9 @@ export default function CalendarPage() {
                 <h2 className="text-lg font-semibold">
                   {format(month, 'MMMM yyyy')}
                 </h2>
-                <p className="text-xs text-muted-foreground">
-                  {openEvents} open item{openEvents === 1 ? '' : 's'}
-                </p>
+              <p className="text-xs text-muted-foreground">
+                {openEvents} open item{openEvents === 1 ? '' : 's'}
+              </p>
               </div>
               <button
                 type="button"
@@ -292,7 +398,7 @@ export default function CalendarPage() {
                 {format(selectedDay, 'EEE, MMM d')}
               </h2>
               <p className="text-xs text-muted-foreground">
-                Add one focused next step
+                Add a task, call, or meeting
               </p>
             </div>
           </div>
@@ -307,6 +413,8 @@ export default function CalendarPage() {
               >
                 <option value="follow_up">Follow-up</option>
                 <option value="call">Contact call</option>
+                <option value="whatsapp">WhatsApp follow-up</option>
+                <option value="meeting">Meeting booking</option>
                 <option value="note">Contact note</option>
               </select>
             </label>
@@ -326,12 +434,29 @@ export default function CalendarPage() {
               </select>
             </label>
             <label className="grid gap-1.5 text-xs font-medium text-muted-foreground">
-              Note
+              Assigned team member
+              <select
+                value={assignedUserId}
+                onChange={(event) => setAssignedUserId(event.target.value)}
+                className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground outline-none focus:border-primary"
+              >
+                <option value="">Assign to me</option>
+                {profiles.map((profile) => (
+                  <option key={profile.user_id} value={profile.user_id}>
+                    {profile.full_name || profile.email || 'Team member'}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-1.5 text-xs font-medium text-muted-foreground">
+              Title
               <input
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
                 placeholder={
-                  kind === 'call'
+                  kind === 'meeting'
+                    ? 'Discovery call with client'
+                    : kind === 'call'
                     ? 'Call purpose'
                     : kind === 'note'
                       ? 'Note to remember'
@@ -340,6 +465,28 @@ export default function CalendarPage() {
                 className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground outline-none focus:border-primary"
               />
             </label>
+            {kind === 'meeting' && (
+              <>
+                <label className="grid gap-1.5 text-xs font-medium text-muted-foreground">
+                  Meeting link
+                  <input
+                    value={meetingUrl}
+                    onChange={(event) => setMeetingUrl(event.target.value)}
+                    placeholder="https://meet.google.com/..."
+                    className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground outline-none focus:border-primary"
+                  />
+                </label>
+                <label className="grid gap-1.5 text-xs font-medium text-muted-foreground">
+                  Location
+                  <input
+                    value={meetingLocation}
+                    onChange={(event) => setMeetingLocation(event.target.value)}
+                    placeholder="Google Meet, office, phone call..."
+                    className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground outline-none focus:border-primary"
+                  />
+                </label>
+              </>
+            )}
             <label className="grid gap-1.5 text-xs font-medium text-muted-foreground">
               Time
               <input
@@ -348,6 +495,20 @@ export default function CalendarPage() {
                 onChange={(event) => setTime(event.target.value)}
                 className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground outline-none focus:border-primary"
               />
+            </label>
+            <label className="grid gap-1.5 text-xs font-medium text-muted-foreground">
+              Reminder
+              <select
+                value={reminderMinutesBefore}
+                onChange={(event) => setReminderMinutesBefore(event.target.value)}
+                className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground outline-none focus:border-primary"
+              >
+                <option value="0">At time</option>
+                <option value="15">15 min before</option>
+                <option value="30">30 min before</option>
+                <option value="60">1 hour before</option>
+                <option value="1440">1 day before</option>
+              </select>
             </label>
             <Button
               className="w-full rounded-xl"
@@ -409,18 +570,70 @@ export default function CalendarPage() {
                               'Contact'}{' '}
                             · {format(parseISO(item.due_at), 'h:mm a')}
                           </p>
+                          <div className="mt-2 flex flex-wrap gap-1.5 text-[10px] text-muted-foreground">
+                            <span className="rounded-full border border-border/70 px-2 py-0.5">
+                              {statusLabel[item.status ?? (item.completed_at ? 'completed' : 'scheduled')]}
+                            </span>
+                            <span className="inline-flex items-center gap-1 rounded-full border border-border/70 px-2 py-0.5">
+                              <UserRound className="h-3 w-3" />
+                              {assigneeName(item.assigned_user_id)}
+                            </span>
+                          </div>
+                          {item.meeting_url && (
+                            <a
+                              href={item.meeting_url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="mt-2 inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                            >
+                              <LinkIcon className="h-3 w-3" />
+                              Open meeting link
+                            </a>
+                          )}
+                          {item.meeting_location && (
+                            <p className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground">
+                              <MapPin className="h-3 w-3" />
+                              {item.meeting_location}
+                            </p>
+                          )}
                         </div>
-                        {!item.completed_at && (
+                      </div>
+                      {(item.status ?? (item.completed_at ? 'completed' : 'scheduled')) === 'scheduled' && (
+                        <div className="mt-3 grid grid-cols-2 gap-2">
                           <button
                             type="button"
-                            onClick={() => void complete(item.id)}
-                            className="text-muted-foreground hover:text-primary"
-                            aria-label="Complete"
+                            onClick={() => void updateStatus(item.id, 'completed')}
+                            className="inline-flex items-center justify-center gap-1 rounded-lg border border-border bg-card px-2 py-1.5 text-xs hover:bg-primary/10 hover:text-primary"
                           >
-                            <CheckCircle2 className="h-4 w-4" />
+                            <CheckCircle2 className="h-3.5 w-3.5" />
+                            Done
                           </button>
-                        )}
-                      </div>
+                          <button
+                            type="button"
+                            onClick={() => void reschedule(item)}
+                            className="inline-flex items-center justify-center gap-1 rounded-lg border border-border bg-card px-2 py-1.5 text-xs hover:bg-muted"
+                          >
+                            <RotateCcw className="h-3.5 w-3.5" />
+                            Reschedule
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => void updateStatus(item.id, 'no_show')}
+                            className="inline-flex items-center justify-center gap-1 rounded-lg border border-border bg-card px-2 py-1.5 text-xs hover:bg-amber-500/10 hover:text-amber-500"
+                          >
+                            <Clock3 className="h-3.5 w-3.5" />
+                            No-show
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => void updateStatus(item.id, 'cancelled')}
+                            className="inline-flex items-center justify-center gap-1 rounded-lg border border-border bg-card px-2 py-1.5 text-xs hover:bg-destructive/10 hover:text-destructive"
+                          >
+                            <CalendarX2 className="h-3.5 w-3.5" />
+                            Cancel
+                          </button>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
