@@ -5,7 +5,9 @@ import { format, addDays, setHours, setMinutes } from "date-fns";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { cn } from "@/lib/utils";
 import type { Contact, Deal, ContactNote, Tag, ConversationStatus } from "@/types";
+import Link from "next/link";
 import {
   Phone,
   Mail,
@@ -19,6 +21,13 @@ import {
   Clock3,
   CircleDot,
   X,
+  Sparkles,
+  Flame,
+  CalendarDays,
+  TrendingUp,
+  Briefcase,
+  Target,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -68,11 +77,35 @@ export function ContactSidebar({
   const [newTagName, setNewTagName] = useState("");
   const [addingNote, setAddingNote] = useState(false);
   const [savingContact, setSavingContact] = useState(false);
+  const [extractingAi, setExtractingAi] = useState(false);
   const [savingTagId, setSavingTagId] = useState<string | null>(null);
   const [creatingTag, setCreatingTag] = useState(false);
   const [savingStatus, setSavingStatus] = useState(false);
   const [savingReminder, setSavingReminder] = useState(false);
   const contactNameRef = useRef<HTMLInputElement>(null);
+
+  const handleExtractAiProfile = useCallback(async () => {
+    if (!contact) return;
+    setExtractingAi(true);
+    try {
+      const res = await fetch(`/api/contacts/${contact.id}/extract`, {
+        method: "POST",
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        toast.error(json.error || "Failed to extract lead profile");
+        return;
+      }
+      toast.success(`Extracted lead profile! Score: ${json.lead_score} (${json.lead_stage})`);
+      if (json.contact) {
+        onContactUpdated?.(json.contact);
+      }
+    } catch (err) {
+      toast.error("AI extraction failed");
+    } finally {
+      setExtractingAi(false);
+    }
+  }, [contact, onContactUpdated]);
 
   const fetchContactData = useCallback(async () => {
     if (!contact) return;
@@ -373,7 +406,87 @@ export function ContactSidebar({
             {contact.company && (
               <p className="text-xs text-muted-foreground">{contact.company}</p>
             )}
+
+            {/* Lead Scorecard */}
+            <div className="mt-3 flex w-full items-center justify-between rounded-xl border border-border/70 bg-card/60 p-2.5 shadow-sm">
+              <div className="text-left">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  Lead Score
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-lg font-bold text-foreground">
+                    {contact.lead_score ?? 0}
+                  </span>
+                  <span className="text-xs text-muted-foreground">/ 100</span>
+                </div>
+              </div>
+              <span
+                className={cn(
+                  "inline-flex items-center rounded-lg px-2 py-1 text-xs font-semibold uppercase tracking-wider",
+                  contact.lead_stage === 'hot' || contact.lead_stage === 'sales_ready'
+                    ? "bg-rose-500/15 text-rose-500 border border-rose-500/30"
+                    : contact.lead_stage === 'warm' || contact.lead_stage === 'qualified'
+                    ? "bg-amber-500/15 text-amber-500 border border-amber-500/30"
+                    : "bg-primary/10 text-primary border border-primary/20"
+                )}
+              >
+                {contact.lead_stage ? contact.lead_stage.replace('_', ' ') : 'New Lead'}
+              </span>
+            </div>
+
+            {/* AI Auto-Profile Button */}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={extractingAi}
+              onClick={handleExtractAiProfile}
+              className="mt-2 w-full gap-2 border-primary/30 bg-primary/5 text-xs font-medium text-primary hover:bg-primary/10"
+            >
+              {extractingAi ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Sparkles className="h-3.5 w-3.5" />
+              )}
+              <span>{extractingAi ? "Extracting CRM Profile..." : "AI Auto-Extract Profile"}</span>
+            </Button>
           </div>
+
+          {/* CRM Lead Intelligence */}
+          {(contact.budget || contact.timeline || contact.requirement || contact.problem || contact.decision_maker) && (
+            <section className="space-y-2 rounded-xl border border-border/70 bg-background/50 p-3">
+              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                <Target className="h-3.5 w-3.5 text-primary" />
+                Lead Intelligence
+              </div>
+              <div className="space-y-1.5 text-xs">
+                {contact.budget && (
+                  <div className="flex justify-between gap-2">
+                    <span className="text-muted-foreground">Budget:</span>
+                    <span className="font-medium text-foreground">{contact.budget}</span>
+                  </div>
+                )}
+                {contact.timeline && (
+                  <div className="flex justify-between gap-2">
+                    <span className="text-muted-foreground">Timeline:</span>
+                    <span className="font-medium text-foreground">{contact.timeline}</span>
+                  </div>
+                )}
+                {contact.decision_maker && (
+                  <div className="flex justify-between gap-2">
+                    <span className="text-muted-foreground">Role:</span>
+                    <span className="font-medium text-foreground">{contact.decision_maker}</span>
+                  </div>
+                )}
+                {contact.requirement && (
+                  <div className="pt-1">
+                    <span className="text-muted-foreground block text-[10px] uppercase">Requirement</span>
+                    <p className="mt-0.5 text-foreground">{contact.requirement}</p>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
 
           <section className="space-y-2 rounded-lg border border-border bg-background/40 p-3">
             <div className="flex items-center gap-2 text-xs font-medium uppercase text-muted-foreground">
@@ -519,9 +632,18 @@ export function ContactSidebar({
           </section>
 
           <section className="space-y-2 border-t border-border pt-4">
-            <div className="flex items-center gap-2 px-1 text-xs font-medium uppercase text-muted-foreground">
-              <Clock3 className="h-3 w-3" />
-              Follow-up
+            <div className="flex items-center justify-between px-1 text-xs font-medium uppercase text-muted-foreground">
+              <span className="flex items-center gap-2">
+                <Clock3 className="h-3 w-3" />
+                Follow-up & Meetings
+              </span>
+              <Link
+                href="/calendar"
+                className="inline-flex items-center gap-1 text-[11px] font-normal text-primary hover:underline"
+              >
+                <CalendarDays className="h-3 w-3" />
+                Calendar
+              </Link>
             </div>
             <div className="grid grid-cols-3 gap-2">
               {REMINDERS.map((item) => (

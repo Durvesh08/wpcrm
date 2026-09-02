@@ -41,11 +41,12 @@ const STATUS_COLORS: Record<ConversationStatus, string> = {
   closed: "bg-muted-foreground",
 };
 
-type InboxFilter = ConversationStatus | "all" | "unread";
+type InboxFilter = ConversationStatus | "all" | "unread" | "hot";
 
 const FILTER_OPTIONS: { label: string; value: InboxFilter }[] = [
   { label: "All", value: "all" },
   { label: "Unread", value: "unread" },
+  { label: "🔥 Hot Leads", value: "hot" },
   { label: "Open", value: "open" },
   { label: "Pending", value: "pending" },
   { label: "Closed", value: "closed" },
@@ -158,6 +159,13 @@ export function ConversationList({
 
     if (filter === "unread") {
       result = result.filter((c) => c.unread_count > 0);
+    } else if (filter === "hot") {
+      result = result.filter(
+        (c) =>
+          c.contact?.lead_stage === "hot" ||
+          c.contact?.lead_stage === "sales_ready" ||
+          (c.contact?.lead_score != null && c.contact.lead_score >= 70)
+      );
     } else if (filter !== "all") {
       result = result.filter((c) => c.status === filter);
     }
@@ -237,10 +245,26 @@ export function ConversationList({
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-1">
+        <div className="flex items-center gap-1 overflow-x-auto pb-0.5 no-scrollbar">
+          {(["all", "unread", "hot"] as const).map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => setFilter(opt)}
+              className={cn(
+                "inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-xs font-medium transition-colors",
+                filter === opt
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "bg-muted/70 text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+            >
+              {opt === "all" ? "All" : opt === "unread" ? "Unread" : "🔥 Hot Leads"}
+            </button>
+          ))}
+
           <DropdownMenu>
-            <DropdownMenuTrigger className="inline-flex h-7 items-center justify-center gap-1 rounded-lg border border-border/70 bg-background/50 px-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground">
-                {activeFilter?.label ?? "All"}
+            <DropdownMenuTrigger className="inline-flex shrink-0 h-6 items-center justify-center gap-1 rounded-full border border-border/70 bg-background/50 px-2 text-xs text-muted-foreground hover:bg-muted hover:text-foreground">
+                {activeFilter && !["all", "unread", "hot"].includes(activeFilter.value) ? activeFilter.label : "Status"}
                 <ChevronDown className="h-3 w-3" />
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -254,7 +278,7 @@ export function ConversationList({
                   className={cn(
                     "text-sm",
                     filter === opt.value
-                      ? "text-primary"
+                      ? "text-primary font-medium"
                       : "text-popover-foreground"
                   )}
                 >
@@ -479,11 +503,25 @@ function ConversationItem({
       {/* Content */}
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">
-          <span className="flex min-w-0 items-center gap-1 truncate text-sm font-medium text-foreground">
+          <span className="flex min-w-0 items-center gap-1.5 truncate text-sm font-medium text-foreground">
             {conversation.is_pinned && (
               <Pin className="h-3 w-3 shrink-0 fill-primary text-primary" />
             )}
             <span className="truncate">{displayName}</span>
+            {contact?.lead_stage && contact.lead_stage !== 'new_lead' && (
+              <span
+                className={cn(
+                  "inline-flex shrink-0 items-center rounded-md px-1.5 py-0.2 text-[9px] font-semibold uppercase tracking-wider",
+                  contact.lead_stage === 'hot' || contact.lead_stage === 'sales_ready'
+                    ? "bg-rose-500/15 text-rose-500 border border-rose-500/30"
+                    : contact.lead_stage === 'warm' || contact.lead_stage === 'qualified'
+                    ? "bg-amber-500/15 text-amber-500 border border-amber-500/30"
+                    : "bg-primary/10 text-primary border border-primary/20"
+                )}
+              >
+                {contact.lead_stage.replace('_', ' ')}
+              </span>
+            )}
           </span>
           <span className="shrink-0 text-[10px] text-muted-foreground">
             {timeAgo}
