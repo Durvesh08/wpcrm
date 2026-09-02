@@ -47,7 +47,7 @@
     "@ai-sdk/openai": "^4.0.56",
     "@base-ui/react": "^1.6.0",
     "@capacitor/android": "^8.4.1",
-    "@capacitor/cli": "^8.4.1",
+    "@capacitor/cli": "^8.5.0",
     "@capacitor/core": "^8.4.1",
     "@capacitor/push-notifications": "^8.1.1",
     "@dagrejs/dagre": "^3.0.0",
