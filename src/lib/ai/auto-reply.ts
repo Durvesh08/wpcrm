@@ -103,6 +103,8 @@ export async function dispatchInboundToAiReply(
     })
 
     const { text, handoff } = await generateReply({
+      db,
+      contactId,
       config,
       systemPrompt,
       messages,
