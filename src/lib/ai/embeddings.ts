@@ -1,43 +1,39 @@
 import { AiError } from './types'
 import { aiRequestTimeoutMs } from './defaults'
-import { providerHttpError, toNetworkError } from './providers/shared'
 
-// ============================================================
-// Embeddings (OpenAI-compatible).
-//
-// Used for the knowledge base's optional semantic-search path: embed
-// each chunk at ingest, and embed the query at retrieval. Anthropic has
-// no embeddings endpoint, so this is always OpenAI's — the account
-// supplies a (possibly separate) embeddings key. 1536-dim
-// text-embedding-3-small matches the `vector(1536)` column in
-// migration 030.
-// ============================================================
+// Local helpers replacing shared
+export function toNetworkError(err: unknown): AiError {
+  const msg = err instanceof Error ? err.message : String(err)
+  if (msg.includes('Timeout') || msg.includes('AbortError')) {
+    return new AiError('AI request timed out', { code: 'timeout', status: 504 })
+  }
+  return new AiError(msg, { code: 'network_error', status: 500 })
+}
+
+export async function providerHttpError(name: string, res: Response): Promise<AiError> {
+  let message = `${name} returned ${res.status}`
+  try {
+    const json = await res.json()
+    if (json.error?.message) message = json.error.message
+  } catch {}
+  if (res.status === 401) return new AiError('Incorrect API key', { code: 'invalid_key', status: 401 })
+  if (res.status === 429) return new AiError('Rate limit reached', { code: 'rate_limited', status: 429 })
+  return new AiError(message, { code: 'provider_error', status: res.status })
+}
 
 const OPENAI_EMBEDDINGS_URL = 'https://api.openai.com/v1/embeddings'
-
 export const EMBEDDING_MODEL = 'text-embedding-3-small'
 export const EMBEDDING_DIMENSIONS = 1536
-
-// OpenAI accepts an array input; keep batches modest so a big re-index
-// stays under request-size limits and partial failures are cheap.
 const BATCH_SIZE = 96
 
 interface EmbeddingResponse {
   data?: { embedding?: number[]; index?: number }[]
 }
 
-/** Format a vector for a pgvector column / RPC param: `[0.1,0.2,...]`.
- *  PostgREST casts this text literal to `vector`; a raw JS array does
- *  not cast reliably. */
 export function toVectorLiteral(embedding: number[]): string {
   return `[${embedding.join(',')}]`
 }
 
-/**
- * Embed a list of strings, preserving input order. Batched; throws
- * `AiError` on provider/network failure so callers can decide whether
- * to degrade (retrieval) or surface (ingest).
- */
 export async function embedTexts(
   apiKey: string,
   inputs: string[],
@@ -76,10 +72,6 @@ export async function embedTexts(
       })
     }
 
-    // Sort by index so order matches the input batch regardless of how
-    // the provider returns them. Require a real numeric index — defaulting
-    // a missing one to 0 would silently misalign chunks with their
-    // vectors (chunk N gets chunk M's embedding), so fail loud instead.
     if (rows.some((r) => typeof r.index !== 'number')) {
       throw new AiError('Embeddings response was missing result indices.', {
         code: 'embeddings_malformed',
