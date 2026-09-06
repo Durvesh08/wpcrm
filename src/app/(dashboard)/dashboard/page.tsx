@@ -7,7 +7,6 @@ import { useAuth } from '@/hooks/use-auth';
 import { formatCurrency } from '@/lib/currency';
 import {
   ArrowUpRight,
-  Bot,
   DollarSign,
   MessageSquare,
   Send,
@@ -356,36 +355,7 @@ export default function DashboardPage() {
 
       <ResponseTimeChart data={responseTime} loading={responseTimeLoading} />
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
-        <ActivityFeed items={activity} loading={activityLoading} />
-        <section className="zovaix-premium-panel rounded-[24px] p-5">
-          <div className="flex items-center gap-2">
-            <span className="zovaix-icon-tile inline-flex h-10 w-10 items-center justify-center rounded-2xl text-primary-foreground">
-              <Bot className="h-4 w-4" />
-            </span>
-            <div>
-              <p className="text-foreground text-sm font-medium">AI insights</p>
-              <p className="text-muted-foreground text-xs">
-                Fast operational signals
-              </p>
-            </div>
-          </div>
-          <div className="mt-4 space-y-3">
-            <InsightRow
-              title="Response momentum"
-              body="Customer conversations are moving faster when agents answer within the first 15 minutes."
-            />
-            <InsightRow
-              title="Best next action"
-              body="Prioritize warm leads in inbox before launching another outbound campaign."
-            />
-            <InsightRow
-              title="Automation opportunity"
-              body="You can likely automate repetitive follow-up for low-intent support requests."
-            />
-          </div>
-        </section>
-      </div>
+      <ActivityFeed items={activity} loading={activityLoading} />
     </div>
   );
 }
@@ -467,14 +437,5 @@ function MissionPriority({
       </span>
       <ArrowUpRight className="text-muted-foreground mt-1 h-4 w-4 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
     </Link>
-  );
-}
-
-function InsightRow({ title, body }: { title: string; body: string }) {
-  return (
-    <div className="border-border/70 bg-background/40 rounded-2xl border px-3 py-3">
-      <p className="text-foreground text-sm font-medium">{title}</p>
-      <p className="text-muted-foreground mt-1 text-xs leading-5">{body}</p>
-    </div>
   );
 }
