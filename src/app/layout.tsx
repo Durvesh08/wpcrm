@@ -32,7 +32,15 @@ export const metadata: Metadata = {
     follow: false,
   },
   icons: {
-    icon: [{ url: "/icon" }],
+    icon: [
+      { url: "/zovaix-logo.png", sizes: "32x32", type: "image/png" },
+      { url: "/zovaix-logo.png", sizes: "192x192", type: "image/png" },
+      { url: "/zovaix-logo.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/zovaix-logo.png",
+    apple: [
+      { url: "/zovaix-logo.png", sizes: "180x180", type: "image/png" },
+    ],
   },
   formatDetection: {
     email: false,
