@@ -151,6 +151,18 @@ export function AiConfig() {
     if (isDefaultModel) setModel(AI_PROVIDER_DEFAULT_MODEL[next]);
   };
 
+  const handlePlatformAiToggle = (checked: boolean) => {
+    setUsePlatformAi(checked);
+    if (checked) {
+      setProvider('gemini');
+      setModel('gemini-3.6-flash');
+    } else {
+      if (model === 'gemini-3.6-flash') {
+        setModel(AI_PROVIDER_DEFAULT_MODEL[provider]);
+      }
+    }
+  };
+
   const keyPayload = () => (keyEdited ? apiKey.trim() : undefined);
 
   // undefined = leave unchanged; '' typed = null (clear); text = set.
@@ -158,8 +170,8 @@ export function AiConfig() {
     embeddingsKeyEdited ? embeddingsKey.trim() || null : undefined;
 
   const buildBody = () => ({
-    provider,
-    model: model.trim(),
+    provider: usePlatformAi ? 'gemini' : provider,
+    model: usePlatformAi ? 'gemini-3.6-flash' : model.trim(),
     api_key: keyPayload(),
     embeddings_api_key: embeddingsKeyPayload(),
     system_prompt: systemPrompt.trim() || null,
@@ -176,8 +188,8 @@ export function AiConfig() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          provider,
-          model: model.trim(),
+          provider: usePlatformAi ? 'gemini' : provider,
+          model: usePlatformAi ? 'gemini-3.6-flash' : model.trim(),
           api_key: keyPayload(),
         }),
       });
@@ -192,7 +204,7 @@ export function AiConfig() {
   };
 
   const handleSave = async () => {
-    if (!model.trim()) {
+    if (!usePlatformAi && !model.trim()) {
       toast.error('Enter a model name.');
       return;
     }
@@ -306,7 +318,7 @@ export function AiConfig() {
               </div>
               <Switch
                 checked={usePlatformAi}
-                onCheckedChange={setUsePlatformAi}
+                onCheckedChange={handlePlatformAiToggle}
                 disabled={disabled}
               />
             </div>
@@ -342,7 +354,7 @@ export function AiConfig() {
               <div className="space-y-2">
                 <Label>Provider</Label>
                 <Select
-                  value={provider}
+                  value={usePlatformAi ? 'gemini' : provider}
                   onValueChange={(v) => handleProviderChange(v as AiProvider)}
                   disabled={disabled || usePlatformAi}
                 >
@@ -367,11 +379,16 @@ export function AiConfig() {
                 <Label htmlFor="ai-model">Model</Label>
                 <Input
                   id="ai-model"
-                  value={model}
+                  value={usePlatformAi ? 'gemini-3.6-flash' : model}
                   onChange={(e) => setModel(e.target.value)}
-                  placeholder={AI_PROVIDER_DEFAULT_MODEL[provider]}
+                  placeholder={usePlatformAi ? 'gemini-3.6-flash' : AI_PROVIDER_DEFAULT_MODEL[provider]}
                   disabled={disabled || usePlatformAi}
                 />
+                {usePlatformAi && (
+                  <p className="text-[11px] text-muted-foreground">
+                    Automatically uses Google Gemini 3.6 Flash (no manual key or model entry needed).
+                  </p>
+                )}
               </div>
             </div>
 
