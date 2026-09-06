@@ -397,25 +397,35 @@ export function Header({ onOpenSidebar }: HeaderProps) {
 
   return (
     <header className="border-border/70 bg-background/72 sticky top-0 z-20 border-b shadow-sm shadow-black/5 backdrop-blur-xl">
-      <div className="flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-7">
-        <div className="flex min-w-0 items-center gap-3">
+      <div className="flex h-16 items-center justify-between gap-2 px-3 sm:px-6 lg:px-7">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <button
             type="button"
             onClick={onOpenSidebar}
             aria-label="Open menu"
-            className="text-muted-foreground hover:bg-card-2 hover:text-foreground inline-flex h-10 w-10 items-center justify-center rounded-xl transition-colors lg:hidden"
+            className="text-muted-foreground hover:bg-card-2 hover:text-foreground inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-colors lg:hidden"
           >
             <Menu className="h-5 w-5" />
           </button>
 
-          <div className="hidden min-w-0 md:block">
-            <h1 className="text-foreground truncate text-lg font-semibold">
+          <div className="min-w-0">
+            <h1 className="text-foreground truncate text-sm font-semibold sm:text-base md:text-lg">
               {title}
             </h1>
           </div>
         </div>
 
-        <div className="flex min-w-0 flex-1 items-center justify-end gap-2 lg:gap-3">
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5 sm:gap-2 lg:gap-3">
+          {/* Mobile search trigger */}
+          <button
+            type="button"
+            onClick={() => setSearchOpen(true)}
+            aria-label="Search"
+            className="zovaix-glass-panel zovaix-premium-hover text-muted-foreground hover:text-foreground inline-flex h-9 w-9 items-center justify-center rounded-xl md:hidden"
+          >
+            <Search className="h-4 w-4" />
+          </button>
+
           <Popover open={searchOpen} onOpenChange={setSearchOpen}>
             <PopoverTrigger
               className="zovaix-glass-panel zovaix-premium-hover focus:ring-primary/30 hidden min-w-0 flex-1 items-center gap-3 rounded-2xl px-4 py-2.5 text-left focus:ring-2 focus:outline-none md:flex md:max-w-xl"
@@ -618,12 +628,12 @@ export function Header({ onOpenSidebar }: HeaderProps) {
 
           <button
             type="button"
-            className="zovaix-glass-panel zovaix-premium-hover text-muted-foreground hover:text-foreground relative inline-flex h-11 w-11 items-center justify-center rounded-2xl"
+            className="zovaix-glass-panel zovaix-premium-hover text-muted-foreground hover:text-foreground relative inline-flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl"
             aria-label="Tasks"
           >
             <CheckSquare className="h-4 w-4" />
             {totalUnread > 0 && (
-              <span className="bg-primary text-primary-foreground absolute -top-1 -right-1 inline-flex min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-semibold">
+              <span className="bg-primary text-primary-foreground absolute -top-1 -right-1 inline-flex min-w-4 sm:min-w-5 items-center justify-center rounded-full px-1 text-[9px] sm:text-[10px] font-semibold">
                 {totalUnread > 9 ? '9+' : totalUnread}
               </span>
             )}
@@ -631,7 +641,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
 
           <Link
             href="/calendar"
-            className="zovaix-premium-panel zovaix-premium-hover text-muted-foreground hover:text-foreground hidden h-11 w-11 items-center justify-center rounded-2xl sm:inline-flex"
+            className="zovaix-premium-panel zovaix-premium-hover text-muted-foreground hover:text-foreground hidden h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl sm:inline-flex"
             aria-label="Calendar"
           >
             <CalendarDays className="h-4 w-4" />
@@ -639,12 +649,12 @@ export function Header({ onOpenSidebar }: HeaderProps) {
 
           <Link
             href="/notifications"
-            className="zovaix-premium-panel zovaix-premium-hover text-muted-foreground hover:text-foreground relative inline-flex h-11 w-11 items-center justify-center rounded-2xl"
+            className="zovaix-premium-panel zovaix-premium-hover text-muted-foreground hover:text-foreground relative inline-flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl"
             aria-label="Notifications"
           >
             <Bell className="h-4 w-4" />
             {unreadNotifications > 0 && (
-              <span className="bg-primary text-primary-foreground absolute -top-1 -right-1 inline-flex min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-semibold">
+              <span className="bg-primary text-primary-foreground absolute -top-1 -right-1 inline-flex min-w-4 sm:min-w-5 items-center justify-center rounded-full px-1 text-[9px] sm:text-[10px] font-semibold">
                 {unreadNotifications > 9 ? '9+' : unreadNotifications}
               </span>
             )}
@@ -654,10 +664,10 @@ export function Header({ onOpenSidebar }: HeaderProps) {
 
           <DropdownMenu>
             <DropdownMenuTrigger
-              className="zovaix-premium-panel zovaix-premium-hover inline-flex items-center gap-2 rounded-2xl px-2 py-1.5 focus:outline-none"
+              className="zovaix-premium-panel zovaix-premium-hover inline-flex items-center gap-2 rounded-xl sm:rounded-2xl p-1 sm:px-2 sm:py-1.5 focus:outline-none"
               aria-label="Open account menu"
             >
-              <Avatar className="size-8">
+              <Avatar className="size-7 sm:size-8">
                 {profile?.avatar_url ? (
                   <AvatarImage
                     src={profile.avatar_url}

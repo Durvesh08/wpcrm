@@ -193,24 +193,24 @@ export default function DashboardPage() {
             </div>
 
             <div>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-muted-foreground text-xs sm:text-sm">
                 {greeting}
                 {profile?.full_name
                   ? `, ${profile.full_name.split(' ')[0]}`
                   : ''}
               </p>
-              <h1 className="text-foreground mt-2 max-w-3xl text-3xl font-semibold tracking-tight sm:text-4xl">
+              <h1 className="text-foreground mt-1.5 max-w-3xl text-xl font-semibold tracking-tight sm:text-3xl lg:text-4xl">
                 Your revenue workspace is active, prioritized, and ready to
                 move.
               </h1>
-              <p className="text-muted-foreground mt-3 max-w-2xl text-sm leading-6 sm:text-[15px]">
+              <p className="text-muted-foreground mt-2 max-w-2xl text-xs leading-5 sm:text-sm sm:leading-6">
                 {heroSummary
                   ? `You have ${metrics?.activeConversations.current ?? 0} active conversations, ${heroSummary.hotLeadCount} hot leads, and ${heroSummary.overdueFollowUps} follow-ups that need attention. AI expects ₹${heroSummary.estimatedRevenue.toLocaleString('en-IN')} in near-term opportunity if your team stays responsive today.`
                   : 'Loading your latest customer momentum, pipeline health, and AI signals.'}
               </p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3 xl:grid-cols-4">
               <InsightChip
                 label="Unread conversations"
                 value={(
@@ -277,7 +277,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {metricsLoading || !metrics ? (
           Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
         ) : (

@@ -341,14 +341,14 @@ export default function CalendarPage() {
                   type="button"
                   onClick={() => setSelectedDay(day)}
                   className={cn(
-                    'group min-h-24 border-r border-b border-border/60 p-2 text-left transition-all hover:bg-muted/50 sm:min-h-28',
+                    'group min-h-16 border-r border-b border-border/60 p-1 text-left transition-all hover:bg-muted/50 sm:min-h-24 sm:p-2',
                     selected && 'bg-primary/10 ring-1 ring-inset ring-primary/40',
                     muted && 'opacity-35'
                   )}
                 >
                   <span
                     className={cn(
-                      'inline-flex h-7 w-7 items-center justify-center rounded-full text-xs font-medium transition-transform group-hover:scale-105',
+                      'inline-flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full text-[11px] sm:text-xs font-medium transition-transform group-hover:scale-105',
                       isToday(day)
                         ? 'bg-primary text-primary-foreground'
                         : selected
@@ -358,27 +358,30 @@ export default function CalendarPage() {
                   >
                     {format(day, 'd')}
                   </span>
-                  <div className="mt-2 space-y-1">
+                  <div className="mt-1 sm:mt-2 space-y-1">
                     {events.slice(0, 2).map((item) => {
                       const Icon = kindIcon[item.kind];
                       return (
                         <span
                           key={item.id}
                           className={cn(
-                            'flex items-center gap-1 truncate rounded-md border px-1.5 py-1 text-[10px]',
+                            'flex items-center gap-1 truncate rounded-md border px-1 py-0.5 sm:px-1.5 sm:py-1 text-[9px] sm:text-[10px]',
                             kindTone[item.kind]
                           )}
                         >
-                          <Icon className="h-3 w-3 shrink-0" />
-                          <span className="truncate">
+                          <Icon className="h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0" />
+                          <span className="hidden sm:inline truncate">
                             {item.contacts?.name || item.title}
+                          </span>
+                          <span className="sm:hidden text-[8px] font-semibold">
+                            {item.kind === 'meeting' ? 'M' : item.kind === 'call' ? 'C' : item.kind === 'whatsapp' ? 'W' : 'T'}
                           </span>
                         </span>
                       );
                     })}
                     {events.length > 2 && (
-                      <span className="block px-1 text-[10px] text-muted-foreground">
-                        +{events.length - 2} more
+                      <span className="block px-0.5 text-[8px] sm:text-[10px] text-muted-foreground">
+                        +{events.length - 2}
                       </span>
                     )}
                   </div>

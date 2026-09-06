@@ -45,7 +45,7 @@ export function ResponseTimeChart({
 
   return (
     <section className="rounded-xl border border-border bg-card">
-      <header className="flex items-center justify-between gap-3 border-b border-border px-5 py-4">
+      <header className="flex flex-col gap-2.5 border-b border-border px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-5 sm:py-4">
         <div>
           <h2 className="text-sm font-semibold text-foreground">
             Average First Response Time
@@ -55,14 +55,14 @@ export function ResponseTimeChart({
             weekday
           </p>
         </div>
-        <div className="flex items-center gap-3 text-right text-xs">
+        <div className="flex flex-wrap items-center gap-2 text-xs sm:gap-3 sm:text-right">
           {thresholdMinutes > 0 && (
             <span className="rounded-full border border-rose-500/40 bg-rose-500/10 px-2 py-0.5 font-medium text-rose-300 tabular-nums">
               target {thresholdMinutes}m
             </span>
           )}
           {data && (data.thisWeekAvg != null || data.lastWeekAvg != null) && (
-            <div>
+            <div className="flex items-center gap-3 sm:block">
               <div className="text-muted-foreground">
                 This week:{' '}
                 <span className="font-medium text-foreground tabular-nums">

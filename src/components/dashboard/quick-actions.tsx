@@ -44,23 +44,23 @@ const ACTIONS: Action[] = [
 
 export function QuickActions() {
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-2 xl:grid-cols-4">
       {ACTIONS.map((a) => {
         const Icon = a.icon;
         return (
           <Link
             key={a.href}
             href={a.href}
-            className="zovaix-glass-panel zovaix-premium-hover group flex items-center gap-3 rounded-[22px] px-4 py-4"
+            className="zovaix-glass-panel zovaix-premium-hover group flex items-center gap-2.5 sm:gap-3 rounded-[20px] sm:rounded-[22px] p-3 sm:px-4 sm:py-4"
           >
             <div
-              className={`zovaix-icon-tile flex h-10 w-10 items-center justify-center rounded-xl text-primary-foreground ${a.tint}`}
+              className={`zovaix-icon-tile flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl text-primary-foreground ${a.tint}`}
             >
               <Icon className="h-4 w-4" />
             </div>
-            <div className="min-w-0">
-              <p className="text-foreground text-sm font-medium">{a.label}</p>
-              <p className="text-muted-foreground text-xs">
+            <div className="min-w-0 flex-1">
+              <p className="text-foreground truncate text-xs sm:text-sm font-medium">{a.label}</p>
+              <p className="text-muted-foreground hidden sm:block truncate text-xs">
                 Launch this workflow
               </p>
             </div>
