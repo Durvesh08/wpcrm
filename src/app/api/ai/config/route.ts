@@ -189,7 +189,7 @@ export async function POST(request: Request) {
     if (!isAiProvider(provider)) {
       return bad('provider must be "openai", "anthropic", or "gemini"');
     }
-    const model = usePlatformAi ? 'gemini-2.5-flash' : typeof body.model === 'string' ? body.model.trim() : '';
+    const model = usePlatformAi ? 'gemini-3.6-flash' : typeof body.model === 'string' ? body.model.trim() : '';
     if (!model) return bad('model is required');
 
     const systemPrompt =

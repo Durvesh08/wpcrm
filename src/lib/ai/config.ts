@@ -93,7 +93,7 @@ export async function loadAiConfig(
 
   return {
     provider: managedAi ? 'gemini' : row.provider,
-    model: managedAi ? 'gemini-2.5-flash' : row.model,
+    model: managedAi ? 'gemini-3.6-flash' : row.model,
     apiKey: managedAi ? platformKey! : decrypt(row.api_key),
     systemPrompt: row.system_prompt,
     isActive: row.is_active,
