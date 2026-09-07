@@ -55,7 +55,40 @@ describe('End-to-End AI Call Booking Simulation', () => {
     expect(result.booking).toBeNull()
   })
 
-  it('System Prompt includes current reference timestamp and booking guidelines', () => {
+  it('Scenario 5: Lead mentions industry (Healthcare) and service needed (Automation)', () => {
+    const rawAiOutput = `We would be happy to help automate patient follow-ups for your healthcare practice! [[LABEL:{"industry":"Healthcare","service":"Automation","tags":["Healthcare","Automation"],"chatLabel":"Healthcare"}]]`
+    
+    const result = parseGeneration(rawAiOutput)
+
+    expect(result.text).toBe('We would be happy to help automate patient follow-ups for your healthcare practice!')
+    expect(result.handoff).toBe(false)
+    expect(result.booking).toBeNull()
+    expect(result.labels).toEqual({
+      industry: 'Healthcare',
+      service: 'Automation',
+      businessType: undefined,
+      tags: ['Healthcare', 'Automation'],
+      chatLabel: 'Healthcare',
+    })
+  })
+
+  it('Scenario 6: Lead in Real Estate requests Web Dev and books a meeting', () => {
+    const rawAiOutput = `Perfect! I have scheduled our discovery call for tomorrow at 2:00 PM to discuss building a custom website for your real estate agency. [[BOOK_CALL:{"datetime":"2026-09-08T14:00:00.000Z","title":"Real Estate Web Dev Call","kind":"meeting"}]] [[LABEL:{"industry":"Real Estate","service":"Web Dev","tags":["Real Estate","Web Dev"],"chatLabel":"Real Estate"}]]`
+    
+    const result = parseGeneration(rawAiOutput)
+
+    expect(result.text).toBe('Perfect! I have scheduled our discovery call for tomorrow at 2:00 PM to discuss building a custom website for your real estate agency.')
+    expect(result.booking?.title).toBe('Real Estate Web Dev Call')
+    expect(result.labels).toEqual({
+      industry: 'Real Estate',
+      service: 'Web Dev',
+      businessType: undefined,
+      tags: ['Real Estate', 'Web Dev'],
+      chatLabel: 'Real Estate',
+    })
+  })
+
+  it('System Prompt includes current reference timestamp, booking guidelines, and lead categorization rules', () => {
     const refTime = '2026-09-07T15:00:00.000Z'
     const prompt = buildSystemPrompt({
       userPrompt: 'We are an agency helping e-commerce brands.',
@@ -64,8 +97,11 @@ describe('End-to-End AI Call Booking Simulation', () => {
     })
 
     expect(prompt).toContain('Calendar & Appointment Booking')
+    expect(prompt).toContain('Lead Categorization & Industry/Service Labeling')
     expect(prompt).toContain(refTime)
     expect(prompt).toContain('[[BOOK_CALL:')
+    expect(prompt).toContain('[[LABEL:')
     expect(prompt).toContain('[[HANDOFF]]')
   })
 })
+

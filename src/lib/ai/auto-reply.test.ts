@@ -13,9 +13,13 @@ const h = vi.hoisted(() => ({
     autoResponders: [] as { id: string }[],
     claim: true as boolean,
     updatePayload: null as Record<string, unknown> | null,
+    contactUpdatePayload: null as Record<string, unknown> | null,
+    conversationUpdatePayload: null as Record<string, unknown> | null,
     rpcCalls: [] as { name: string; args: unknown }[],
     reminders: [] as Record<string, unknown>[],
     notifications: [] as Record<string, unknown>[],
+    tags: [] as Record<string, unknown>[],
+    contactTags: [] as Record<string, unknown>[],
   },
 }))
 
@@ -55,7 +59,39 @@ vi.mock('./admin-client', () => ({
           }),
           update: (payload: Record<string, unknown>) => {
             h.state.updatePayload = payload
+            h.state.contactUpdatePayload = payload
             return { eq: () => Promise.resolve({ error: null }) }
+          },
+        }
+      }
+      if (table === 'tags') {
+        return {
+          select: () => ({
+            eq: () => ({
+              ilike: (_field: string, val: string) => ({
+                maybeSingle: () => {
+                  const existing = h.state.tags.find((t) => (t.name as string).toLowerCase() === val.toLowerCase())
+                  return Promise.resolve({ data: existing || null, error: null })
+                },
+              }),
+            }),
+          }),
+          insert: (payload: Record<string, unknown>) => {
+            const newTag = { id: `tag-${h.state.tags.length + 1}`, ...payload }
+            h.state.tags.push(newTag)
+            return {
+              select: () => ({
+                maybeSingle: () => Promise.resolve({ data: newTag, error: null }),
+              }),
+            }
+          },
+        }
+      }
+      if (table === 'contact_tags') {
+        return {
+          upsert: (payload: Record<string, unknown>) => {
+            h.state.contactTags.push(payload)
+            return Promise.resolve({ error: null })
           },
         }
       }
@@ -77,6 +113,7 @@ vi.mock('./admin-client', () => ({
         }),
         update: (payload: Record<string, unknown>) => {
           h.state.updatePayload = payload
+          h.state.conversationUpdatePayload = payload
           return { eq: () => Promise.resolve({ error: null }) }
         },
       }
@@ -278,3 +315,45 @@ describe('dispatchInboundToAiReply — automated call booking', () => {
     )
   })
 })
+
+describe('dispatchInboundToAiReply — automated lead labeling & tagging', () => {
+  it('updates contact profile, conversation chat_label, and creates contact_tags when labels are returned', async () => {
+    h.generateReply.mockResolvedValue({
+      text: 'Welcome! We help healthcare companies with marketing and automation.',
+      handoff: false,
+      labels: {
+        industry: 'Healthcare',
+        service: 'Automation',
+        tags: ['Healthcare', 'Automation'],
+        chatLabel: 'Healthcare',
+      },
+    })
+
+    await dispatchInboundToAiReply(ARGS)
+
+    // Contact profile updated
+    expect(h.state.contactUpdatePayload).toEqual({
+      industry: 'Healthcare',
+      requirement: 'Automation',
+    })
+
+    // Conversation chat_label updated
+    expect(h.state.conversationUpdatePayload).toEqual({
+      chat_label: 'Healthcare',
+    })
+
+    // Tags created and linked
+    expect(h.state.tags).toHaveLength(2)
+    expect(h.state.tags.map((t) => t.name)).toEqual(['Healthcare', 'Automation'])
+    expect(h.state.contactTags).toHaveLength(2)
+    expect(h.state.contactTags[0]).toEqual({
+      contact_id: 'contact-1',
+      tag_id: 'tag-1',
+    })
+    expect(h.state.contactTags[1]).toEqual({
+      contact_id: 'contact-1',
+      tag_id: 'tag-2',
+    })
+  })
+})
+

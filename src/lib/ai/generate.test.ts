@@ -43,15 +43,17 @@ describe('parseGeneration', () => {
       text: 'Hello there',
       handoff: false,
       booking: null,
+      labels: null,
     })
   })
 
   it('detects + strips the handoff sentinel', () => {
-    expect(parseGeneration('[[HANDOFF]]')).toEqual({ text: '', handoff: true, booking: null })
+    expect(parseGeneration('[[HANDOFF]]')).toEqual({ text: '', handoff: true, booking: null, labels: null })
     expect(parseGeneration('Let me get a human [[HANDOFF]]')).toEqual({
       text: 'Let me get a human',
       handoff: true,
       booking: null,
+      labels: null,
     })
   })
 
@@ -67,6 +69,30 @@ describe('parseGeneration', () => {
       meetingLocation: undefined,
       meetingUrl: undefined,
     })
+  })
+
+  it('detects and extracts lead labeling and strips the tag from message text', () => {
+    const raw = 'We would love to help your healthcare clinic! We specialize in automation. [[LABEL:{"industry":"Healthcare","service":"Automation","tags":["Healthcare","Automation"],"chatLabel":"Healthcare"}]]'
+    const res = parseGeneration(raw)
+    expect(res.text).toBe('We would love to help your healthcare clinic! We specialize in automation.')
+    expect(res.handoff).toBe(false)
+    expect(res.labels).toEqual({
+      industry: 'Healthcare',
+      service: 'Automation',
+      businessType: undefined,
+      tags: ['Healthcare', 'Automation'],
+      chatLabel: 'Healthcare',
+    })
+  })
+
+  it('handles combined booking and labeling in a single AI message', () => {
+    const raw = 'Awesome! I booked our call for tomorrow at 3 PM to discuss web dev for your real estate business. [[BOOK_CALL:{"datetime":"2026-09-08T15:00:00Z","title":"Web Dev Call"}]] [[LABEL:{"industry":"Real Estate","service":"Web Dev","tags":["Real Estate","Web Dev"],"chatLabel":"Real Estate"}]]'
+    const res = parseGeneration(raw)
+    expect(res.text).toBe('Awesome! I booked our call for tomorrow at 3 PM to discuss web dev for your real estate business.')
+    expect(res.booking?.title).toBe('Web Dev Call')
+    expect(res.labels?.industry).toBe('Real Estate')
+    expect(res.labels?.service).toBe('Web Dev')
+    expect(res.labels?.tags).toEqual(['Real Estate', 'Web Dev'])
   })
 
   it('handles malformed booking tags gracefully without crashing', () => {
@@ -92,7 +118,7 @@ describe('generateReply — OpenAI', () => {
       messages: [{ role: 'user', content: 'Hi' }],
     })
 
-    expect(res).toEqual({ text: 'Sure — happy to help!', handoff: false, booking: null })
+    expect(res).toEqual({ text: 'Sure — happy to help!', handoff: false, booking: null, labels: null })
     const [url, opts] = fetchMock.mock.calls[0]
     expect(url).toContain('api.openai.com')
     expect(opts.headers.Authorization).toBe('Bearer sk-test')
@@ -143,7 +169,7 @@ describe('generateReply — Anthropic', () => {
       messages: [{ role: 'user', content: 'Hello' }],
     })
 
-    expect(res).toEqual({ text: 'Hi there!', handoff: false, booking: null })
+    expect(res).toEqual({ text: 'Hi there!', handoff: false, booking: null, labels: null })
     const [url, opts] = fetchMock.mock.calls[0]
     expect(url).toContain('api.anthropic.com')
     expect(opts.headers['x-api-key']).toBe('sk-ant-x')
@@ -211,7 +237,7 @@ describe('generateReply — Gemini', () => {
       ],
     })
 
-    expect(res).toEqual({ text: 'Hello from Gemini', handoff: false, booking: null })
+    expect(res).toEqual({ text: 'Hello from Gemini', handoff: false, booking: null, labels: null })
     const [url, opts] = fetchMock.mock.calls[0]
     expect(url).toContain('generativelanguage.googleapis.com')
     expect(url).toContain('gemini-test:generateContent')

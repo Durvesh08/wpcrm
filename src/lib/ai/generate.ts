@@ -1,4 +1,4 @@
-import { AiError, type AiConfig, type ChatMessage, type GenerateResult, type AppointmentBooking } from './types'
+import { AiError, type AiConfig, type ChatMessage, type GenerateResult, type AppointmentBooking, type LeadLabeling } from './types'
 import { HANDOFF_SENTINEL, aiRequestTimeoutMs } from './defaults'
 import { generateOpenAi } from './providers/openai'
 import { generateAnthropic } from './providers/anthropic'
@@ -50,16 +50,54 @@ export async function generateReply(args: GenerateArgs): Promise<GenerateResult>
 }
 
 /**
- * Split the raw model output into `{ text, handoff, booking }`. The sentinel can
+ * Split the raw model output into `{ text, handoff, booking, labels }`. The sentinel can
  * appear alone or trailing a partial reply; either way we treat the
  * turn as a handoff and strip the marker from any remaining text.
- * Any [[BOOK_CALL:{...}]] tag is parsed into an AppointmentBooking.
+ * Any [[BOOK_CALL:{...}]] and [[LABEL:{...}]] tags are parsed cleanly.
  */
 export function parseGeneration(raw: string): GenerateResult {
   const handoff = raw.includes(HANDOFF_SENTINEL)
   let cleaned = raw.split(HANDOFF_SENTINEL).join('')
 
   let booking: AppointmentBooking | null = null
+  let labels: LeadLabeling | null = null
+
+  // Scan for [[LABEL:{...}]]
+  const labelRegex = /\[\[LABEL:\s*(\{[\s\S]*?\})\s*\]\]/i
+  const labelMatch = cleaned.match(labelRegex)
+  if (labelMatch) {
+    try {
+      const parsed = JSON.parse(labelMatch[1])
+      const tags = Array.isArray(parsed?.tags)
+        ? parsed.tags.map((t: unknown) => String(t).trim()).filter(Boolean)
+        : []
+      const industry = typeof parsed?.industry === 'string' && parsed.industry.trim()
+        ? parsed.industry.trim().slice(0, 100)
+        : undefined
+      const service = typeof parsed?.service === 'string' && parsed.service.trim()
+        ? parsed.service.trim().slice(0, 100)
+        : undefined
+      const businessType = typeof parsed?.businessType === 'string' && parsed.businessType.trim()
+        ? parsed.businessType.trim().slice(0, 100)
+        : undefined
+      const chatLabel = typeof parsed?.chatLabel === 'string' && parsed.chatLabel.trim()
+        ? parsed.chatLabel.trim().slice(0, 50)
+        : industry || service
+
+      if (industry || service || businessType || tags.length > 0 || chatLabel) {
+        labels = {
+          industry,
+          service,
+          businessType,
+          tags: tags.length > 0 ? tags : (industry ? [industry] : service ? [service] : []),
+          chatLabel,
+        }
+      }
+    } catch {
+      // Ignore malformed JSON in label tag
+    }
+    cleaned = cleaned.replace(labelRegex, '')
+  }
 
   // Scan for [[BOOK_CALL:{...}]]
   const bookCallRegex = /\[\[BOOK_CALL:\s*(\{[\s\S]*?\})\s*\]\]/i
@@ -94,5 +132,5 @@ export function parseGeneration(raw: string): GenerateResult {
   }
 
   const text = cleaned.trim()
-  return { text, handoff, booking }
+  return { text, handoff, booking, labels }
 }

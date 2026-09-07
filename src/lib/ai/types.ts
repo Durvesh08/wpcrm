@@ -43,14 +43,24 @@ export interface AppointmentBooking {
   meetingUrl?: string
 }
 
+export interface LeadLabeling {
+  industry?: string
+  service?: string
+  businessType?: string
+  tags?: string[]
+  chatLabel?: string
+}
+
 /** Outcome of a generation call. */
 export interface GenerateResult {
-  /** The reply text, with any handoff sentinel or booking tags stripped. */
+  /** The reply text, with any handoff sentinel, booking, or label tags stripped. */
   text: string
   /** True when the model asked to hand off to a human (auto-reply mode). */
   handoff: boolean
   /** Optional appointment booked by the AI when customer confirmed a date/time. */
   booking?: AppointmentBooking | null
+  /** Optional lead categorization/industry/service labels extracted by the AI. */
+  labels?: LeadLabeling | null
 }
 
 /**

@@ -102,7 +102,7 @@ export async function dispatchInboundToAiReply(
       knowledge,
     })
 
-    const { text, handoff, booking } = await generateReply({
+    const { text, handoff, booking, labels } = await generateReply({
       config,
       systemPrompt,
       messages,
@@ -140,6 +140,67 @@ export async function dispatchInboundToAiReply(
       return
     }
     if (claimed !== true) return // lost the per-conversation cap race
+
+    // If the AI identified the lead's industry, category, or service requirements,
+    // apply them to contacts, conversation labels, and CRM tags.
+    if (labels) {
+      try {
+        const contactUpdates: Record<string, unknown> = {}
+        if (labels.industry) contactUpdates.industry = labels.industry
+        if (labels.businessType) contactUpdates.business_type = labels.businessType
+        if (labels.service) contactUpdates.requirement = labels.service
+
+        if (Object.keys(contactUpdates).length > 0) {
+          await db.from('contacts').update(contactUpdates).eq('id', contactId)
+        }
+
+        const chatLabel = labels.chatLabel || labels.industry || labels.service
+        if (chatLabel) {
+          await db
+            .from('conversations')
+            .update({ chat_label: chatLabel })
+            .eq('id', conversationId)
+        }
+
+        if (labels.tags && labels.tags.length > 0) {
+          for (const tagName of labels.tags) {
+            const cleanName = tagName.trim()
+            if (!cleanName) continue
+
+            // Find or create tag
+            let { data: tagRow } = await db
+              .from('tags')
+              .select('id')
+              .eq('account_id', accountId)
+              .ilike('name', cleanName)
+              .maybeSingle()
+
+            if (!tagRow) {
+              const { data: newTag } = await db
+                .from('tags')
+                .insert({
+                  account_id: accountId,
+                  user_id: configOwnerUserId,
+                  name: cleanName,
+                  color: '#3b82f6',
+                })
+                .select('id')
+                .maybeSingle()
+              tagRow = newTag
+            }
+
+            if (tagRow?.id) {
+              await db.from('contact_tags').upsert(
+                { contact_id: contactId, tag_id: tagRow.id },
+                { onConflict: 'contact_id,tag_id', ignoreDuplicates: true },
+              )
+            }
+          }
+        }
+      } catch (labelErr) {
+        console.error('[ai auto-reply] labeling handler error:', labelErr)
+      }
+    }
 
     // If the AI negotiated and booked a call with the customer, write it
     // directly into the team's Calendar & Tasks (follow_up_reminders).
