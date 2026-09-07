@@ -14,6 +14,8 @@ const h = vi.hoisted(() => ({
     claim: true as boolean,
     updatePayload: null as Record<string, unknown> | null,
     rpcCalls: [] as { name: string; args: unknown }[],
+    reminders: [] as Record<string, unknown>[],
+    notifications: [] as Record<string, unknown>[],
   },
 }))
 
@@ -26,7 +28,6 @@ vi.mock('./admin-client', () => ({
   supabaseAdmin: () => ({
     from: (table: string) => {
       if (table === 'automations') {
-        // .select().eq().eq().in().limit() → active auto-responders
         const chain = {
           select: () => chain,
           eq: () => chain,
@@ -35,6 +36,36 @@ vi.mock('./admin-client', () => ({
             Promise.resolve({ data: h.state.autoResponders, error: null }),
         }
         return chain
+      }
+      if (table === 'follow_up_reminders') {
+        return {
+          insert: (payload: Record<string, unknown>) => {
+            h.state.reminders.push(payload)
+            return Promise.resolve({ error: null })
+          },
+        }
+      }
+      if (table === 'contacts') {
+        return {
+          select: () => ({
+            eq: () => ({
+              maybeSingle: () =>
+                Promise.resolve({ data: { name: 'John Doe', phone: '+1234567890' }, error: null }),
+            }),
+          }),
+          update: (payload: Record<string, unknown>) => {
+            h.state.updatePayload = payload
+            return { eq: () => Promise.resolve({ error: null }) }
+          },
+        }
+      }
+      if (table === 'notifications') {
+        return {
+          insert: (payload: Record<string, unknown>) => {
+            h.state.notifications.push(payload)
+            return Promise.resolve({ error: null })
+          },
+        }
       }
       // conversations
       return {
@@ -192,5 +223,58 @@ describe('dispatchInboundToAiReply — handoff', () => {
     expect(h.engineSendText).not.toHaveBeenCalled()
     expect(h.state.updatePayload).toEqual({ ai_autoreply_disabled: true })
     expect(h.state.rpcCalls).toHaveLength(0)
+  })
+})
+
+describe('dispatchInboundToAiReply — automated call booking', () => {
+  it('inserts into follow_up_reminders, updates contact, and emits team notification when booking is returned', async () => {
+    const bookingTime = '2026-09-08T15:00:00.000Z'
+    h.generateReply.mockResolvedValue({
+      text: 'Perfect! I booked our call for tomorrow at 3:00 PM.',
+      handoff: false,
+      booking: {
+        datetime: bookingTime,
+        title: 'Demo Call with Client',
+        kind: 'meeting',
+      },
+    })
+
+    await dispatchInboundToAiReply(ARGS)
+
+    // Calendar booking inserted
+    expect(h.state.reminders).toHaveLength(1)
+    expect(h.state.reminders[0]).toMatchObject({
+      account_id: 'acct-1',
+      contact_id: 'contact-1',
+      conversation_id: 'conv-1',
+      user_id: 'user-1',
+      assigned_user_id: 'user-1',
+      kind: 'meeting',
+      title: 'Demo Call with Client',
+      due_at: bookingTime,
+      status: 'scheduled',
+    })
+
+    // Contact lead stage updated
+    expect(h.state.updatePayload).toMatchObject({
+      next_follow_up_at: bookingTime,
+      lead_stage: 'sales_ready',
+    })
+
+    // Notification created
+    expect(h.state.notifications).toHaveLength(1)
+    expect(h.state.notifications[0]).toMatchObject({
+      account_id: 'acct-1',
+      user_id: 'user-1',
+      title: '📅 New Call Booked by AI',
+    })
+
+    // Clean confirmation message sent to WhatsApp
+    expect(h.engineSendText).toHaveBeenCalledWith(
+      expect.objectContaining({
+        conversationId: 'conv-1',
+        text: 'Perfect! I booked our call for tomorrow at 3:00 PM.',
+      }),
+    )
   })
 })

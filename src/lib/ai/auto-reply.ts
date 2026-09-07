@@ -102,7 +102,7 @@ export async function dispatchInboundToAiReply(
       knowledge,
     })
 
-    const { text, handoff } = await generateReply({
+    const { text, handoff, booking } = await generateReply({
       config,
       systemPrompt,
       messages,
@@ -140,6 +140,70 @@ export async function dispatchInboundToAiReply(
       return
     }
     if (claimed !== true) return // lost the per-conversation cap race
+
+    // If the AI negotiated and booked a call with the customer, write it
+    // directly into the team's Calendar & Tasks (follow_up_reminders).
+    if (booking && booking.datetime) {
+      try {
+        const { error: remErr } = await db.from('follow_up_reminders').insert({
+          account_id: accountId,
+          contact_id: contactId,
+          conversation_id: conversationId,
+          user_id: configOwnerUserId,
+          assigned_user_id: configOwnerUserId,
+          kind: booking.kind || 'meeting',
+          title: booking.title || 'Call booked via AI',
+          due_at: booking.datetime,
+          status: 'scheduled',
+          meeting_location: booking.meetingLocation || null,
+          meeting_url: booking.meetingUrl || null,
+          reminder_minutes_before: 30,
+        })
+
+        if (remErr) {
+          console.error('[ai auto-reply] failed to create calendar booking:', remErr)
+        } else {
+          // Update contact next_follow_up_at and advance lead stage
+          await db
+            .from('contacts')
+            .update({
+              next_follow_up_at: booking.datetime,
+              lead_stage: 'sales_ready',
+              last_contacted_at: new Date().toISOString(),
+            })
+            .eq('id', contactId)
+
+          // In-app notification for the team
+          const { data: contactRow } = await db
+            .from('contacts')
+            .select('name, phone')
+            .eq('id', contactId)
+            .maybeSingle()
+
+          const contactLabel = contactRow?.name || contactRow?.phone || 'a customer'
+          const formattedTime = new Date(booking.datetime).toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+          })
+
+          await db
+            .from('notifications')
+            .insert({
+              account_id: accountId,
+              user_id: configOwnerUserId,
+              type: 'conversation_assigned',
+              conversation_id: conversationId,
+              contact_id: contactId,
+              title: '📅 New Call Booked by AI',
+              body: `AI scheduled a ${booking.kind || 'call'} with ${contactLabel} for ${formattedTime}`,
+            })
+        }
+      } catch (bookErr) {
+        console.error('[ai auto-reply] booking handler error:', bookErr)
+      }
+    }
 
     await engineSendText({
       accountId,

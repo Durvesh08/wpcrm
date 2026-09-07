@@ -42,15 +42,38 @@ describe('parseGeneration', () => {
     expect(parseGeneration('Hello there')).toEqual({
       text: 'Hello there',
       handoff: false,
+      booking: null,
     })
   })
 
   it('detects + strips the handoff sentinel', () => {
-    expect(parseGeneration('[[HANDOFF]]')).toEqual({ text: '', handoff: true })
+    expect(parseGeneration('[[HANDOFF]]')).toEqual({ text: '', handoff: true, booking: null })
     expect(parseGeneration('Let me get a human [[HANDOFF]]')).toEqual({
       text: 'Let me get a human',
       handoff: true,
+      booking: null,
     })
+  })
+
+  it('detects and extracts call booking details and strips the tag from message text', () => {
+    const raw = 'Awesome! I booked our call for tomorrow at 3:00 PM. [[BOOK_CALL:{"datetime":"2026-09-08T15:00:00Z","title":"Pricing Call","kind":"call"}]]'
+    const res = parseGeneration(raw)
+    expect(res.text).toBe('Awesome! I booked our call for tomorrow at 3:00 PM.')
+    expect(res.handoff).toBe(false)
+    expect(res.booking).toEqual({
+      datetime: '2026-09-08T15:00:00.000Z',
+      title: 'Pricing Call',
+      kind: 'call',
+      meetingLocation: undefined,
+      meetingUrl: undefined,
+    })
+  })
+
+  it('handles malformed booking tags gracefully without crashing', () => {
+    const raw = 'Sure thing! [[BOOK_CALL:{invalid-json]]'
+    const res = parseGeneration(raw)
+    expect(res.text).toBe('Sure thing! [[BOOK_CALL:{invalid-json]]')
+    expect(res.booking).toBeNull()
   })
 })
 
@@ -69,7 +92,7 @@ describe('generateReply — OpenAI', () => {
       messages: [{ role: 'user', content: 'Hi' }],
     })
 
-    expect(res).toEqual({ text: 'Sure — happy to help!', handoff: false })
+    expect(res).toEqual({ text: 'Sure — happy to help!', handoff: false, booking: null })
     const [url, opts] = fetchMock.mock.calls[0]
     expect(url).toContain('api.openai.com')
     expect(opts.headers.Authorization).toBe('Bearer sk-test')
@@ -120,7 +143,7 @@ describe('generateReply — Anthropic', () => {
       messages: [{ role: 'user', content: 'Hello' }],
     })
 
-    expect(res).toEqual({ text: 'Hi there!', handoff: false })
+    expect(res).toEqual({ text: 'Hi there!', handoff: false, booking: null })
     const [url, opts] = fetchMock.mock.calls[0]
     expect(url).toContain('api.anthropic.com')
     expect(opts.headers['x-api-key']).toBe('sk-ant-x')
@@ -188,7 +211,7 @@ describe('generateReply — Gemini', () => {
       ],
     })
 
-    expect(res).toEqual({ text: 'Hello from Gemini', handoff: false })
+    expect(res).toEqual({ text: 'Hello from Gemini', handoff: false, booking: null })
     const [url, opts] = fetchMock.mock.calls[0]
     expect(url).toContain('generativelanguage.googleapis.com')
     expect(url).toContain('gemini-test:generateContent')

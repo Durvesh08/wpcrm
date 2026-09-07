@@ -35,12 +35,22 @@ export interface ChatMessage {
   content: string
 }
 
+export interface AppointmentBooking {
+  datetime: string
+  title?: string
+  kind?: 'follow_up' | 'call' | 'whatsapp' | 'meeting' | 'note'
+  meetingLocation?: string
+  meetingUrl?: string
+}
+
 /** Outcome of a generation call. */
 export interface GenerateResult {
-  /** The reply text, with any handoff sentinel stripped. */
+  /** The reply text, with any handoff sentinel or booking tags stripped. */
   text: string
   /** True when the model asked to hand off to a human (auto-reply mode). */
   handoff: boolean
+  /** Optional appointment booked by the AI when customer confirmed a date/time. */
+  booking?: AppointmentBooking | null
 }
 
 /**
