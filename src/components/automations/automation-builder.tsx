@@ -689,7 +689,7 @@ export function AutomationBuilder({ initial }: { initial: BuilderInitial }) {
   }
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-background">
+    <div className="fixed inset-0 z-50 flex flex-col bg-background">
       {/* Top bar with prominent Save and Save as Draft buttons */}
       <header className="sticky top-0 z-30 flex flex-shrink-0 flex-wrap sm:flex-nowrap items-center justify-between gap-3 border-b border-border bg-card/95 backdrop-blur px-3 py-2.5 sm:px-5 sm:py-3 shadow-xs">
         <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
@@ -781,7 +781,7 @@ export function AutomationBuilder({ initial }: { initial: BuilderInitial }) {
       </header>
 
       {/* Canvas */}
-      <div className="relative flex-1 overflow-y-auto">
+      <div className="relative flex-1 overflow-y-auto pb-20">
         <div className="absolute inset-0 bg-[radial-gradient(circle,var(--border)_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
         <div className="relative mx-auto flex max-w-2xl flex-col items-center gap-0 px-4 py-10">
           <ResourcesProvider>
@@ -802,6 +802,66 @@ export function AutomationBuilder({ initial }: { initial: BuilderInitial }) {
               moveStepAt={moveStepAt}
             />
           </ResourcesProvider>
+
+          {/* Sticky Bottom Actions Dock for effortless discovery */}
+          <div className="sticky bottom-6 z-20 mt-10 flex items-center gap-2 sm:gap-3 rounded-full border border-border bg-card/95 px-4 py-2 sm:px-6 sm:py-2.5 shadow-xl backdrop-blur-md">
+            <div className="hidden xs:flex items-center gap-2 pr-2.5 border-r border-border text-xs text-muted-foreground">
+              <span className="font-medium text-foreground">Status:</span>
+              {state.is_active ? (
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Active
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                  <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/60" />
+                  Draft
+                </span>
+              )}
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => handleSave({ asDraft: true })}
+              disabled={isSaving}
+              className="gap-1.5 rounded-full px-3.5 sm:px-4 font-medium"
+            >
+              {savingAction === "draft" ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
+              ) : (
+                <FileText className="h-3.5 w-3.5 text-muted-foreground" />
+              )}
+              <span>Save as Draft</span>
+            </Button>
+
+            <Button
+              type="button"
+              variant="default"
+              size="sm"
+              onClick={() => handleSave({ asDraft: false })}
+              disabled={isSaving}
+              className="gap-1.5 rounded-full px-4 sm:px-5 font-semibold bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+            >
+              {savingAction === "save" ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-primary-foreground" />
+              ) : state.is_active ? (
+                <Zap className="h-3.5 w-3.5 fill-current text-primary-foreground" />
+              ) : (
+                <Save className="h-3.5 w-3.5 text-primary-foreground" />
+              )}
+              <span>
+                {isEditing
+                  ? state.is_active
+                    ? "Save & Activate"
+                    : "Save Changes"
+                  : state.is_active
+                  ? "Publish & Activate"
+                  : "Save Automation"}
+              </span>
+            </Button>
+          </div>
         </div>
       </div>
     </div>

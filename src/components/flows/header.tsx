@@ -33,6 +33,7 @@ import {
   Save,
   Trash2,
   Workflow,
+  FileText,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -116,47 +117,75 @@ export function EditorHeader() {
             Delete
           </Button>
           {state.status === "active" ? (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => void setStatus("draft")}
-              disabled={activating}
-            >
-              {activating ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <PauseCircle className="h-3.5 w-3.5" />
-              )}
-              Pause
-            </Button>
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => void setStatus("draft")}
+                disabled={activating || saving}
+                title="Pause flow and save as draft"
+                className="gap-1.5"
+              >
+                {activating ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <PauseCircle className="h-3.5 w-3.5" />
+                )}
+                Pause to Draft
+              </Button>
+              <Button
+                onClick={() => void save()}
+                disabled={saving}
+                size="sm"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium gap-1.5"
+                title="Save changes to active flow"
+              >
+                {saving ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Save className="h-3.5 w-3.5" />
+                )}
+                Save Changes
+              </Button>
+            </>
           ) : (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => void setStatus("active")}
-              disabled={activating || !canActivate}
-              title={
-                !canActivate
-                  ? "Fix the issues below before activating"
-                  : undefined
-              }
-            >
-              {activating ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <PlayCircle className="h-3.5 w-3.5" />
-              )}
-              Activate
-            </Button>
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => void save()}
+                disabled={saving}
+                title="Save flow as draft without activating"
+                className="gap-1.5"
+              >
+                {saving ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <FileText className="h-3.5 w-3.5 text-muted-foreground" />
+                )}
+                Save as Draft
+              </Button>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => void setStatus("active")}
+                disabled={activating || !canActivate}
+                title={
+                  !canActivate
+                    ? "Fix the issues below before activating"
+                    : "Save and activate this flow"
+                }
+                className="bg-primary text-primary-foreground hover:bg-primary/90 font-medium gap-1.5 shadow-sm"
+              >
+                {activating ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <PlayCircle className="h-3.5 w-3.5" />
+                )}
+                Save & Activate
+              </Button>
+            </>
           )}
-          <Button onClick={() => void save()} disabled={saving} size="sm">
-            {saving ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Save className="h-3.5 w-3.5" />
-            )}
-            Save
-          </Button>
         </div>
       </div>
 
