@@ -30,6 +30,8 @@ import {
   Loader2,
   ArrowDown,
   ArrowUp,
+  Save,
+  Check,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -590,7 +592,8 @@ export function AutomationBuilder({ initial }: { initial: BuilderInitial }) {
   const router = useRouter()
   const isEditing = !!initial.id
   const [state, setState] = useState<BuilderInitial>(initial)
-  const [saving, setSaving] = useState(false)
+  const [savingAction, setSavingAction] = useState<"draft" | "save" | null>(null)
+  const isSaving = savingAction !== null
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
   function patchTop<K extends keyof BuilderInitial>(key: K, value: BuilderInitial[K]) {
@@ -622,15 +625,17 @@ export function AutomationBuilder({ initial }: { initial: BuilderInitial }) {
     setState((s) => ({ ...s, steps: moveAt(s.steps, path, direction) }))
   }
 
-  async function save() {
-    setSaving(true)
+  async function handleSave(options?: { asDraft?: boolean }) {
+    const saveAsDraft = options?.asDraft ?? false
+    const targetIsActive = saveAsDraft ? false : state.is_active
+    setSavingAction(saveAsDraft ? "draft" : "save")
     try {
       const payload = {
-        name: state.name || "Untitled automation",
+        name: state.name?.trim() || "Untitled automation",
         description: state.description || null,
         trigger_type: state.trigger_type,
         trigger_config: state.trigger_config,
-        is_active: state.is_active,
+        is_active: targetIsActive,
         steps: toApiSteps(state.steps),
       }
 
@@ -662,51 +667,117 @@ export function AutomationBuilder({ initial }: { initial: BuilderInitial }) {
         }
         return
       }
-      toast.success(isEditing ? "Automation saved" : "Automation created")
+
+      if (saveAsDraft) {
+        setState((s) => ({ ...s, is_active: false }))
+        toast.success(isEditing ? "Automation saved as draft" : "Draft automation created")
+      } else {
+        setState((s) => ({ ...s, is_active: targetIsActive }))
+        toast.success(
+          targetIsActive
+            ? (isEditing ? "Automation updated and active" : "Automation published and active")
+            : (isEditing ? "Automation changes saved" : "Automation created")
+        )
+      }
+
       if (!isEditing && body?.automation?.id) {
         router.replace(`/automations/${body.automation.id}/edit`)
       }
     } finally {
-      setSaving(false)
+      setSavingAction(null)
     }
   }
 
   return (
     <div className="fixed inset-0 flex flex-col bg-background">
-      {/* Top bar. At sub-sm widths the "Active" label is hidden and the
-          switch moves to the right of the save button, so the name input
-          gets maximum width. */}
-      <header className="flex flex-shrink-0 items-center gap-2 border-b border-border bg-card/80 px-3 py-3 sm:gap-3 sm:px-4">
-        <button
-          type="button"
-          onClick={() => router.push("/automations")}
-          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-          aria-label="Back to automations"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </button>
-        <input
-          value={state.name}
-          onChange={(e) => patchTop("name", e.target.value)}
-          placeholder="Untitled automation"
-          className="min-w-0 flex-1 rounded-md bg-transparent px-2 py-1 text-sm font-semibold text-foreground placeholder:text-muted-foreground focus:bg-muted focus:outline-none sm:text-base"
-        />
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span className="hidden sm:inline">Active</span>
-          <Switch
-            checked={state.is_active}
-            onCheckedChange={(v) => patchTop("is_active", !!v)}
-            aria-label="Active"
-          />
+      {/* Top bar with prominent Save and Save as Draft buttons */}
+      <header className="sticky top-0 z-30 flex flex-shrink-0 flex-wrap sm:flex-nowrap items-center justify-between gap-3 border-b border-border bg-card/95 backdrop-blur px-3 py-2.5 sm:px-5 sm:py-3 shadow-xs">
+        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
+          <button
+            type="button"
+            onClick={() => router.push("/automations")}
+            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground border border-border/40"
+            aria-label="Back to automations"
+            title="Back to automations"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </button>
+          <div className="flex min-w-0 flex-1 items-center gap-2.5">
+            <input
+              value={state.name}
+              onChange={(e) => patchTop("name", e.target.value)}
+              placeholder="Untitled automation"
+              className="min-w-[140px] max-w-sm flex-1 rounded-md bg-transparent px-2.5 py-1 text-sm font-semibold text-foreground placeholder:text-muted-foreground/70 hover:bg-muted/40 focus:bg-muted focus:outline-none focus:ring-1 focus:ring-primary sm:text-base"
+            />
+            {state.is_active ? (
+              <span className="hidden xs:inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Active
+              </span>
+            ) : (
+              <span className="hidden xs:inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-muted/70 px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/50" />
+                Draft
+              </span>
+            )}
+          </div>
         </div>
-        <Button
-          onClick={save}
-          disabled={saving}
-          className="bg-primary text-primary-foreground hover:bg-primary/90"
-        >
-          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-          {isEditing ? "Save" : "Save Draft"}
-        </Button>
+
+        {/* Action Controls */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          <div className="flex items-center gap-2 rounded-lg border border-border/80 bg-muted/40 px-2.5 py-1.5 text-xs text-muted-foreground">
+            <span className="hidden sm:inline font-medium text-foreground">Active</span>
+            <Switch
+              checked={state.is_active}
+              onCheckedChange={(v) => patchTop("is_active", !!v)}
+              aria-label="Toggle active state"
+            />
+          </div>
+
+          {/* Save as Draft Button */}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => handleSave({ asDraft: true })}
+            disabled={isSaving}
+            className="border-border bg-card hover:bg-muted text-foreground font-medium transition-all shadow-xs gap-1.5 px-3 sm:px-4"
+            title="Save as inactive draft"
+          >
+            {savingAction === "draft" ? (
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            ) : (
+              <FileText className="h-4 w-4 text-muted-foreground" />
+            )}
+            <span>Save as Draft</span>
+          </Button>
+
+          {/* Primary Save Button */}
+          <Button
+            type="button"
+            variant="default"
+            onClick={() => handleSave({ asDraft: false })}
+            disabled={isSaving}
+            className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold transition-all shadow-sm gap-1.5 px-3.5 sm:px-5"
+            title={state.is_active ? "Save and activate automation" : "Save automation"}
+          >
+            {savingAction === "save" ? (
+              <Loader2 className="h-4 w-4 animate-spin text-primary-foreground" />
+            ) : state.is_active ? (
+              <Zap className="h-4 w-4 fill-current text-primary-foreground" />
+            ) : (
+              <Save className="h-4 w-4 text-primary-foreground" />
+            )}
+            <span>
+              {isEditing
+                ? state.is_active
+                  ? "Save & Activate"
+                  : "Save Changes"
+                : state.is_active
+                ? "Publish & Activate"
+                : "Save Automation"}
+            </span>
+          </Button>
+        </div>
       </header>
 
       {/* Canvas */}
