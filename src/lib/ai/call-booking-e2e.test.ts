@@ -88,6 +88,38 @@ describe('End-to-End AI Call Booking Simulation', () => {
     })
   })
 
+  it('Scenario 7 (Customer Screenshot): Customer confirms "Kal din me 12 baje", call is booked on calendar', () => {
+    const refDate = new Date('2026-09-14T09:00:00.000Z') // Monday 2:30 PM IST
+    // Case A: AI returns booking tag with informal Hindi datetime
+    const rawAiOutput1 = `Perfect! Aapka call kal dopahar 12:00 baje ke liye schedule kar diya gaya hai. Hamare expert aapse connect karenge. [[BOOK_CALL:{"datetime":"kal din me 12 baje","title":"Discovery Call"}]]`
+    const res1 = parseGeneration(rawAiOutput1, refDate)
+    expect(res1.text).toBe('Perfect! Aapka call kal dopahar 12:00 baje ke liye schedule kar diya gaya hai. Hamare expert aapse connect karenge.')
+    expect(res1.booking?.datetime).toBe('2026-09-15T06:30:00.000Z')
+
+    // Case B: AI omitted the tag, but confirmed in the text
+    const rawAiOutput2 = `Perfect! Aapka call kal dopahar 12:00 baje ke liye schedule kar diya gaya hai. Hamare expert aapse connect karenge.`
+    const res2 = parseGeneration(rawAiOutput2, refDate)
+    expect(res2.text).toBe('Perfect! Aapka call kal dopahar 12:00 baje ke liye schedule kar diya gaya hai. Hamare expert aapse connect karenge.')
+    expect(res2.booking?.datetime).toBe('2026-09-15T06:30:00.000Z')
+  })
+
+  it('Scenario 8 (Customer Screenshot): Strips leaked [[LABEL:{" tag and sets exact "Trading" & "Meta Ads" labels', () => {
+    const rawAiOutput = `Shukriya! Share Market ke Meta Ads ke liye call confirm ho gayi hai... [[LABEL:{"`
+    const res = parseGeneration(rawAiOutput)
+
+    // Customer receives clean message with zero leaked syntax
+    expect(res.text).toBe('Shukriya! Share Market ke Meta Ads ke liye call confirm ho gayi hai...')
+    expect(res.text).not.toContain('[[LABEL')
+    expect(res.text).not.toContain('[[')
+
+    // System captures specific niche and ad service (never generic Ads Agency)
+    expect(res.labels?.industry).toBe('Trading')
+    expect(res.labels?.service).toBe('Meta Ads')
+    expect(res.labels?.tags).toContain('Trading')
+    expect(res.labels?.tags).toContain('Meta Ads')
+    expect(res.labels?.tags).not.toContain('Ads Agency')
+  })
+
   it('System Prompt includes current reference timestamp, booking guidelines, and lead categorization rules', () => {
     const refTime = '2026-09-07T15:00:00.000Z'
     const prompt = buildSystemPrompt({
@@ -99,6 +131,8 @@ describe('End-to-End AI Call Booking Simulation', () => {
     expect(prompt).toContain('Calendar & Appointment Booking')
     expect(prompt).toContain('Lead Categorization & Industry/Service Labeling')
     expect(prompt).toContain(refTime)
+    expect(prompt).toContain('Meta Ads')
+    expect(prompt).toContain('Trading')
     expect(prompt).toContain('[[BOOK_CALL:')
     expect(prompt).toContain('[[LABEL:')
     expect(prompt).toContain('[[HANDOFF]]')

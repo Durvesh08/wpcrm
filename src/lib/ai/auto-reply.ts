@@ -96,16 +96,19 @@ export async function dispatchInboundToAiReply(
       latestUserMessage(messages),
     )
 
+    const now = new Date()
     const systemPrompt = buildSystemPrompt({
       userPrompt: config.systemPrompt,
       mode: 'auto_reply',
       knowledge,
+      referenceTime: now.toISOString(),
     })
 
     const { text, handoff, booking, labels } = await generateReply({
       config,
       systemPrompt,
       messages,
+      referenceDate: now,
     })
 
     if (handoff || !text) {

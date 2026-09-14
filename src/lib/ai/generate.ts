@@ -4,12 +4,27 @@ import { generateOpenAi } from './providers/openai'
 import { generateAnthropic } from './providers/anthropic'
 import { generateGemini } from './providers/gemini'
 
+import {
+  parseBookingDateTime,
+  sanitizeAiMessageText,
+  detectBookingFromText,
+  normalizeAiLabels,
+} from './booking-parser'
+
+export {
+  parseBookingDateTime,
+  sanitizeAiMessageText,
+  detectBookingFromText,
+  normalizeAiLabels,
+}
+
 export interface GenerateArgs {
   config: AiConfig
   /** Fully-built system prompt (see `buildSystemPrompt`). */
   systemPrompt: string
   /** Recent conversation turns, oldest first. */
   messages: ChatMessage[]
+  referenceDate?: Date
 }
 
 /**
@@ -18,7 +33,7 @@ export interface GenerateArgs {
  * of the raw text. Throws `AiError` on any provider/network failure.
  */
 export async function generateReply(args: GenerateArgs): Promise<GenerateResult> {
-  const { config, systemPrompt, messages } = args
+  const { config, systemPrompt, messages, referenceDate } = args
   const timeoutMs = aiRequestTimeoutMs()
   const providerArgs = {
     apiKey: config.apiKey,
@@ -46,28 +61,36 @@ export async function generateReply(args: GenerateArgs): Promise<GenerateResult>
       })
   }
 
-  return parseGeneration(raw)
+  return parseGeneration(raw, referenceDate)
 }
 
 /**
- * Split the raw model output into `{ text, handoff, booking, labels }`. The sentinel can
- * appear alone or trailing a partial reply; either way we treat the
- * turn as a handoff and strip the marker from any remaining text.
+ * Split the raw model output into `{ text, handoff, booking, labels }`.
  * Any [[BOOK_CALL:{...}]] and [[LABEL:{...}]] tags are parsed cleanly.
+ * All internal tags are safely stripped so no code syntax leaks to WhatsApp.
  */
-export function parseGeneration(raw: string): GenerateResult {
+export function parseGeneration(raw: string, referenceDate: Date = new Date()): GenerateResult {
   const handoff = raw.includes(HANDOFF_SENTINEL)
   let cleaned = raw.split(HANDOFF_SENTINEL).join('')
 
   let booking: AppointmentBooking | null = null
   let labels: LeadLabeling | null = null
 
-  // Scan for [[LABEL:{...}]]
+  // 1. Scan for [[LABEL:{...}]] (both closed and unclosed)
   const labelRegex = /\[\[LABEL:\s*(\{[\s\S]*?\})\s*\]\]/i
-  const labelMatch = cleaned.match(labelRegex)
+  const unclosedLabelRegex = /\[\[LABEL:\s*(\{[\s\S]*?)(?:\]\]|$)/i
+  const labelMatch = cleaned.match(labelRegex) || cleaned.match(unclosedLabelRegex)
   if (labelMatch) {
     try {
-      const parsed = JSON.parse(labelMatch[1])
+      let jsonStr = labelMatch[1].trim()
+      if (!jsonStr.endsWith('}')) {
+        const openBraces = (jsonStr.match(/\{/g) || []).length
+        const closeBraces = (jsonStr.match(/\}/g) || []).length
+        if (openBraces > closeBraces) {
+          jsonStr += '}'.repeat(openBraces - closeBraces)
+        }
+      }
+      const parsed = JSON.parse(jsonStr)
       const tags = Array.isArray(parsed?.tags)
         ? parsed.tags.map((t: unknown) => String(t).trim()).filter(Boolean)
         : []
@@ -96,20 +119,28 @@ export function parseGeneration(raw: string): GenerateResult {
     } catch {
       // Ignore malformed JSON in label tag
     }
-    cleaned = cleaned.replace(labelRegex, '')
   }
 
-  // Scan for [[BOOK_CALL:{...}]]
+  // 2. Scan for [[BOOK_CALL:{...}]] (both closed and unclosed)
   const bookCallRegex = /\[\[BOOK_CALL:\s*(\{[\s\S]*?\})\s*\]\]/i
-  const match = cleaned.match(bookCallRegex)
+  const unclosedBookCallRegex = /\[\[BOOK_CALL:\s*(\{[\s\S]*?)(?:\]\]|$)/i
+  const match = cleaned.match(bookCallRegex) || cleaned.match(unclosedBookCallRegex)
   if (match) {
     try {
-      const parsed = JSON.parse(match[1])
+      let jsonStr = match[1].trim()
+      if (!jsonStr.endsWith('}')) {
+        const openBraces = (jsonStr.match(/\{/g) || []).length
+        const closeBraces = (jsonStr.match(/\}/g) || []).length
+        if (openBraces > closeBraces) {
+          jsonStr += '}'.repeat(openBraces - closeBraces)
+        }
+      }
+      const parsed = JSON.parse(jsonStr)
       if (typeof parsed?.datetime === 'string' && parsed.datetime.trim()) {
-        const d = new Date(parsed.datetime)
-        if (!Number.isNaN(d.getTime())) {
+        const iso = parseBookingDateTime(parsed.datetime, referenceDate)
+        if (iso) {
           booking = {
-            datetime: d.toISOString(),
+            datetime: iso,
             title: typeof parsed.title === 'string' && parsed.title.trim()
               ? parsed.title.trim().slice(0, 240)
               : 'Call booked via AI',
@@ -128,8 +159,20 @@ export function parseGeneration(raw: string): GenerateResult {
     } catch {
       // Ignore malformed JSON in booking tag
     }
-    cleaned = cleaned.replace(bookCallRegex, '')
   }
+
+  // 3. Robust sanitization of all control tags so NOTHING leaks to WhatsApp
+  cleaned = sanitizeAiMessageText(cleaned)
+
+  // 4. Fallback booking detection: if no booking tag was parsed, but the message text
+  // confirms a scheduled call (e.g. "Aapka call kal dopahar 12:00 baje ke liye schedule kar diya gaya hai"),
+  // automatically extract and schedule the call!
+  if (!booking) {
+    booking = detectBookingFromText(cleaned, referenceDate)
+  }
+
+  // 5. Post-process & normalize labels (e.g. "Ads Agency" -> "Meta Ads", "Trading" / "Share Market")
+  labels = normalizeAiLabels(labels, raw)
 
   const text = cleaned.trim()
   return { text, handoff, booking, labels }

@@ -95,11 +95,49 @@ describe('parseGeneration', () => {
     expect(res.labels?.tags).toEqual(['Real Estate', 'Web Dev'])
   })
 
-  it('handles malformed booking tags gracefully without crashing', () => {
+  it('handles malformed booking tags gracefully without crashing and safely strips them from customer text', () => {
     const raw = 'Sure thing! [[BOOK_CALL:{invalid-json]]'
     const res = parseGeneration(raw)
-    expect(res.text).toBe('Sure thing! [[BOOK_CALL:{invalid-json]]')
+    expect(res.text).toBe('Sure thing!')
     expect(res.booking).toBeNull()
+  })
+
+  it('safely strips unclosed / truncated [[LABEL:{" tags so no syntax leaks to customer', () => {
+    const raw = 'Shukriya! Share Market ke Meta Ads ke liye call confirm ho gayi hai... [[LABEL:{"'
+    const res = parseGeneration(raw)
+    expect(res.text).toBe('Shukriya! Share Market ke Meta Ads ke liye call confirm ho gayi hai...')
+    // Recovers labels from context
+    expect(res.labels?.industry).toBe('Trading')
+    expect(res.labels?.service).toBe('Meta Ads')
+    expect(res.labels?.tags).toContain('Trading')
+    expect(res.labels?.tags).toContain('Meta Ads')
+  })
+
+  it('corrects generic "Ads Agency" to "Meta Ads" and adds "Trading" for share market', () => {
+    const raw = 'We will run your Meta Ads campaign for stock trading! [[LABEL:{"industry":"Finance","service":"Ads Agency","tags":["Finance","Ads Agency"],"chatLabel":"Ads Agency"}]]'
+    const res = parseGeneration(raw)
+    expect(res.text).toBe('We will run your Meta Ads campaign for stock trading!')
+    expect(res.labels?.service).toBe('Meta Ads')
+    expect(res.labels?.industry).toBe('Trading')
+    expect(res.labels?.tags).toContain('Meta Ads')
+    expect(res.labels?.tags).toContain('Trading')
+    expect(res.labels?.tags).not.toContain('Ads Agency')
+  })
+
+  it('parses informal Hindi dates like "kal din me 12 baje" in booking tags', () => {
+    const refDate = new Date('2026-09-14T09:00:00.000Z') // Mon 14 Sep 2026 2:30 PM IST
+    const raw = 'Ji bilkul! [[BOOK_CALL:{"datetime":"kal din me 12 baje","title":"Meta Ads Call"}]]'
+    const res = parseGeneration(raw, refDate)
+    expect(res.text).toBe('Ji bilkul!')
+    expect(res.booking?.datetime).toBe('2026-09-15T06:30:00.000Z') // 12:00 PM IST next day is 06:30 UTC
+  })
+
+  it('recovers booking from confirmation message text when AI omitted the BOOK_CALL tag', () => {
+    const refDate = new Date('2026-09-14T09:00:00.000Z')
+    const raw = 'Perfect! Aapka call kal dopahar 12:00 baje ke liye schedule kar diya gaya hai. Hamare expert aapse connect karenge.'
+    const res = parseGeneration(raw, refDate)
+    expect(res.text).toBe('Perfect! Aapka call kal dopahar 12:00 baje ke liye schedule kar diya gaya hai. Hamare expert aapse connect karenge.')
+    expect(res.booking?.datetime).toBe('2026-09-15T06:30:00.000Z')
   })
 })
 
