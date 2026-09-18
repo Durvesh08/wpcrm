@@ -29,20 +29,24 @@ export function MetricCard({
   subtitle,
 }: MetricCardProps) {
   return (
-    <div className="zovaix-premium-panel zovaix-premium-hover zovaix-kpi-glow zovaix-enter rounded-[24px] p-5">
-      <div className="flex items-start justify-between">
-        <p className="text-muted-foreground text-sm font-medium">{title}</p>
-        <div className="zovaix-icon-tile relative z-10 flex h-10 w-10 items-center justify-center rounded-xl text-primary-foreground">
-          <Icon className="h-4 w-4" />
+    <div className="zovaix-glass-card zovaix-premium-hover zovaix-kpi-glow zovaix-enter relative flex flex-col justify-between overflow-hidden rounded-[24px] p-5 sm:p-5.5 transition-all duration-300">
+      <div>
+        <div className="flex items-start justify-between gap-2">
+          <p className="text-muted-foreground text-xs sm:text-sm font-medium tracking-wide">
+            {title}
+          </p>
+          <div className="zovaix-icon-tile relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-primary-foreground shadow-md">
+            <Icon className="h-4.5 w-4.5" />
+          </div>
         </div>
+        <p className="text-foreground relative z-10 mt-3.5 text-2xl sm:text-3xl lg:text-[32px] font-bold tracking-tight tabular-nums">
+          {value}
+        </p>
       </div>
-      <p className="text-foreground relative z-10 mt-4 text-[30px] leading-none font-semibold tabular-nums">
-        {value}
-      </p>
       {delta ? (
         <DeltaRow sign={delta.sign} label={delta.label} />
       ) : subtitle ? (
-        <p className="text-muted-foreground relative z-10 mt-2 text-sm">
+        <p className="text-muted-foreground relative z-10 mt-3.5 text-xs sm:text-sm font-medium">
           {subtitle}
         </p>
       ) : null}
@@ -53,17 +57,22 @@ export function MetricCard({
 function DeltaRow({ sign, label }: { sign: number; label: string }) {
   const tone =
     sign > 0
-      ? 'text-primary'
+      ? 'border-emerald-500/30 bg-emerald-500/15 text-emerald-400'
       : sign < 0
-        ? 'text-red-400'
-        : 'text-muted-foreground';
+        ? 'border-rose-500/30 bg-rose-500/15 text-rose-400'
+        : 'border-border/60 bg-muted/40 text-muted-foreground';
   const Arrow = sign > 0 ? ArrowUp : sign < 0 ? ArrowDown : Minus;
   return (
-    <div
-      className={cn('relative z-10 mt-3 flex items-center gap-1 text-sm', tone)}
-    >
-      <Arrow className="h-4 w-4" aria-hidden />
-      <span className="tabular-nums">{label}</span>
+    <div className="relative z-10 mt-3.5 flex items-center">
+      <span
+        className={cn(
+          'inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold tabular-nums backdrop-blur-sm',
+          tone
+        )}
+      >
+        <Arrow className="h-3.5 w-3.5 stroke-[2.5]" aria-hidden />
+        <span>{label}</span>
+      </span>
     </div>
   );
 }

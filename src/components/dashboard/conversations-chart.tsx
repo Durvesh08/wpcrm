@@ -46,23 +46,23 @@ export function ConversationsChart({ series, loading, range, onRangeChange }: Co
   }, [data])
 
   return (
-    <section className="flex h-full flex-col rounded-xl border border-border bg-card">
-      <header className="flex items-center justify-between border-b border-border px-5 py-4">
+    <section className="zovaix-glass-panel zovaix-enter flex h-full flex-col overflow-hidden rounded-[24px]">
+      <header className="flex items-center justify-between border-b border-border/50 px-5 py-4 bg-card/25 backdrop-blur-md">
         <div>
-          <h2 className="text-sm font-semibold text-foreground">Conversations Over Time</h2>
+          <h2 className="text-sm font-semibold text-foreground tracking-tight">Conversations Over Time</h2>
           <p className="mt-0.5 text-xs text-muted-foreground">Daily message volume by direction</p>
         </div>
-        <div className="flex items-center gap-1 rounded-lg bg-muted/60 p-1">
+        <div className="flex items-center gap-1 rounded-xl bg-background/60 border border-border/50 p-1">
           {[7, 30, 90].map((r) => (
             <button
               key={r}
               type="button"
               onClick={() => onRangeChange(r as RangeDays)}
               className={cn(
-                'rounded-md px-2.5 py-1 text-xs font-medium transition-colors',
+                'rounded-lg px-2.5 py-1 text-xs font-medium transition-all duration-200',
                 range === r
-                  ? 'bg-secondary text-secondary-foreground'
-                  : 'text-muted-foreground hover:text-foreground',
+                  ? 'bg-primary text-primary-foreground font-semibold shadow-sm shadow-primary/25'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-card/50',
               )}
             >
               {r} days
@@ -73,21 +73,21 @@ export function ConversationsChart({ series, loading, range, onRangeChange }: Co
 
       <div className="p-5">
         {loading || !data ? (
-          <Skeleton className="h-[240px] w-full" />
+          <Skeleton className="h-[240px] w-full rounded-2xl" />
         ) : data.every((p) => p.incoming === 0 && p.outgoing === 0) ? (
           <EmptyState
             icon={MessageSquare}
             title="No message activity in this range"
-            hint="Send or receive messages to start populating this chart."
+            hint="Send or receive a message to start charting volume."
           />
         ) : (
           <LineSvg data={data} maxY={maxY} ticks={niceTicks} />
         )}
       </div>
 
-      <footer className="flex items-center gap-4 border-t border-border px-5 py-3 text-xs text-muted-foreground">
-        <LegendDot color="#3b82f6" label="Incoming" />
-        <LegendDot color="#7c3aed" label="Outgoing" />
+      <footer className="flex items-center gap-4 border-t border-border/50 px-5 py-3 text-xs bg-card/20 backdrop-blur-md">
+        <LegendDot color="#06b6d4" label="Incoming" />
+        <LegendDot color="#a855f7" label="Outgoing" />
       </footer>
     </section>
   )
@@ -242,17 +242,17 @@ function LineSvg({
         <path
           d={outgoingPath}
           fill="none"
-          stroke="#7c3aed"
-          strokeWidth={2}
+          stroke="#a855f7"
+          strokeWidth={2.5}
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        {/* Incoming polyline (blue) */}
+        {/* Incoming polyline (cyan) */}
         <path
           d={incomingPath}
           fill="none"
-          stroke="#3b82f6"
-          strokeWidth={2}
+          stroke="#06b6d4"
+          strokeWidth={2.5}
           strokeLinecap="round"
           strokeLinejoin="round"
         />
@@ -268,8 +268,8 @@ function LineSvg({
               stroke="var(--muted-foreground)"
               strokeDasharray="3 3"
             />
-            <circle cx={hoverX} cy={yFor(data[hover.idx].incoming)} r={3.5} fill="#3b82f6" />
-            <circle cx={hoverX} cy={yFor(data[hover.idx].outgoing)} r={3.5} fill="#7c3aed" />
+            <circle cx={hoverX} cy={yFor(data[hover.idx].incoming)} r={4} fill="#06b6d4" stroke="#ffffff" strokeWidth={1.5} />
+            <circle cx={hoverX} cy={yFor(data[hover.idx].outgoing)} r={4} fill="#a855f7" stroke="#ffffff" strokeWidth={1.5} />
           </g>
         )}
       </svg>

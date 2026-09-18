@@ -396,7 +396,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
   };
 
   return (
-    <header className="border-border/70 bg-background/72 sticky top-0 z-20 border-b shadow-sm shadow-black/5 backdrop-blur-xl">
+    <header className="border-border/50 bg-background/65 sticky top-0 z-20 border-b shadow-lg shadow-black/20 backdrop-blur-2xl">
       <div className="flex h-16 items-center justify-between gap-2 px-3 sm:px-6 lg:px-7">
         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <button
@@ -641,7 +641,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
 
           <Link
             href="/calendar"
-            className="zovaix-premium-panel zovaix-premium-hover text-muted-foreground hover:text-foreground hidden h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl sm:inline-flex"
+            className="zovaix-glass-panel zovaix-premium-hover text-muted-foreground hover:text-foreground hidden h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl sm:inline-flex"
             aria-label="Calendar"
           >
             <CalendarDays className="h-4 w-4" />
@@ -649,7 +649,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
 
           <Link
             href="/notifications"
-            className="zovaix-premium-panel zovaix-premium-hover text-muted-foreground hover:text-foreground relative inline-flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl"
+            className="zovaix-glass-panel zovaix-premium-hover text-muted-foreground hover:text-foreground relative inline-flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl"
             aria-label="Notifications"
           >
             <Bell className="h-4 w-4" />

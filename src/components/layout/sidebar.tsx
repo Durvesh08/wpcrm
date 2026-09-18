@@ -173,7 +173,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
       <aside
         className={cn(
           // Mobile: fixed drawer that slides in from the left.
-          'border-border/70 bg-sidebar/90 fixed inset-y-0 left-0 z-40 flex h-full w-72 flex-col border-r shadow-2xl shadow-black/10 backdrop-blur-xl',
+          'border-border/50 bg-sidebar/75 fixed inset-y-0 left-0 z-40 flex h-full w-72 flex-col border-r shadow-2xl shadow-black/30 backdrop-blur-2xl',
           'transition-transform duration-200 ease-out will-change-transform',
           open ? 'translate-x-0' : '-translate-x-full',
           // Desktop: static, always visible — reset all the mobile framing.
@@ -183,9 +183,9 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
       >
         {/* Logo row. On mobile we put a close button here; on desktop the
             close button is hidden since the sidebar is always-visible. */}
-        <div className="border-border/70 flex shrink-0 items-center justify-between gap-2 border-b px-4 py-4">
-          <Link href="/dashboard" className="flex min-w-0 items-center gap-2">
-            <div className="border-primary/25 shadow-primary/15 relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-2xl border bg-black shadow-lg transition-transform duration-300 hover:scale-[1.03]">
+        <div className="border-border/50 flex shrink-0 items-center justify-between gap-2 border-b px-4 py-4 bg-sidebar/40">
+          <Link href="/dashboard" className="flex min-w-0 items-center gap-2.5">
+            <div className="border-primary/30 shadow-primary/25 relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-2xl border bg-black shadow-lg transition-transform duration-300 hover:scale-[1.03]">
               <Image
                 src="/zovaix-logo.png"
                 alt=""
@@ -219,24 +219,21 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
             <p className="text-muted-foreground text-[11px] font-medium tracking-[0.22em] uppercase">
               Favorites
             </p>
-            <div className="mt-3 space-y-1">
-              {favoriteItems.map((item) => {
-                const active =
-                  pathname === item.href ||
-                  (item.href !== '/dashboard' &&
-                    pathname.startsWith(item.href));
+            <div className="mt-2.5 space-y-1">
+              {favoriteItems.map((fav) => {
+                const isActive = pathname.startsWith(fav.href);
                 return (
                   <Link
-                    key={item.href}
-                    href={item.href}
+                    key={fav.href}
+                    href={fav.href}
                     className={cn(
-                      'flex items-center justify-between rounded-xl px-3 py-2 text-sm transition-colors',
-                      active
-                        ? 'bg-primary/12 text-primary shadow-primary/10 shadow-sm'
-                        : 'text-muted-foreground hover:bg-card-2 hover:text-foreground'
+                      'zovaix-premium-hover flex items-center justify-between rounded-xl px-2.5 py-2 text-xs font-medium transition-colors',
+                      isActive
+                        ? 'border-primary/30 bg-primary/15 text-primary font-semibold border shadow-sm shadow-primary/15'
+                        : 'text-muted-foreground hover:bg-card/70 hover:text-foreground'
                     )}
                   >
-                    <span>{item.label}</span>
+                    <span>{fav.label}</span>
                     <ChevronRight className="h-4 w-4 opacity-60" />
                   </Link>
                 );
@@ -271,8 +268,8 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
                       // Taller on mobile so fingers can hit the row reliably (≥44px).
                       'group flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition-all duration-200 lg:py-2.5',
                       isActive
-                        ? 'bg-primary/12 text-primary shadow-primary/10 shadow-sm'
-                        : 'text-muted-foreground hover:bg-card-2 hover:translate-x-0.5 hover:text-foreground'
+                        ? 'border-primary/25 bg-primary/15 text-primary border shadow-sm shadow-primary/15 font-semibold'
+                        : 'text-muted-foreground hover:bg-card/70 hover:translate-x-1 hover:text-foreground'
                     )}
                   >
                     <span
@@ -329,8 +326,8 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
                     className={cn(
                       'flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition-all lg:py-2.5',
                       isActive
-                        ? 'bg-primary/12 text-primary'
-                        : 'text-muted-foreground hover:bg-card-2 hover:translate-x-0.5 hover:text-foreground'
+                        ? 'border-primary/25 bg-primary/15 text-primary border shadow-sm shadow-primary/15 font-semibold'
+                        : 'text-muted-foreground hover:bg-card/70 hover:translate-x-1 hover:text-foreground'
                     )}
                   >
                     <span
@@ -352,7 +349,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
         </nav>
 
         {/* User section */}
-        <div className="border-border/70 shrink-0 border-t p-3">
+        <div className="border-border/50 bg-sidebar/40 shrink-0 border-t p-3 backdrop-blur-md">
           {/* Account name display — surfaced only when the account
               name differs from the user's own name (see
               `showAccountStrip`). For a default solo account the two

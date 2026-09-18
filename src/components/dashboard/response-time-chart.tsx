@@ -44,10 +44,10 @@ export function ResponseTimeChart({
     })) ?? []
 
   return (
-    <section className="rounded-xl border border-border bg-card">
-      <header className="flex flex-col gap-2.5 border-b border-border px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-5 sm:py-4">
+    <section className="zovaix-glass-panel zovaix-enter overflow-hidden rounded-[24px]">
+      <header className="flex flex-col gap-2.5 border-b border-border/50 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-5 sm:py-4.5 bg-card/25 backdrop-blur-md">
         <div>
-          <h2 className="text-sm font-semibold text-foreground">
+          <h2 className="text-sm font-semibold text-foreground tracking-tight">
             Average First Response Time
           </h2>
           <p className="mt-0.5 text-xs text-muted-foreground">
@@ -57,7 +57,7 @@ export function ResponseTimeChart({
         </div>
         <div className="flex flex-wrap items-center gap-2 text-xs sm:gap-3 sm:text-right">
           {thresholdMinutes > 0 && (
-            <span className="rounded-full border border-rose-500/40 bg-rose-500/10 px-2 py-0.5 font-medium text-rose-300 tabular-nums">
+            <span className="rounded-full border border-rose-500/40 bg-rose-500/15 px-2.5 py-0.5 font-semibold text-rose-400 tabular-nums">
               target {thresholdMinutes}m
             </span>
           )}

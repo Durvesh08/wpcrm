@@ -15,9 +15,9 @@ interface PipelineDonutProps {
 
 export function PipelineDonut({ data, loading, currency }: PipelineDonutProps) {
   return (
-    <section className="flex h-full flex-col rounded-xl border border-border bg-card">
-      <header className="border-b border-border px-5 py-4">
-        <h2 className="text-sm font-semibold text-foreground">Pipeline Value</h2>
+    <section className="zovaix-glass-panel zovaix-enter flex h-full flex-col overflow-hidden rounded-[24px]">
+      <header className="border-b border-border/50 px-5 py-4 bg-card/25 backdrop-blur-md">
+        <h2 className="text-sm font-semibold text-foreground tracking-tight">Pipeline Value</h2>
         <p className="mt-0.5 text-xs text-muted-foreground">
           Open deals by stage
         </p>
@@ -25,7 +25,7 @@ export function PipelineDonut({ data, loading, currency }: PipelineDonutProps) {
 
       <div className="flex flex-1 flex-col p-5">
         {loading || !data ? (
-          <Skeleton className="h-56 w-full" />
+          <Skeleton className="h-56 w-full rounded-2xl" />
         ) : data.stages.length === 0 ? (
           <EmptyState
             icon={GitBranch}
@@ -35,19 +35,19 @@ export function PipelineDonut({ data, loading, currency }: PipelineDonutProps) {
         ) : (
           <>
             <Donut data={data} currency={currency} />
-            <ul className="mt-5 space-y-2">
+            <ul className="mt-5 space-y-1.5">
               {data.stages.map((s) => (
-                <li key={s.id} className="flex items-center gap-3 text-xs">
+                <li key={s.id} className="flex items-center gap-3 rounded-xl px-2.5 py-1.5 text-xs transition-colors hover:bg-card/40">
                   <span
                     className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
-                    style={{ background: s.color }}
+                    style={{ background: s.color, boxShadow: `0 0 8px ${s.color}80` }}
                     aria-hidden
                   />
-                  <span className="flex-1 truncate text-muted-foreground">{s.name}</span>
+                  <span className="flex-1 truncate font-medium text-foreground">{s.name}</span>
                   <span className="text-muted-foreground tabular-nums">
                     {s.dealCount} deal{s.dealCount === 1 ? '' : 's'}
                   </span>
-                  <span className="w-20 text-right text-muted-foreground tabular-nums">
+                  <span className="w-20 text-right font-semibold text-foreground tabular-nums">
                     {formatCurrencyShort(s.totalValue, currency)}
                   </span>
                 </li>

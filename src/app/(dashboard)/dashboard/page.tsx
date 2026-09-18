@@ -182,15 +182,18 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 lg:space-y-7">
-      <section className="zovaix-premium-panel zovaix-enter relative overflow-hidden rounded-[28px] px-5 py-5 sm:px-6 sm:py-6 lg:px-7 lg:py-7">
-        <div className="zovaix-soft-grid pointer-events-none absolute inset-0 opacity-35" />
+      <section className="zovaix-premium-panel zovaix-enter relative overflow-hidden rounded-[28px] px-5 py-5 sm:px-6 sm:py-6 lg:px-7 lg:py-7 border-primary/20 shadow-[0_0_50px_-15px_rgba(56,189,248,0.15)]">
+        {/* Ambient background glows */}
+        <div className="pointer-events-none absolute -top-24 -right-24 h-80 w-80 rounded-full bg-primary/20 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-chart-2/20 blur-3xl" />
+        <div className="zovaix-soft-grid pointer-events-none absolute inset-0 opacity-40" />
         <div className="relative grid gap-5 xl:grid-cols-[minmax(0,1.35fr)_22rem]">
           <div className="space-y-5">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="border-primary/20 bg-primary/10 text-primary rounded-full border px-3 py-1 text-[11px] font-medium tracking-[0.22em] uppercase">
+              <span className="border-primary/30 bg-primary/15 text-primary rounded-full border px-3 py-1 text-[11px] font-semibold tracking-[0.22em] uppercase shadow-sm shadow-primary/20">
                 AI Mission Control
               </span>
-              <span className="border-border/70 bg-card/60 text-muted-foreground rounded-full border px-3 py-1 text-[11px] font-medium tracking-[0.18em] uppercase">
+              <span className="border-border/80 bg-card/70 text-foreground/80 rounded-full border px-3 py-1 text-[11px] font-medium tracking-[0.18em] uppercase backdrop-blur-md">
                 {account?.name ?? 'Workspace'}
               </span>
             </div>
@@ -203,12 +206,12 @@ export default function DashboardPage() {
                     ? `, ${profile.full_name.split(' ')[0]}`
                     : ''}
                 </p>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-[11px] font-medium text-emerald-400">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400 shadow-sm shadow-emerald-500/20">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   Live
                 </span>
               </div>
-              <h1 className="text-foreground mt-1 text-xl font-bold tracking-tight sm:text-2xl lg:text-3xl">
+              <h1 className="text-foreground mt-1 text-2xl font-extrabold tracking-tight sm:text-3xl lg:text-4xl">
                 Revenue Mission Control
               </h1>
               
@@ -410,17 +413,17 @@ function InsightChip({
 }) {
   const toneClass =
     tone === 'emerald'
-      ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-300'
+      ? 'border-emerald-500/30 bg-emerald-500/12 text-emerald-300 shadow-[0_0_16px_-4px_rgba(16,185,129,0.2)]'
       : tone === 'blue'
-        ? 'border-blue-500/20 bg-blue-500/10 text-blue-300'
-        : 'border-violet-500/20 bg-violet-500/10 text-violet-300';
+        ? 'border-cyan-500/30 bg-cyan-500/12 text-cyan-300 shadow-[0_0_16px_-4px_rgba(6,182,212,0.2)]'
+        : 'border-violet-500/30 bg-violet-500/12 text-violet-300 shadow-[0_0_16px_-4px_rgba(168,85,247,0.2)]';
 
   return (
-    <div className={`rounded-2xl border px-3 py-3 ${toneClass}`}>
-      <p className="text-[11px] tracking-[0.16em] uppercase opacity-80">
+    <div className={`rounded-2xl border px-3.5 py-3 backdrop-blur-md transition-all duration-200 hover:scale-[1.02] ${toneClass}`}>
+      <p className="text-[10px] font-bold tracking-[0.18em] uppercase opacity-85">
         {label}
       </p>
-      <p className="mt-1 text-sm font-semibold">{value}</p>
+      <p className="mt-1 text-base font-extrabold tracking-tight text-foreground">{value}</p>
     </div>
   );
 }
@@ -442,25 +445,25 @@ function MissionPriority({
 }) {
   const toneClass =
     tone === 'emerald'
-      ? 'bg-emerald-500/10 text-emerald-300'
+      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/35 shadow-sm shadow-emerald-500/20'
       : tone === 'blue'
-        ? 'bg-blue-500/10 text-blue-300'
-        : 'bg-violet-500/10 text-violet-300';
+        ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/35 shadow-sm shadow-cyan-500/20'
+        : 'bg-violet-500/20 text-violet-400 border border-violet-500/35 shadow-sm shadow-violet-500/20';
 
   return (
     <Link
       href={href}
-      className="zovaix-premium-hover border-border/70 bg-background/40 group flex items-start gap-3 rounded-2xl border px-3 py-3"
+      className="zovaix-glass-card zovaix-premium-hover group flex items-start gap-3 rounded-2xl p-3.5 transition-all duration-200"
     >
       <span
         className={`mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${toneClass}`}
       >
-        <Icon className="h-4 w-4" />
+        <Icon className="h-4.5 w-4.5" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="text-foreground flex items-center justify-between gap-2 text-sm font-medium">
+        <span className="text-foreground flex items-center justify-between gap-2 text-sm font-semibold tracking-tight">
           <span className="truncate">{label}</span>
-          <span className="text-primary shrink-0 text-xs tabular-nums">
+          <span className="text-primary shrink-0 text-xs font-bold tabular-nums">
             {value}
           </span>
         </span>

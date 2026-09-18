@@ -12,7 +12,8 @@ interface Action {
   label: string;
   href: string;
   icon: ComponentType<{ className?: string }>;
-  tint: string;
+  gradient: string;
+  shadow: string;
 }
 
 const ACTIONS: Action[] = [
@@ -20,25 +21,29 @@ const ACTIONS: Action[] = [
     label: 'New Contact',
     href: '/contacts',
     icon: UserPlus,
-    tint: 'text-primary',
+    gradient: 'from-emerald-400 via-teal-400 to-cyan-500',
+    shadow: 'shadow-emerald-500/25',
   },
   {
     label: 'New Deal',
     href: '/pipelines',
     icon: BriefcaseBusiness,
-    tint: 'text-blue-400',
+    gradient: 'from-blue-400 via-indigo-500 to-violet-600',
+    shadow: 'shadow-blue-500/25',
   },
   {
     label: 'New Broadcast',
     href: '/broadcasts/new',
     icon: RadioTower,
-    tint: 'text-amber-400',
+    gradient: 'from-amber-400 via-orange-400 to-amber-600',
+    shadow: 'shadow-amber-500/25',
   },
   {
     label: 'New Automation',
     href: '/automations/new',
     icon: WandSparkles,
-    tint: 'text-primary',
+    gradient: 'from-violet-400 via-purple-500 to-fuchsia-500',
+    shadow: 'shadow-purple-500/25',
   },
 ];
 
@@ -51,17 +56,17 @@ export function QuickActions() {
           <Link
             key={a.href}
             href={a.href}
-            className="zovaix-glass-panel zovaix-premium-hover group flex items-center gap-2.5 sm:gap-3 rounded-[20px] sm:rounded-[22px] p-3 sm:px-4 sm:py-4"
+            className="zovaix-glass-panel zovaix-premium-hover group flex items-center gap-3 rounded-[22px] p-3.5 sm:p-4 transition-all duration-200"
           >
             <div
-              className={`zovaix-icon-tile flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl text-primary-foreground ${a.tint}`}
+              className={`flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${a.gradient} text-white shadow-lg ${a.shadow} transition-transform duration-200 group-hover:scale-105`}
             >
-              <Icon className="h-4 w-4" />
+              <Icon className="h-5 w-5 stroke-[2.25]" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-foreground truncate text-xs sm:text-sm font-medium">{a.label}</p>
-              <p className="text-muted-foreground hidden sm:block truncate text-xs">
-                Launch this workflow
+              <p className="text-foreground truncate text-xs sm:text-sm font-semibold tracking-tight">{a.label}</p>
+              <p className="text-muted-foreground hidden sm:block truncate text-xs mt-0.5">
+                Launch workflow
               </p>
             </div>
           </Link>
