@@ -28,6 +28,8 @@ import {
   User,
   CheckSquare,
   ChevronDown,
+  Copy,
+  Check,
   Zap,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
@@ -70,18 +72,139 @@ type CopilotSuggestion = {
   href: string;
 };
 
-function CopilotBrief({ content }: { content: string }) {
+function InlineMarkdown({ text }: { text: string }) {
+  // Regex splitting by **bold**, `code`, or [tags]
+  const parts = text.split(/(\*\*.*?\*\*|`.*?`|\[.*?\])/g);
+
   return (
-    <div className="space-y-3">
-      {content.split('\n').filter(Boolean).map((line, index) => {
-        const value = line.replace(/\*\*/g, '').trim();
-        if (value.startsWith('## ')) {
-          return <p key={`${value}-${index}`} className="border-border/70 border-t pt-3 text-[11px] font-semibold tracking-[0.15em] text-primary uppercase">{value.slice(3)}</p>;
+    <span>
+      {parts.map((part, i) => {
+        if (!part) return null;
+        if (part.startsWith('**') && part.endsWith('**')) {
+          const inner = part.slice(2, -2);
+          const isHighlight = /^(Now|Next|Watch|Signal|Action|Customer Signal|Immediate Action|Evidence|Impact|Status):?$/i.test(inner);
+          if (isHighlight) {
+            return (
+              <span
+                key={i}
+                className="inline-flex items-center rounded-md bg-primary/15 border border-primary/25 px-1.5 py-0.5 text-[11px] font-bold text-primary mr-1 tracking-tight"
+              >
+                {inner}
+              </span>
+            );
+          }
+          return (
+            <strong key={i} className="font-semibold text-foreground">
+              {inner}
+            </strong>
+          );
         }
-        if (value.startsWith('# ')) {
-          return <h3 key={`${value}-${index}`} className="text-base font-semibold text-foreground">{value.slice(2)}</h3>;
+        if (part.startsWith('[') && part.endsWith(']')) {
+          const inner = part.slice(1, -1);
+          const isOverdue = /overdue/i.test(inner);
+          return (
+            <span
+              key={i}
+              className={cn(
+                'inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold mx-1',
+                isOverdue
+                  ? 'bg-rose-500/15 border-rose-500/30 text-rose-400'
+                  : 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
+              )}
+            >
+              {inner}
+            </span>
+          );
         }
-        return <p key={`${value}-${index}`} className="text-sm leading-6 text-muted-foreground">{value.replace(/^[-*]\s*/, '')}</p>;
+        if (part.startsWith('`') && part.endsWith('`')) {
+          return (
+            <code
+              key={i}
+              className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono text-foreground"
+            >
+              {part.slice(1, -1)}
+            </code>
+          );
+        }
+        return <span key={i}>{part}</span>;
+      })}
+    </span>
+  );
+}
+
+function CopilotBrief({ content }: { content: string }) {
+  const lines = content.split('\n');
+
+  return (
+    <div className="space-y-2.5 text-xs sm:text-sm leading-relaxed">
+      {lines.map((rawLine, idx) => {
+        const line = rawLine.trim();
+        if (!line) return null;
+
+        if (line.startsWith('## ')) {
+          return (
+            <div
+              key={idx}
+              className="border-border/60 mt-4 mb-2 flex items-center gap-2 border-t pt-3.5 first:mt-0 first:border-0 first:pt-0"
+            >
+              <span className="bg-primary h-2 w-2 shrink-0 rounded-full shadow-sm" />
+              <h4 className="text-xs font-bold tracking-wider text-primary uppercase">
+                {line.slice(3).replace(/\*\*/g, '')}
+              </h4>
+            </div>
+          );
+        }
+
+        if (line.startsWith('# ')) {
+          return (
+            <h3
+              key={idx}
+              className="text-sm sm:text-base font-extrabold text-foreground tracking-tight mb-2"
+            >
+              {line.slice(2).replace(/\*\*/g, '')}
+            </h3>
+          );
+        }
+
+        if (line.startsWith('### ')) {
+          return (
+            <h5 key={idx} className="text-xs font-bold text-foreground mt-2 mb-1">
+              {line.slice(4).replace(/\*\*/g, '')}
+            </h5>
+          );
+        }
+
+        const isBullet = /^[-*]\s+/.test(line);
+        const isNumber = /^\d+\.\s+/.test(line);
+        const textContent = isBullet
+          ? line.replace(/^[-*]\s+/, '')
+          : isNumber
+            ? line.replace(/^\d+\.\s+/, '')
+            : line;
+        const indent = rawLine.startsWith('  ') || rawLine.startsWith('\t');
+
+        return (
+          <div
+            key={idx}
+            className={cn(
+              'text-muted-foreground transition-colors',
+              indent &&
+                'ml-3.5 pl-2.5 border-l-2 border-primary/25 text-xs text-foreground/90 my-1',
+              (isBullet || isNumber) &&
+                !indent &&
+                'flex items-start gap-2 text-foreground/95'
+            )}
+          >
+            {(isBullet || isNumber) && !indent && (
+              <span className="text-primary font-bold mt-0.5 shrink-0 select-none">
+                •
+              </span>
+            )}
+            <div className="flex-1">
+              <InlineMarkdown text={textContent} />
+            </div>
+          </div>
+        );
       })}
     </div>
   );
@@ -321,6 +444,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
     content: string;
     href: string;
   } | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const initial =
     profile?.full_name?.charAt(0)?.toUpperCase() ??
@@ -552,30 +676,85 @@ export function Header({ onOpenSidebar }: HeaderProps) {
                 </div>
               </div>
               {copilotResult ? (
-                <div className="max-h-[34rem] overflow-y-auto p-4">
-                  <div className="border-primary/20 bg-primary/6 rounded-xl border p-4">
-                    <div className="mb-3 flex items-center gap-2">
-                      <span className="zovaix-icon-tile inline-flex h-8 w-8 items-center justify-center rounded-xl text-primary-foreground">
-                        <Sparkles className="h-4 w-4" />
-                      </span>
-                      <p className="text-foreground text-sm font-semibold">
-                        {copilotResult.title}
-                      </p>
+                <div className="max-h-[34rem] overflow-y-auto p-4 space-y-3">
+                  <div className="zovaix-glass-card rounded-2xl border border-primary/25 bg-background/80 p-4.5 shadow-sm">
+                    <div className="mb-3 flex items-center justify-between gap-2 border-b border-border/60 pb-3">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className="zovaix-icon-tile inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-primary-foreground">
+                          <Sparkles className="h-4 w-4" />
+                        </span>
+                        <p className="text-foreground truncate text-sm font-semibold">
+                          {copilotResult.title}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(copilotResult.content);
+                          setCopied(true);
+                          setTimeout(() => setCopied(false), 2000);
+                          toast.success('Briefing copied to clipboard');
+                        }}
+                        className="border-border/70 hover:bg-card-2 text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-medium transition-colors"
+                        title="Copy briefing"
+                      >
+                        {copied ? (
+                          <>
+                            <Check className="h-3.5 w-3.5 text-primary" />
+                            <span className="text-primary font-semibold">Copied</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-3.5 w-3.5" />
+                            <span>Copy</span>
+                          </>
+                        )}
+                      </button>
                     </div>
+
                     <CopilotBrief content={copilotResult.content} />
                   </div>
-                  <div className="mt-3 flex items-center justify-between gap-3">
+
+                  {/* Workflow Quick Actions */}
+                  <div className="flex items-center gap-2 pt-1 text-xs">
+                    <span className="text-muted-foreground font-medium shrink-0">Quick jump:</span>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <Link
+                        href="/inbox"
+                        onClick={() => setCopilotOpen(false)}
+                        className="bg-card-2 hover:bg-card-3 border-border/70 text-foreground inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 font-medium transition-colors"
+                      >
+                        💬 Inbox
+                      </Link>
+                      <Link
+                        href="/pipelines"
+                        onClick={() => setCopilotOpen(false)}
+                        className="bg-card-2 hover:bg-card-3 border-border/70 text-foreground inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 font-medium transition-colors"
+                      >
+                        💼 Deals
+                      </Link>
+                      <Link
+                        href="/calendar"
+                        onClick={() => setCopilotOpen(false)}
+                        className="bg-card-2 hover:bg-card-3 border-border/70 text-foreground inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 font-medium transition-colors"
+                      >
+                        📅 Calendar
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-3 pt-2 border-t border-border/60">
                     <button
                       type="button"
                       onClick={() => setCopilotResult(null)}
-                      className="text-muted-foreground hover:text-foreground text-sm font-medium"
+                      className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
                     >
-                      Run another
+                      ← Run another action
                     </button>
                     <Link
                       href={copilotResult.href}
                       onClick={() => setCopilotOpen(false)}
-                      className="bg-primary text-primary-foreground hover:bg-primary-hover inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium"
+                      className="bg-primary text-primary-foreground hover:bg-primary-hover shadow-primary/20 inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-semibold shadow-sm transition-all"
                     >
                       Open workspace <ArrowRight className="h-4 w-4" />
                     </Link>
