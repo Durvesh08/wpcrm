@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 import type { Contact, Tag, ContactTag } from '@/types';
@@ -48,6 +49,8 @@ import {
   SlidersHorizontal,
   Filter,
   X,
+  MessageSquare,
+  Phone,
 } from 'lucide-react';
 import { ContactForm } from '@/components/contacts/contact-form';
 import { ContactDetailView } from '@/components/contacts/contact-detail-view';
@@ -98,6 +101,7 @@ interface ContactWithTags extends Contact {
 }
 
 export default function ContactsPage() {
+  const router = useRouter();
   const supabase = createClient();
   const canEdit = useCan('send-messages');
   const canEditSettings = useCan('edit-settings');
@@ -560,8 +564,161 @@ export default function ContactsPage() {
         </div>
       )}
 
-      {/* Table */}
-      <div className="rounded-lg border border-border overflow-x-auto">
+      {/* Mobile Glass Contact Cards (<md) */}
+      <div className="space-y-3 block md:hidden">
+        {loading ? (
+          <div className="zovaix-glass-card flex flex-col items-center justify-center rounded-2xl p-8 text-center">
+            <Loader2 className="size-6 animate-spin text-primary mb-2" />
+            <p className="text-sm text-muted-foreground">Loading contacts...</p>
+          </div>
+        ) : contacts.length === 0 ? (
+          <div className="zovaix-glass-card flex flex-col items-center justify-center rounded-2xl p-8 text-center">
+            <Users className="size-8 text-muted-foreground mb-2" />
+            <p className="text-sm text-muted-foreground">
+              {hasActiveFilters
+                ? 'No contacts match your filters.'
+                : 'No contacts yet.'}
+            </p>
+            {!hasActiveFilters && (
+              <GatedButton
+                canAct={canEdit}
+                gateReason="add or import contacts"
+                variant="outline"
+                size="sm"
+                onClick={openAddForm}
+                className="mt-3 border-border text-muted-foreground hover:bg-muted"
+              >
+                <Plus className="size-3.5" />
+                Add your first contact
+              </GatedButton>
+            )}
+          </div>
+        ) : (
+          contacts.map((contact) => (
+            <div
+              key={contact.id}
+              onClick={() => openDetail(contact.id)}
+              className="zovaix-glass-card zovaix-touch-press relative cursor-pointer rounded-2xl p-4 transition-all"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex items-center justify-center"
+                  >
+                    <Checkbox
+                      checked={selected.has(contact.id)}
+                      onCheckedChange={() => toggleSelect(contact.id)}
+                      aria-label={`Select ${contact.name || contact.phone}`}
+                    />
+                  </div>
+                  <div className="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold">
+                    {(contact.name || contact.phone || '?').charAt(0).toUpperCase()}
+                  </div>
+                  <div className="min-w-0">
+                    <h4 className="text-foreground truncate text-sm font-semibold">
+                      {contact.name || <span className="text-muted-foreground italic">Unnamed</span>}
+                    </h4>
+                    <p className="text-muted-foreground font-mono text-xs truncate">
+                      {contact.phone}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
+                  <a
+                    href={`tel:${contact.phone}`}
+                    className="text-muted-foreground hover:text-foreground inline-flex h-8 w-8 items-center justify-center rounded-lg bg-muted/60"
+                    title="Call"
+                  >
+                    <Phone className="h-3.5 w-3.5" />
+                  </a>
+                  <Button
+                    size="icon-xs"
+                    variant="default"
+                    onClick={() => router.push(`/inbox?phone=${encodeURIComponent(contact.phone)}`)}
+                    className="h-8 w-8 rounded-lg"
+                    title="Chat on WhatsApp"
+                  >
+                    <MessageSquare className="h-3.5 w-3.5" />
+                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="icon-xs"
+                          className="text-muted-foreground hover:text-foreground h-8 w-8 rounded-lg"
+                        />
+                      }
+                    >
+                      <MoreHorizontal className="size-4" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="bg-popover border-border">
+                      <DropdownMenuItem
+                        onClick={() => openEditForm(contact)}
+                        className="text-popover-foreground focus:bg-muted focus:text-foreground"
+                      >
+                        <Pencil className="size-4" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator className="bg-border" />
+                      <DropdownMenuItem
+                        variant="destructive"
+                        onClick={() => confirmDelete(contact)}
+                      >
+                        <Trash2 className="size-4" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+
+              {/* Badges & Meta */}
+              <div className="mt-3 flex flex-wrap items-center gap-2 pt-2 border-t border-border/40 text-xs">
+                <span
+                  className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold ${leadStageClass(contact.lead_stage)}`}
+                >
+                  {leadStageLabel(contact.lead_stage)}
+                </span>
+                <span className={`text-[11px] font-semibold ${scoreTone(contact.lead_score)}`}>
+                  ★ {contact.lead_score ?? 0}/100
+                </span>
+                {contact.company && (
+                  <span className="text-muted-foreground text-[11px] truncate max-w-[120px]">
+                    🏢 {contact.company}
+                  </span>
+                )}
+                {contact.tags && contact.tags.length > 0 && (
+                  <div className="flex items-center gap-1 ml-auto">
+                    {contact.tags.slice(0, 2).map((tag) => (
+                      <span
+                        key={tag.id}
+                        className="inline-flex items-center rounded-full px-1.5 py-0.2 text-[9px] font-medium"
+                        style={{
+                          backgroundColor: tag.color + '20',
+                          color: tag.color,
+                        }}
+                      >
+                        {tag.name}
+                      </span>
+                    ))}
+                    {contact.tags.length > 2 && (
+                      <span className="text-[9px] text-muted-foreground">
+                        +{contact.tags.length - 2}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Desktop Table (md+) */}
+      <div className="hidden md:block rounded-lg border border-border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow className="border-border hover:bg-transparent">

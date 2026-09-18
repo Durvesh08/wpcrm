@@ -7,11 +7,14 @@ import { useAuth } from '@/hooks/use-auth';
 import { formatCurrency } from '@/lib/currency';
 import {
   ArrowUpRight,
+  ChevronDown,
+  ChevronUp,
   DollarSign,
   MessageSquare,
   Send,
   Sparkles,
   UserPlus,
+  Zap,
 } from 'lucide-react';
 
 import {
@@ -64,6 +67,7 @@ export default function DashboardPage() {
 
   const [activity, setActivity] = useState<ActivityItem[] | null>(null);
   const [activityLoading, setActivityLoading] = useState(true);
+  const [showAiBrief, setShowAiBrief] = useState(false);
 
   const loadAll = useCallback(() => {
     const db = createClient();
@@ -192,26 +196,55 @@ export default function DashboardPage() {
             </div>
 
             <div>
-              <p className="text-muted-foreground text-xs sm:text-sm">
-                {greeting}
-                {profile?.full_name
-                  ? `, ${profile.full_name.split(' ')[0]}`
-                  : ''}
-              </p>
-              <h1 className="text-foreground mt-1.5 max-w-3xl text-xl font-semibold tracking-tight sm:text-3xl lg:text-4xl">
-                Your revenue workspace is active, prioritized, and ready to
-                move.
+              <div className="flex items-center gap-2">
+                <p className="text-muted-foreground text-xs sm:text-sm font-medium">
+                  {greeting}
+                  {profile?.full_name
+                    ? `, ${profile.full_name.split(' ')[0]}`
+                    : ''}
+                </p>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-[11px] font-medium text-emerald-400">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Live
+                </span>
+              </div>
+              <h1 className="text-foreground mt-1 text-xl font-bold tracking-tight sm:text-2xl lg:text-3xl">
+                Revenue Mission Control
               </h1>
-              <p className="text-muted-foreground mt-2 max-w-2xl text-xs leading-5 sm:text-sm sm:leading-6">
-                {heroSummary
-                  ? `You have ${metrics?.activeConversations.current ?? 0} active conversations, ${heroSummary.hotLeadCount} hot leads, and ${heroSummary.overdueFollowUps} follow-ups that need attention. AI expects ₹${heroSummary.estimatedRevenue.toLocaleString('en-IN')} in near-term opportunity if your team stays responsive today.`
-                  : 'Loading your latest customer momentum, pipeline health, and AI signals.'}
-              </p>
+              
+              {/* Quick scannable status line instead of paragraph text */}
+              <div className="mt-2.5 flex flex-wrap items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                <span>{metrics?.activeConversations.current ?? 0} active conversations</span>
+                <span>•</span>
+                <span className="text-foreground font-medium">{heroSummary?.hotLeadCount ?? 0} hot leads</span>
+                <span>•</span>
+                <span>{heroSummary?.overdueFollowUps ?? 0} follow-ups pending</span>
+                <button
+                  type="button"
+                  onClick={() => setShowAiBrief(!showAiBrief)}
+                  className="zovaix-touch-press inline-flex items-center gap-1 ml-1 text-primary hover:underline font-medium text-xs"
+                >
+                  <Sparkles className="h-3 w-3" />
+                  {showAiBrief ? 'Hide AI Brief' : 'View AI Brief'}
+                  {showAiBrief ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                </button>
+              </div>
+
+              {/* Expandable AI Narrative */}
+              {showAiBrief && heroSummary && (
+                <div className="zovaix-glass-card mt-3 rounded-2xl p-3.5 text-xs sm:text-sm text-muted-foreground leading-relaxed border-primary/20 bg-primary/5">
+                  <div className="flex items-center gap-2 font-semibold text-foreground mb-1">
+                    <Sparkles className="h-3.5 w-3.5 text-primary" />
+                    <span>AI Revenue Forecast</span>
+                  </div>
+                  You have {metrics?.activeConversations.current ?? 0} active conversations and {heroSummary.hotLeadCount} high-intent leads. Staying responsive today can capture an estimated ₹{heroSummary.estimatedRevenue.toLocaleString('en-IN')} in near-term deals.
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-2 sm:gap-3 xl:grid-cols-4">
               <InsightChip
-                label="Unread conversations"
+                label="Unread chats"
                 value={(
                   metrics?.activeConversations.current ?? 0
                 ).toLocaleString()}
@@ -223,7 +256,7 @@ export default function DashboardPage() {
                 tone="blue"
               />
               <InsightChip
-                label="Revenue today"
+                label="Near-term revenue"
                 value={
                   heroSummary
                     ? formatCurrency(

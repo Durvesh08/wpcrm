@@ -28,6 +28,8 @@ import {
   PanelRightClose,
   Pin,
   Tag,
+  MoreVertical,
+  Phone,
 } from 'lucide-react';
 import { format, isToday, isYesterday, differenceInHours } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
@@ -990,124 +992,17 @@ export function MessageThread({
           </Badge>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Contact-panel toggle — desktop only. The contact sidebar
-              eats a chunk of horizontal width that crowds the thread on
-              smaller laptops; this lets agents reclaim it when they just
-              want to read and reply. Hidden on mobile, where the sidebar
-              never renders as a permanent panel anyway. Issue #258. */}
-          {onToggleContactPanel && (
-            <button
-              type="button"
-              onClick={onToggleContactPanel}
-              aria-label={
-                contactPanelOpen ? 'Hide contact panel' : 'Show contact panel'
-              }
-              aria-pressed={contactPanelOpen}
-              title={contactPanelOpen ? 'Hide contact' : 'Show contact'}
-              className={cn(
-                'hover:bg-muted hover:text-foreground hidden h-7 w-7 items-center justify-center rounded-md transition-colors lg:inline-flex',
-                contactPanelOpen ? 'text-primary' : 'text-muted-foreground'
-              )}
-            >
-              {contactPanelOpen ? (
-                <PanelRightClose className="h-4 w-4" />
-              ) : (
-                <PanelRightOpen className="h-4 w-4" />
-              )}
-            </button>
-          )}
-
-          {/* Manual refresh — forces a refetch of the messages + the
-              conversation list (the parent bumps its resyncToken). Useful
-              when realtime missed an event or the agent just wants to be
-              sure nothing's stale. Only rendered when the parent wires
-              up `onRefresh`. */}
-          {onRefresh && (
-            <button
-              type="button"
-              onClick={handleRefreshClick}
-              disabled={isRefreshing}
-              aria-label="Refresh conversation"
-              title="Refresh"
-              className={cn(
-                'text-muted-foreground hover:bg-muted hover:text-foreground inline-flex h-7 w-7 items-center justify-center rounded-md transition-colors disabled:opacity-60'
-              )}
-            >
-              <RefreshCw
-                className={cn('h-3.5 w-3.5', isRefreshing && 'animate-spin')}
-              />
-            </button>
-          )}
-
-          <button
-            type="button"
-            onClick={() =>
-              void patchConversation({ is_pinned: !conversation.is_pinned })
-            }
-            aria-label={conversation.is_pinned ? 'Unpin chat' : 'Pin chat'}
-            title={conversation.is_pinned ? 'Unpin chat' : 'Pin chat'}
-            className={cn(
-              'hover:bg-muted hover:text-foreground inline-flex h-7 w-7 items-center justify-center rounded-md transition-colors',
-              conversation.is_pinned ? 'text-primary' : 'text-muted-foreground'
-            )}
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Quick Call Action */}
+          <a
+            href={`tel:${contact.phone}`}
+            className="text-muted-foreground hover:text-foreground inline-flex h-7 w-7 items-center justify-center rounded-md hover:bg-muted transition-colors"
+            title="Call"
           >
-            <Pin
-              className={cn(
-                'h-3.5 w-3.5',
-                conversation.is_pinned && 'fill-current'
-              )}
-            />
-          </button>
+            <Phone className="h-3.5 w-3.5" />
+          </a>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              className={cn(
-                'hover:bg-muted inline-flex h-7 items-center justify-center gap-1 rounded-md px-2 text-xs',
-                conversation.chat_label
-                  ? 'text-primary'
-                  : 'text-muted-foreground'
-              )}
-            >
-              <Tag className="h-3 w-3" />
-              <span className="hidden sm:inline">
-                {conversation.chat_label ?? 'Label'}
-              </span>
-              <ChevronDown className="h-3 w-3" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="border-border bg-popover"
-            >
-              {CHAT_LABELS.map((label) => (
-                <DropdownMenuItem
-                  key={label}
-                  onClick={() => void patchConversation({ chat_label: label })}
-                  className={cn(
-                    'text-sm',
-                    conversation.chat_label === label
-                      ? 'text-primary'
-                      : 'text-popover-foreground'
-                  )}
-                >
-                  {label}
-                </DropdownMenuItem>
-              ))}
-              {conversation.chat_label && (
-                <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => void patchConversation({ chat_label: null })}
-                    className="text-muted-foreground text-sm"
-                  >
-                    Clear label
-                  </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Status dropdown */}
+          {/* Status dropdown — always accessible */}
           <DropdownMenu>
             <DropdownMenuTrigger
               className={cn(
@@ -1134,73 +1029,235 @@ export function MessageThread({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Assign dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger
+          {/* Desktop Only Actions */}
+          <div className="hidden sm:flex items-center gap-1.5">
+            {/* Contact-panel toggle */}
+            {onToggleContactPanel && (
+              <button
+                type="button"
+                onClick={onToggleContactPanel}
+                aria-label={
+                  contactPanelOpen ? 'Hide contact panel' : 'Show contact panel'
+                }
+                aria-pressed={contactPanelOpen}
+                title={contactPanelOpen ? 'Hide contact' : 'Show contact'}
+                className={cn(
+                  'hover:bg-muted hover:text-foreground hidden h-7 w-7 items-center justify-center rounded-md transition-colors lg:inline-flex',
+                  contactPanelOpen ? 'text-primary' : 'text-muted-foreground'
+                )}
+              >
+                {contactPanelOpen ? (
+                  <PanelRightClose className="h-4 w-4" />
+                ) : (
+                  <PanelRightOpen className="h-4 w-4" />
+                )}
+              </button>
+            )}
+
+            {/* Manual refresh */}
+            {onRefresh && (
+              <button
+                type="button"
+                onClick={handleRefreshClick}
+                disabled={isRefreshing}
+                aria-label="Refresh conversation"
+                title="Refresh"
+                className="text-muted-foreground hover:bg-muted hover:text-foreground inline-flex h-7 w-7 items-center justify-center rounded-md transition-colors disabled:opacity-60"
+              >
+                <RefreshCw
+                  className={cn('h-3.5 w-3.5', isRefreshing && 'animate-spin')}
+                />
+              </button>
+            )}
+
+            {/* Pin Chat */}
+            <button
+              type="button"
+              onClick={() =>
+                void patchConversation({ is_pinned: !conversation.is_pinned })
+              }
+              aria-label={conversation.is_pinned ? 'Unpin chat' : 'Pin chat'}
+              title={conversation.is_pinned ? 'Unpin chat' : 'Pin chat'}
               className={cn(
-                'hover:bg-muted inline-flex h-7 items-center justify-center gap-1 rounded-md px-2 text-xs',
-                assignedAgentId ? 'text-primary' : 'text-muted-foreground'
+                'hover:bg-muted hover:text-foreground inline-flex h-7 w-7 items-center justify-center rounded-md transition-colors',
+                conversation.is_pinned ? 'text-primary' : 'text-muted-foreground'
               )}
             >
-              <UserPlus className="h-3 w-3" />
-              <span className="hidden sm:inline">{assignLabel}</span>
-              <ChevronDown className="h-3 w-3" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="border-border bg-popover"
-            >
-              {profiles.length === 0 ? (
-                <DropdownMenuItem
-                  disabled
-                  className="text-muted-foreground text-sm"
-                >
-                  No teammates available
-                </DropdownMenuItem>
-              ) : (
-                profiles.map((p) => {
-                  const isSelected = p.user_id === assignedAgentId;
-                  const presence = getPresence(p.user_id);
-                  return (
-                    <DropdownMenuItem
-                      key={p.id}
-                      onClick={() => handleAssignChange(p.user_id)}
-                      className={cn(
-                        'text-sm',
-                        isSelected ? 'text-primary' : 'text-popover-foreground'
-                      )}
-                    >
-                      <PresenceDot
-                        status={presence}
-                        label={presenceLabel(
-                          presence,
-                          getRow(p.user_id)?.last_seen_at ?? null,
-                          now
-                        )}
-                        className="mr-2"
-                      />
-                      <span className="flex-1">
-                        {p.full_name}
-                        {p.user_id === user?.id ? ' (me)' : ''}
-                      </span>
-                      {isSelected && <Check className="ml-2 h-3 w-3" />}
-                    </DropdownMenuItem>
-                  );
-                })
-              )}
-              {assignedAgentId && (
-                <>
-                  <DropdownMenuSeparator className="bg-border" />
+              <Pin
+                className={cn(
+                  'h-3.5 w-3.5',
+                  conversation.is_pinned && 'fill-current'
+                )}
+              />
+            </button>
+
+            {/* Label dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className={cn(
+                  'hover:bg-muted inline-flex h-7 items-center justify-center gap-1 rounded-md px-2 text-xs',
+                  conversation.chat_label
+                    ? 'text-primary'
+                    : 'text-muted-foreground'
+                )}
+              >
+                <Tag className="h-3 w-3" />
+                <span>{conversation.chat_label ?? 'Label'}</span>
+                <ChevronDown className="h-3 w-3" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="border-border bg-popover"
+              >
+                {CHAT_LABELS.map((label) => (
                   <DropdownMenuItem
-                    onClick={() => handleAssignChange(null)}
+                    key={label}
+                    onClick={() => void patchConversation({ chat_label: label })}
+                    className={cn(
+                      'text-sm',
+                      conversation.chat_label === label
+                        ? 'text-primary'
+                        : 'text-popover-foreground'
+                    )}
+                  >
+                    {label}
+                  </DropdownMenuItem>
+                ))}
+                {conversation.chat_label && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => void patchConversation({ chat_label: null })}
+                      className="text-muted-foreground text-sm"
+                    >
+                      Clear label
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Assign dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className={cn(
+                  'hover:bg-muted inline-flex h-7 items-center justify-center gap-1 rounded-md px-2 text-xs',
+                  assignedAgentId ? 'text-primary' : 'text-muted-foreground'
+                )}
+              >
+                <UserPlus className="h-3 w-3" />
+                <span>{assignLabel}</span>
+                <ChevronDown className="h-3 w-3" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="border-border bg-popover"
+              >
+                {profiles.length === 0 ? (
+                  <DropdownMenuItem
+                    disabled
                     className="text-muted-foreground text-sm"
                   >
-                    Unassign
+                    No teammates available
                   </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                ) : (
+                  profiles.map((p) => {
+                    const isSelected = p.user_id === assignedAgentId;
+                    const presence = getPresence(p.user_id);
+                    return (
+                      <DropdownMenuItem
+                        key={p.id}
+                        onClick={() => handleAssignChange(p.user_id)}
+                        className={cn(
+                          'text-sm',
+                          isSelected ? 'text-primary' : 'text-popover-foreground'
+                        )}
+                      >
+                        <PresenceDot
+                          status={presence}
+                          label={presenceLabel(
+                            presence,
+                            getRow(p.user_id)?.last_seen_at ?? null,
+                            now
+                          )}
+                          className="mr-2"
+                        />
+                        <span className="flex-1">
+                          {p.full_name}
+                          {p.user_id === user?.id ? ' (me)' : ''}
+                        </span>
+                        {isSelected && <Check className="ml-2 h-3 w-3" />}
+                      </DropdownMenuItem>
+                    );
+                  })
+                )}
+                {assignedAgentId && (
+                  <>
+                    <DropdownMenuSeparator className="bg-border" />
+                    <DropdownMenuItem
+                      onClick={() => handleAssignChange(null)}
+                      className="text-muted-foreground text-sm"
+                    >
+                      Unassign
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Mobile Secondary Menu (<sm) */}
+          <div className="flex sm:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className="text-muted-foreground hover:bg-muted hover:text-foreground inline-flex h-7 w-7 items-center justify-center rounded-md transition-colors"
+                aria-label="More conversation actions"
+              >
+                <MoreVertical className="h-4 w-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="border-border bg-popover w-48">
+                {onRefresh && (
+                  <DropdownMenuItem onClick={handleRefreshClick}>
+                    <RefreshCw className="mr-2 h-3.5 w-3.5" />
+                    Refresh messages
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem
+                  onClick={() =>
+                    void patchConversation({ is_pinned: !conversation.is_pinned })
+                  }
+                >
+                  <Pin className="mr-2 h-3.5 w-3.5" />
+                  {conversation.is_pinned ? 'Unpin chat' : 'Pin chat'}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-border" />
+                <div className="px-2 py-1 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                  Labels
+                </div>
+                {CHAT_LABELS.map((label) => (
+                  <DropdownMenuItem
+                    key={label}
+                    onClick={() => void patchConversation({ chat_label: label })}
+                    className={cn(
+                      'text-sm',
+                      conversation.chat_label === label && 'text-primary font-medium'
+                    )}
+                  >
+                    <Tag className="mr-2 h-3.5 w-3.5" />
+                    {label}
+                  </DropdownMenuItem>
+                ))}
+                {conversation.chat_label && (
+                  <DropdownMenuItem
+                    onClick={() => void patchConversation({ chat_label: null })}
+                    className="text-muted-foreground text-xs"
+                  >
+                    Clear label
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
 

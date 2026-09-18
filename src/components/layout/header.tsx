@@ -516,13 +516,13 @@ export function Header({ onOpenSidebar }: HeaderProps) {
             }}
           >
             <PopoverTrigger
-              className="zovaix-glass-panel zovaix-premium-hover focus:ring-primary/30 hidden min-w-0 items-center gap-3 rounded-2xl px-4 py-2.5 text-left focus:ring-2 focus:outline-none xl:flex xl:w-[23rem]"
+              className="zovaix-glass-panel zovaix-premium-hover focus:ring-primary/30 flex min-w-0 items-center gap-2 rounded-xl sm:rounded-2xl p-2 xl:px-4 xl:py-2.5 text-left focus:ring-2 focus:outline-none xl:w-[23rem]"
               aria-label="Open AI copilot"
             >
-              <span className="zovaix-icon-tile inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-primary-foreground">
-                <Sparkles className="h-4 w-4" />
+              <span className="zovaix-icon-tile inline-flex h-7 w-7 sm:h-8 sm:w-8 xl:h-9 xl:w-9 shrink-0 items-center justify-center rounded-lg sm:rounded-xl text-primary-foreground">
+                <Sparkles className="h-3.5 w-3.5 xl:h-4 xl:w-4" />
               </span>
-              <div className="min-w-0 flex-1">
+              <div className="hidden min-w-0 flex-1 xl:block">
                 <p className="text-foreground truncate text-sm font-medium">
                   AI Copilot
                 </p>

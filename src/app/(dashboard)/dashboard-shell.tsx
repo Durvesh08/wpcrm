@@ -9,6 +9,7 @@ import { PresenceHeartbeat } from '@/components/presence/presence-heartbeat';
 import { createClient } from '@/lib/supabase/client';
 import type { Notification } from '@/types';
 import { toast } from 'sonner';
+import { MobileBottomNav } from '@/components/layout/mobile-bottom-nav';
 
 // Auth-gated dashboard shell. Extracted from the layout so the layout
 // itself can stay a server component and export metadata (noindex) —
@@ -135,10 +136,11 @@ function DashboardShellInner({ children }: { children: React.ReactNode }) {
       <Sidebar open={sidebarOpen} onClose={closeSidebar} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header onOpenSidebar={() => setSidebarOpen(true)} />
-        <main className="flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5 lg:px-7">
+        <main className="flex-1 overflow-y-auto px-3 py-3 sm:px-6 sm:py-5 lg:px-7 pb-24 lg:pb-6">
           {children}
         </main>
       </div>
+      <MobileBottomNav />
     </div>
   );
 }
