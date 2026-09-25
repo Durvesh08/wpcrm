@@ -35,6 +35,7 @@ export async function POST(request: Request) {
     const body = await request.json().catch(() => null)
     const conversationId =
       body && typeof body.conversation_id === 'string' ? body.conversation_id : ''
+    const mode = body?.mode === 'suggestions' ? 'suggestions' : 'draft'
     if (!conversationId) {
       return NextResponse.json(
         { error: 'conversation_id is required' },
@@ -97,11 +98,21 @@ export async function POST(request: Request) {
       latestUserMessage(messages),
     )
 
-    const systemPrompt = buildSystemPrompt({
-      userPrompt: config.systemPrompt,
-      mode: 'draft',
-      knowledge,
-    })
+    const systemPrompt = mode === 'suggestions'
+      ? `You are a sales reply assistant. Based on the conversation history, generate exactly 3 short reply options the sales agent can send. Each reply should be 1-3 sentences max.
+
+Return ONLY a JSON array of 3 strings, nothing else. Example:
+["Thanks for your interest! I'd love to share our pricing. When's a good time for a quick call?", "Hi! Our packages start at ₹15,000/month. Want me to send you the detailed brochure?", "Got it, let me check availability and get back to you within the hour."]
+
+The 3 replies should have these tones:
+1. Professional & consultative
+2. Friendly & warm  
+3. Direct & action-oriented`
+      : buildSystemPrompt({
+          userPrompt: config.systemPrompt,
+          mode: 'draft',
+          knowledge,
+        })
 
     if (config.managedAi) {
       const hasCredit = await claimManagedAiCredit(supabase, userId, 'copilot')
@@ -117,6 +128,21 @@ export async function POST(request: Request) {
     }
 
     const { text } = await generateReply({ config, systemPrompt, messages })
+    
+    if (mode === 'suggestions') {
+      let parsedArray: string[] = []
+      try {
+        parsedArray = JSON.parse(text)
+        if (!Array.isArray(parsedArray)) throw new Error('Not an array')
+      } catch (err) {
+        parsedArray = text
+          .split('\n')
+          .map(line => line.trim().replace(/^[\d\.\-\*\[\]"']+|["'\]]+$/g, '').trim())
+          .filter(Boolean)
+      }
+      return NextResponse.json({ suggestions: parsedArray.slice(0, 3) })
+    }
+
     return NextResponse.json({ draft: text })
   } catch (err) {
     if (err instanceof AiError) {

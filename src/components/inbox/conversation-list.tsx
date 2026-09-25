@@ -41,12 +41,57 @@ const STATUS_COLORS: Record<ConversationStatus, string> = {
   closed: "bg-muted-foreground",
 };
 
-type InboxFilter = ConversationStatus | "all" | "unread" | "hot";
+type StaleLevel = "fresh" | "warm" | "aging" | "stale";
+
+/**
+ * Classify a conversation's idle time for visual urgency badges.
+ *   fresh  = < 4 h   → no badge
+ *   warm   = 4–24 h  → yellow ⏰
+ *   aging  = 24–48 h → orange ⚠️
+ *   stale  = > 48 h  → red 🔴
+ * Closed conversations are always "fresh" (no badge needed).
+ */
+function getStaleLevel(conv: Conversation): StaleLevel {
+  if (conv.status === "closed") return "fresh";
+  const lastMsg = conv.last_message_at;
+  if (!lastMsg) return "stale";
+  const hoursAgo =
+    (Date.now() - new Date(lastMsg).getTime()) / 3_600_000;
+  if (hoursAgo < 4) return "fresh";
+  if (hoursAgo < 24) return "warm";
+  if (hoursAgo < 48) return "aging";
+  return "stale";
+}
+
+const STALE_BADGE: Record<
+  StaleLevel,
+  { label: string; className: string } | null
+> = {
+  fresh: null,
+  warm: {
+    label: "⏰",
+    className:
+      "bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30",
+  },
+  aging: {
+    label: "⚠️ Idle",
+    className:
+      "bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-500/30",
+  },
+  stale: {
+    label: "🔴 Stale",
+    className:
+      "bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30 animate-pulse",
+  },
+};
+
+type InboxFilter = ConversationStatus | "all" | "unread" | "hot" | "stale";
 
 const FILTER_OPTIONS: { label: string; value: InboxFilter }[] = [
   { label: "All", value: "all" },
   { label: "Unread", value: "unread" },
   { label: "🔥 Hot Leads", value: "hot" },
+  { label: "🔴 Stale", value: "stale" },
   { label: "Open", value: "open" },
   { label: "Pending", value: "pending" },
   { label: "Closed", value: "closed" },
@@ -165,6 +210,10 @@ export function ConversationList({
           c.contact?.lead_stage === "hot" ||
           c.contact?.lead_stage === "sales_ready" ||
           (c.contact?.lead_score != null && c.contact.lead_score >= 70)
+      );
+    } else if (filter === "stale") {
+      result = result.filter(
+        (c) => getStaleLevel(c) === "aging" || getStaleLevel(c) === "stale"
       );
     } else if (filter !== "all") {
       result = result.filter((c) => c.status === filter);
@@ -539,6 +588,20 @@ function ConversationItem({
             {conversation.last_message_text || "No messages yet"}
           </p>
           <div className="flex shrink-0 items-center gap-1.5">
+            {(() => {
+              const badge = STALE_BADGE[getStaleLevel(conversation)];
+              return badge ? (
+                <span
+                  className={cn(
+                    "inline-flex items-center rounded-md px-1.5 py-0.5 text-[9px] font-semibold",
+                    badge.className
+                  )}
+                  title={`Last message: ${conversation.last_message_at ? formatDistanceToNow(new Date(conversation.last_message_at), { addSuffix: true }) : "never"}`}
+                >
+                  {badge.label}
+                </span>
+              ) : null;
+            })()}
             {conversation.unread_count > 0 && (
               <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
                 {conversation.unread_count}

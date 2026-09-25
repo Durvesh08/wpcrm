@@ -19,6 +19,7 @@ import {
   X,
   Loader2,
   Sparkles,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GatedButton } from "@/components/ui/gated-button";
@@ -37,6 +38,8 @@ import {
   MEDIA_MAX_BYTES_BY_KIND,
 } from "@/lib/storage/upload-media";
 import { ReplyQuote } from "./reply-quote";
+import { PaymentLinkDialog } from "./payment-link-dialog";
+import { CreditCard } from "lucide-react";
 
 /** Media content types an agent can send from the composer. */
 export type ComposerMediaKind = "image" | "video" | "document" | "audio";
@@ -124,6 +127,8 @@ export function MessageComposer({
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
   const [drafting, setDrafting] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Media attachment state. `draft` holds an uploaded-but-not-yet-sent
@@ -268,6 +273,30 @@ export function MessageComposer({
       setDrafting(false);
     }
   }, [drafting, conversationId, adjustHeight]);
+
+  const handleSuggestReplies = async () => {
+    if (loadingSuggestions || !conversationId) return;
+    setLoadingSuggestions(true);
+    setSuggestions([]);
+    try {
+      const res = await fetch('/api/ai/draft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ conversation_id: conversationId, mode: 'suggestions' }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error ?? 'Failed to generate suggestions');
+      if (Array.isArray(data.suggestions) && data.suggestions.length > 0) {
+        setSuggestions(data.suggestions);
+      } else {
+        toast.error('No suggestions generated');
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to generate suggestions');
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  };
 
   // Upload a captured file to chat-media and stage it as a draft.
   const stageUpload = useCallback(
@@ -574,6 +603,23 @@ export function MessageComposer({
             size="sm"
             canAct={!readOnly}
             gateReason="send messages"
+            disabled={loadingSuggestions}
+            title={readOnly ? undefined : "Quick reply suggestions"}
+            className="h-9 w-9 shrink-0 p-0 text-muted-foreground hover:text-primary"
+            onClick={handleSuggestReplies}
+          >
+            {loadingSuggestions ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Zap className="h-4 w-4" />
+            )}
+          </GatedButton>
+
+          <GatedButton
+            variant="ghost"
+            size="sm"
+            canAct={!readOnly}
+            gateReason="send messages"
             disabled={drafting}
             title={readOnly ? undefined : "Draft a reply with AI"}
             className="h-9 w-9 shrink-0 p-0 text-muted-foreground hover:text-primary"
@@ -585,6 +631,25 @@ export function MessageComposer({
               <Sparkles className="h-4 w-4" />
             )}
           </GatedButton>
+
+          <PaymentLinkDialog
+            conversationId={conversationId}
+            onLinkCreated={(url) => {
+              setText((prev) => (prev ? prev + "\n\n" + url : url));
+              textareaRef.current?.focus();
+            }}
+          >
+            <GatedButton
+              variant="ghost"
+              size="sm"
+              canAct={!readOnly}
+              gateReason="send messages"
+              title={readOnly ? undefined : "Create payment link"}
+              className="h-9 w-9 shrink-0 p-0 text-muted-foreground hover:text-primary"
+            >
+              <CreditCard className="h-4 w-4" />
+            </GatedButton>
+          </PaymentLinkDialog>
 
           <textarea
             ref={textareaRef}
@@ -623,6 +688,37 @@ export function MessageComposer({
         </div>
       )}
 
+      {suggestions.length > 0 && (
+        <div className="border-t border-border/70 px-3 py-2 space-y-1.5">
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Quick replies</p>
+            <button
+              type="button"
+              onClick={() => setSuggestions([])}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </div>
+          {suggestions.map((s, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => {
+                setText(s);
+                setSuggestions([]);
+                textareaRef.current?.focus();
+              }}
+              className="w-full text-left rounded-xl border border-border/70 bg-card/50 hover:bg-primary/8 hover:border-primary/30 px-3 py-2 text-xs text-foreground transition-colors"
+            >
+              <span className="text-primary font-semibold mr-1.5">
+                {i === 0 ? '💼' : i === 1 ? '😊' : '⚡'}
+              </span>
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

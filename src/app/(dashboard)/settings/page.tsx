@@ -11,12 +11,15 @@ import { ProfileForm } from '@/components/settings/profile-form';
 import { SecurityPanel } from '@/components/settings/security-panel';
 import { AppearancePanel } from '@/components/settings/appearance-panel';
 import { WhatsAppConfig } from '@/components/settings/whatsapp-config';
+import { WidgetSettings } from '@/components/settings/widget-settings';
 import { TranslationSettings } from '@/components/settings/translation-settings';
 import { TemplateManager } from '@/components/settings/template-manager';
 import { FieldsAndTagsPanel } from '@/components/settings/fields-and-tags-panel';
 import { DealsSettings } from '@/components/settings/deals-settings';
 import { MembersTab } from '@/components/settings/members-tab';
 import { ApiKeysSettings } from '@/components/settings/api-keys-settings';
+import { PaymentsSettings } from '@/components/settings/payments-settings';
+import { RoutingSettings } from '@/components/settings/routing-settings';
 import {
   resolveSection,
   type SettingsSection,
@@ -63,6 +66,8 @@ export default function SettingsPage() {
         return <AppearancePanel />;
       case 'whatsapp':
         return <WhatsAppConfig />;
+      case 'widget':
+        return <WidgetSettings />;
       case 'translation':
         return <TranslationSettings />;
       case 'templates':
@@ -75,6 +80,10 @@ export default function SettingsPage() {
         return <MembersTab />;
       case 'api':
         return <ApiKeysSettings />;
+      case 'routing':
+        return <RoutingSettings />;
+      case 'payments':
+        return <PaymentsSettings />;
     }
   })();
 

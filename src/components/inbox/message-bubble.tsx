@@ -19,6 +19,8 @@ import {
   Play,
   FileDown,
   Link as LinkIcon,
+  Mic,
+  Loader2,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ReplyQuote } from './reply-quote';
@@ -241,16 +243,73 @@ function MediaVideo({ url }: { url: string }) {
   );
 }
 
-function MediaAudio({ url }: { url: string }) {
+function MediaAudio({ url, transcription, messageId }: { url: string; transcription?: string | null; messageId?: string }) {
   const [error, setError] = useState(false);
+  const [localTranscription, setLocalTranscription] = useState(transcription ?? null);
+  const [transcribing, setTranscribing] = useState(false);
+
+  const handleTranscribe = async () => {
+    if (!messageId || transcribing) return;
+    setTranscribing(true);
+    try {
+      const res = await fetch('/api/ai/transcribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message_id: messageId }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.transcription) {
+        setLocalTranscription(data.transcription);
+      }
+    } catch {
+      // silently fail — transcription is optional
+    } finally {
+      setTranscribing(false);
+    }
+  };
+
   if (error) return <MediaUnavailable label="Audio" />;
   return (
-    <audio
-      src={url}
-      controls
-      className="max-w-60"
-      onError={() => setError(true)}
-    />
+    <div className="space-y-1.5">
+      <audio
+        src={url}
+        controls
+        className="max-w-60"
+        onError={() => setError(true)}
+      />
+      {localTranscription ? (
+        <div className="max-w-60 rounded-lg bg-muted/50 px-2.5 py-1.5">
+          <div className="mb-0.5 flex items-center gap-1">
+            <Mic className="h-3 w-3 text-primary" />
+            <span className="text-[9px] font-semibold uppercase tracking-wider text-primary">
+              Transcribed
+            </span>
+          </div>
+          <p className="text-xs leading-relaxed text-foreground/90 whitespace-pre-wrap">
+            {localTranscription}
+          </p>
+        </div>
+      ) : messageId ? (
+        <button
+          type="button"
+          onClick={handleTranscribe}
+          disabled={transcribing}
+          className="flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-medium text-muted-foreground hover:text-primary hover:bg-primary/8 transition-colors disabled:opacity-50"
+        >
+          {transcribing ? (
+            <>
+              <Loader2 className="h-3 w-3 animate-spin" />
+              Transcribing...
+            </>
+          ) : (
+            <>
+              <Mic className="h-3 w-3" />
+              Transcribe
+            </>
+          )}
+        </button>
+      ) : null}
+    </div>
   );
 }
 
@@ -524,7 +583,11 @@ function MessageContent({
       return (
         <div>
           {message.media_url ? (
-            <MediaAudio url={message.media_url} />
+            <MediaAudio
+              url={message.media_url}
+              transcription={message.transcription_text}
+              messageId={message.id}
+            />
           ) : (
             <MediaUnavailable label="Audio" />
           )}

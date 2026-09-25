@@ -169,5 +169,16 @@ export async function resolveConversationByPhone(
     );
   }
 
+  // Trigger routing assignment logic for new conversation
+  try {
+    const { assignConversation } = await import('@/lib/routing/assign');
+    await assignConversation(db, {
+      accountId,
+      conversationId: newConv.id,
+    });
+  } catch (routeErr) {
+    console.error('[resolve-conversation] routing assignment error:', routeErr);
+  }
+
   return { conversationId: newConv.id, contactId, contactCreated };
 }
