@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import {
   MessageSquare,
   Users,
@@ -45,9 +45,11 @@ export function MobileBottomNav() {
   const unreadAlerts = useUnreadNotifications();
   const [moreOpen, setMoreOpen] = useState(false);
 
-  // In conversation view (/inbox/[id] or thread active on mobile), hide the bottom nav
+  const searchParams = useSearchParams();
+
+  // In conversation view (/inbox?c=... or thread active on mobile), hide the bottom nav
   // so the mobile chat keyboard/composer has full vertical height.
-  const isDeepInboxChat = pathname.startsWith('/inbox/') && pathname !== '/inbox';
+  const isDeepInboxChat = pathname === '/inbox' && searchParams.has('c');
 
   if (isDeepInboxChat) {
     return null;
@@ -84,7 +86,7 @@ export function MobileBottomNav() {
       {/* Mobile Glass Bottom Nav */}
       <nav
         aria-label="Mobile Navigation"
-        className="zovaix-bottom-nav fixed bottom-3 left-3 right-3 z-40 flex h-16 items-center justify-around rounded-2xl px-2 lg:hidden"
+        className="zovaix-bottom-nav fixed bottom-3 left-3 right-3 z-30 flex h-16 items-center justify-around rounded-2xl px-2 lg:hidden"
         style={{
           paddingBottom: 'max(0px, env(safe-area-inset-bottom))',
         }}
