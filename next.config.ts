@@ -65,6 +65,51 @@ const SECURITY_HEADERS = [
 
 const nextConfig: NextConfig = {
   /**
+   * Bundle optimizations.
+   *
+   * `optimizePackageImports` — tree-shakes barrel exports for large
+   * icon / utility libraries so only the symbols actually used make it
+   * into the client bundle. Without this, `import { X } from 'lucide-react'`
+   * pulls the entire 39 MB package into the compile graph.
+   *
+   * `serverExternalPackages` — keeps heavy server-only SDKs out of the
+   * Webpack graph entirely (resolved at runtime via Node require).
+   */
+  experimental: {
+    optimizePackageImports: [
+      'lucide-react',
+      'date-fns',
+      'recharts',
+      '@xyflow/react',
+      '@dnd-kit/core',
+      '@dnd-kit/sortable',
+    ],
+  },
+  serverExternalPackages: ['firebase-admin'],
+
+  /**
+   * Image optimisation — allows `next/image` to proxy and resize
+   * Supabase-hosted media (chat images, avatars). Serves modern
+   * formats (AVIF → WebP fallback) to cut payload by 40-60%.
+   */
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: '**.supabase.co' },
+    ],
+    formats: ['image/avif', 'image/webp'],
+  },
+
+  /**
+   * Strip console.log in production builds. Debug logs are free in dev
+   * but add noise + minor overhead in prod.
+   */
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production'
+      ? { exclude: ['error', 'warn'] }
+      : false,
+  },
+
+  /**
    * Cache-Control policy.
    *
    * Why this exists:

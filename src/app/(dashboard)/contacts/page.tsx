@@ -598,7 +598,7 @@ export default function ContactsPage() {
             <div
               key={contact.id}
               onClick={() => openDetail(contact.id)}
-              className="zovaix-glass-card zovaix-touch-press relative cursor-pointer rounded-2xl p-4 transition-all"
+              className="bg-card/80 border border-border/60 shadow-sm zovaix-touch-press relative cursor-pointer rounded-2xl p-4 transition-all"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">

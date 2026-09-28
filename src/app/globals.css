@@ -365,7 +365,13 @@ html[data-mode='light'][data-theme='whatsapp'] .zovaix-whatsapp-chat-surface {
     radial-gradient(ellipse 90% 55% at 50% -12%, color-mix(in oklch, var(--primary) 20%, transparent) 0%, transparent 68%),
     radial-gradient(ellipse 65% 45% at 95% 15%, color-mix(in oklch, var(--chart-2) 16%, transparent) 0%, transparent 55%),
     radial-gradient(ellipse 55% 40% at 5% 50%, color-mix(in oklch, var(--primary) 12%, transparent) 0%, transparent 50%);
-  background-attachment: fixed;
+  background-attachment: scroll;
+}
+
+@media (min-width: 1024px) {
+  .zovaix-app-shell {
+    background-attachment: fixed;
+  }
 }
 
 .zovaix-premium-panel {
@@ -380,8 +386,8 @@ html[data-mode='light'][data-theme='whatsapp'] .zovaix-whatsapp-chat-surface {
     0 1px 1px 0 rgba(255, 255, 255, 0.18) inset,
     0 0 0 1px rgba(255, 255, 255, 0.04) inset,
     0 12px 32px -6px color-mix(in oklch, black 50%, transparent);
-  backdrop-filter: blur(24px) saturate(170%);
-  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
 }
 
 .zovaix-glass-panel {
@@ -396,8 +402,8 @@ html[data-mode='light'][data-theme='whatsapp'] .zovaix-whatsapp-chat-surface {
     0 1px 1px 0 rgba(255, 255, 255, 0.22) inset,
     0 0 0 1px rgba(255, 255, 255, 0.06) inset,
     0 20px 48px -10px color-mix(in oklch, black 55%, transparent);
-  backdrop-filter: blur(26px) saturate(180%);
-  -webkit-backdrop-filter: blur(26px) saturate(180%);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
 }
 
 .zovaix-icon-tile {
@@ -522,23 +528,23 @@ html[data-mode='dark'] .zovaix-premium-hover:hover {
   box-shadow:
     0 1px 1px 0 rgba(255, 255, 255, 0.20) inset,
     0 14px 36px -8px color-mix(in oklch, black 50%, transparent);
-  backdrop-filter: blur(24px) saturate(170%);
-  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
 }
 
 .zovaix-bottom-nav {
   background:
     linear-gradient(
       180deg,
-      color-mix(in oklch, var(--card) 85%, white 5%),
-      color-mix(in oklch, var(--card-2) 80%, transparent 20%)
+      color-mix(in oklch, var(--card) 92%, white 5%),
+      color-mix(in oklch, var(--card-2) 90%, transparent 10%)
     );
   border: 1px solid color-mix(in oklch, var(--border) 60%, white 25%);
   box-shadow:
     0 1px 1px 0 rgba(255, 255, 255, 0.25) inset,
-    0 -8px 36px -4px color-mix(in oklch, black 60%, transparent);
-  backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
+    0 -4px 16px -4px color-mix(in oklch, black 40%, transparent);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
 }
 
 .zovaix-pill-glow {
@@ -554,3 +560,13 @@ html[data-mode='dark'] .zovaix-premium-hover:hover {
   opacity: 0.9;
 }
 
+
+/* Disable continuous infinite animations on mobile to save battery and GPU */
+@media (max-width: 768px) {
+  .zovaix-brand-mark {
+    animation: none;
+  }
+  .zovaix-wordmark::after {
+    animation: none;
+  }
+}

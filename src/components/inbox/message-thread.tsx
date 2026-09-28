@@ -173,6 +173,73 @@ function hiddenMessagesKey(userId: string | undefined, conversationId: string) {
   return `zovaix:hidden-messages:${userId ?? 'anonymous'}:${conversationId}`;
 }
 
+function AssignDropdownContent({ 
+  profiles, 
+  assignedAgentId, 
+  userId, 
+  onAssign 
+}: { 
+  profiles: Profile[]; 
+  assignedAgentId: string | null; 
+  userId: string | undefined;
+  onAssign: (agentId: string | null) => void;
+}) {
+  const { getPresence, getRow, now } = usePresence();
+  return (
+    <>
+      {profiles.length === 0 ? (
+        <DropdownMenuItem
+          disabled
+          className="text-muted-foreground text-sm"
+        >
+          No teammates available
+        </DropdownMenuItem>
+      ) : (
+        profiles.map((p) => {
+          const isSelected = p.user_id === assignedAgentId;
+          const presence = getPresence(p.user_id);
+          return (
+            <DropdownMenuItem
+              key={p.id}
+              onClick={() => onAssign(p.user_id)}
+              className={cn(
+                'text-sm',
+                isSelected ? 'text-primary' : 'text-popover-foreground'
+              )}
+            >
+              <PresenceDot
+                status={presence}
+                label={presenceLabel(
+                  presence,
+                  getRow(p.user_id)?.last_seen_at ?? null,
+                  now
+                )}
+                className="mr-2"
+              />
+              <span className="flex-1">
+                {p.full_name}
+                {p.user_id === userId ? ' (me)' : ''}
+              </span>
+              {isSelected && <Check className="ml-2 h-3 w-3" />}
+            </DropdownMenuItem>
+          );
+        })
+      )}
+      {assignedAgentId && (
+        <>
+          <DropdownMenuSeparator className="bg-border" />
+          <DropdownMenuItem
+            onClick={() => onAssign(null)}
+            className="text-muted-foreground text-sm"
+          >
+            Unassign
+          </DropdownMenuItem>
+        </>
+      )}
+    </>
+  );
+}
+
 export function MessageThread({
   conversation,
   contact,
@@ -190,7 +257,6 @@ export function MessageThread({
   onToggleContactPanel,
 }: MessageThreadProps) {
   const { user } = useAuth();
-  const { getPresence, getRow, now } = usePresence();
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
@@ -928,10 +994,14 @@ export function MessageThread({
   }
 
   const displayName = contact.name || contact.phone;
-  const visibleMessages = messages.filter(
-    (msg) => !hiddenMessageIds.has(msg.id)
+  const visibleMessages = useMemo(
+    () => messages.filter((msg) => !hiddenMessageIds.has(msg.id)),
+    [messages, hiddenMessageIds]
   );
-  const messageGroups = groupMessagesByDate(visibleMessages);
+  const messageGroups = useMemo(
+    () => groupMessagesByDate(visibleMessages),
+    [visibleMessages]
+  );
   const currentStatus = STATUS_OPTIONS.find(
     (s) => s.value === conversation.status
   );
@@ -1153,55 +1223,12 @@ export function MessageThread({
                 align="end"
                 className="border-border bg-popover"
               >
-                {profiles.length === 0 ? (
-                  <DropdownMenuItem
-                    disabled
-                    className="text-muted-foreground text-sm"
-                  >
-                    No teammates available
-                  </DropdownMenuItem>
-                ) : (
-                  profiles.map((p) => {
-                    const isSelected = p.user_id === assignedAgentId;
-                    const presence = getPresence(p.user_id);
-                    return (
-                      <DropdownMenuItem
-                        key={p.id}
-                        onClick={() => handleAssignChange(p.user_id)}
-                        className={cn(
-                          'text-sm',
-                          isSelected ? 'text-primary' : 'text-popover-foreground'
-                        )}
-                      >
-                        <PresenceDot
-                          status={presence}
-                          label={presenceLabel(
-                            presence,
-                            getRow(p.user_id)?.last_seen_at ?? null,
-                            now
-                          )}
-                          className="mr-2"
-                        />
-                        <span className="flex-1">
-                          {p.full_name}
-                          {p.user_id === user?.id ? ' (me)' : ''}
-                        </span>
-                        {isSelected && <Check className="ml-2 h-3 w-3" />}
-                      </DropdownMenuItem>
-                    );
-                  })
-                )}
-                {assignedAgentId && (
-                  <>
-                    <DropdownMenuSeparator className="bg-border" />
-                    <DropdownMenuItem
-                      onClick={() => handleAssignChange(null)}
-                      className="text-muted-foreground text-sm"
-                    >
-                      Unassign
-                    </DropdownMenuItem>
-                  </>
-                )}
+                <AssignDropdownContent
+                  profiles={profiles}
+                  assignedAgentId={assignedAgentId}
+                  userId={user?.id}
+                  onAssign={handleAssignChange}
+                />
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

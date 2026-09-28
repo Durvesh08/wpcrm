@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef, memo } from 'react';
 import { cn } from '@/lib/utils';
 import type { Message, MessageReaction } from '@/types';
 import {
@@ -202,6 +202,8 @@ function MediaImage({ url, alt }: { url: string; alt: string }) {
         <img
           src={url}
           alt={alt}
+          loading="lazy"
+          decoding="async"
           className="max-h-64 max-w-60 object-cover"
           onError={() => setError(true)}
         />
@@ -676,7 +678,7 @@ function MessageContent({
   }
 }
 
-export function MessageBubble({
+function MessageBubbleInner({
   message,
   reply,
   reactions,
@@ -739,3 +741,6 @@ export function MessageBubble({
     </div>
   );
 }
+
+export const MessageBubble = memo(MessageBubbleInner);
+

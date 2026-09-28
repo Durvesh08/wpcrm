@@ -520,7 +520,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
   };
 
   return (
-    <header className="border-border/50 bg-background/65 sticky top-0 z-20 border-b shadow-lg shadow-black/20 backdrop-blur-2xl">
+    <header className="border-border/50 bg-background/65 sticky top-0 z-20 border-b shadow-lg shadow-black/20 backdrop-blur-md">
       <div className="flex h-16 items-center justify-between gap-2 px-3 sm:px-6 lg:px-7">
         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <button

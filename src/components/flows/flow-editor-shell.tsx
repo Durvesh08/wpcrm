@@ -28,7 +28,19 @@ import { useEffect, useState } from "react";
 import { GitFork, List } from "lucide-react";
 
 import { FlowBuilder } from "./flow-builder";
-import { FlowCanvas } from "./flow-canvas";
+import dynamic from "next/dynamic";
+
+const FlowCanvas = dynamic(
+  () => import("./flow-canvas").then((m) => m.FlowCanvas),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-full w-full items-center justify-center text-muted-foreground text-sm">
+        Loading canvas…
+      </div>
+    ),
+  }
+);
 import { FlowEditorProvider } from "./flow-editor-state";
 import { EditorHeader } from "./header";
 import { ValidationPanel } from "./validation-panel";
