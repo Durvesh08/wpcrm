@@ -34,6 +34,7 @@ import { requireApiKey } from '@/lib/auth/api-context';
 // bound, not a guarantee: a near-cap (MAX_RECIPIENTS) audience can
 // still exceed 60s, so very large sends should be split across
 // requests. A durable queue/cron drain is the complete fix (follow-up).
+export const maxDuration = 60;
 import { ok, fail, toApiErrorResponse } from '@/lib/api/v1/respond';
 import { resolveAuditUserId, ContactError } from '@/lib/api/v1/contacts';
 import {

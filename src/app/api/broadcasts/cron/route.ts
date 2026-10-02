@@ -1,4 +1,3 @@
-export const maxDuration = 60;
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/automations/admin-client';
 
