@@ -102,7 +102,7 @@ export async function POST(request: Request) {
 
     // Build absolute URL for internal media proxy
     const audioUrl = message.media_url.startsWith('/')
-      ? `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}${message.media_url}`
+      ? `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}${message.media_url}`
       : message.media_url
 
     const { transcription, summary } = await transcribeAudio(config, audioUrl)

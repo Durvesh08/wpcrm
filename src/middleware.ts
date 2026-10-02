@@ -23,7 +23,13 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
+    let user = null;
+  try {
+    const res = await supabase.auth.getUser();
+    user = res.data.user;
+  } catch (err) {
+    console.error('Middleware Supabase error:', err);
+  }
 
   // getUser() transparently refreshes an expired access token, which
   // ROTATES the refresh token and writes the new cookies onto

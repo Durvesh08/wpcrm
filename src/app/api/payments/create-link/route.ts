@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     }
 
     // 2. Create Stripe Checkout Session
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const appUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
     
     const params = new URLSearchParams({
       'line_items[0][price_data][currency]': 'inr',
