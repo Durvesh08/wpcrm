@@ -46,6 +46,7 @@ interface BroadcastPayload {
    * falls back to the template's stored URL only when this is empty.
    */
   headerMediaUrl?: string;
+  scheduledAt?: string;
 }
 
 interface UseBroadcastSendingReturn {
@@ -368,7 +369,8 @@ export function useBroadcastSending(): UseBroadcastSendingReturn {
             customField: payload.audience.customField,
             excludeTagIds: payload.audience.excludeTagIds,
           },
-          status: 'sending',
+          status: payload.scheduledAt ? 'scheduled' : 'sending',
+          scheduled_at: payload.scheduledAt || null,
           total_recipients: contacts.length,
           sent_count: 0,
           delivered_count: 0,
@@ -383,6 +385,11 @@ export function useBroadcastSending(): UseBroadcastSendingReturn {
         throw new Error(
           `Failed to create broadcast: ${broadcastError?.message ?? 'unknown error'}`,
         );
+      }
+
+      if (payload.scheduledAt) {
+        setProgress(100);
+        return broadcast.id;
       }
 
       // ── Step 3: Insert recipient rows ─────────────────────────────

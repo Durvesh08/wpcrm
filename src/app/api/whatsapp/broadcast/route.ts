@@ -63,13 +63,23 @@ export async function POST(request: Request) {
   try {
     const supabase = await createClient()
 
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
+    const cronSecret = request.headers.get('x-cron-secret');
+    const isCron = cronSecret === process.env.AUTOMATION_CRON_SECRET;
+    
+    let user;
+    if (!isCron) {
+      const {
+        data: { user: authUser },
+        error: authError,
+      } = await supabase.auth.getUser();
 
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      if (authError || !authUser) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+      user = authUser;
+    } else {
+      // Mock user for cron to satisfy type constraints downstream
+      user = { id: 'cron-user' };
     }
 
     // Per-user broadcast budget. Note: this limits how often a user
@@ -84,20 +94,27 @@ export async function POST(request: Request) {
     // + broadcasts are all account-scoped post-multi-user, so the
     // old `.eq('user_id', user.id)` filters miss every row created
     // by a teammate.
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('account_id')
-      .eq('user_id', user.id)
-      .maybeSingle()
-    const accountId = profile?.account_id as string | undefined
-    if (!accountId) {
-      return NextResponse.json(
-        { error: 'Your profile is not linked to an account.' },
-        { status: 403 },
-      )
+    
+    const body = await request.json();
+    let accountId = body.account_id;
+
+    if (!isCron) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('account_id')
+        .eq('user_id', user.id)
+        .maybeSingle()
+      accountId = profile?.account_id as string | undefined
+      if (!accountId) {
+        return NextResponse.json(
+          { error: 'Your profile is not linked to an account.' },
+          { status: 403 },
+        )
+      }
+    } else if (!accountId) {
+      return NextResponse.json({ error: 'account_id required for cron' }, { status: 400 });
     }
 
-    const body = await request.json()
     const {
       recipients: newRecipients,
       phone_numbers,

@@ -1,7 +1,7 @@
 "use client";
 
 import type { Deal, PipelineStage } from "@/types";
-import { Calendar, Check, X } from "lucide-react";
+import { Calendar, Check, X, Flame } from "lucide-react";
 import { formatCurrency } from "@/lib/currency";
 
 interface DealCardProps {
@@ -27,6 +27,10 @@ function initials(name?: string, fallback?: string) {
 
 export function DealCard({ deal, stage, onEdit, isOverlay }: DealCardProps) {
   const contactLabel = deal.contact?.name || deal.contact?.phone || "No contact";
+  
+  const daysIdle = deal.updated_at ? Math.floor((Date.now() - new Date(deal.updated_at).getTime()) / (1000 * 60 * 60 * 24)) : 0;
+  const isRotting = daysIdle > 7; // Rotting threshold: 7 days
+
   const assigneeLabel = deal.assignee?.full_name || null;
 
   return (
@@ -39,7 +43,7 @@ export function DealCard({ deal, stage, onEdit, isOverlay }: DealCardProps) {
         e.stopPropagation();
         onEdit(deal);
       }}
-      className={`group relative w-full cursor-pointer rounded-xl border border-border/50 bg-muted/70 pl-4 pr-3 py-3 text-left shadow-sm transition-all ${
+      className={`group relative w-full cursor-pointer rounded-xl border pl-4 pr-3 py-3 text-left shadow-sm transition-all ${isRotting ? 'border-rose-500/30 bg-rose-500/10' : 'border-border/50 bg-muted/70'} ${
         isOverlay
           ? "shadow-xl"
           : "hover:-translate-y-0.5 hover:border-border hover:bg-muted hover:shadow-lg"
@@ -53,8 +57,13 @@ export function DealCard({ deal, stage, onEdit, isOverlay }: DealCardProps) {
       />
 
       <div className="flex items-start justify-between gap-2">
-        <h4 className="flex-1 text-sm font-semibold leading-snug text-foreground break-words">
-          {deal.title}
+        <h4 className="flex-1 text-sm font-semibold leading-snug text-foreground break-words flex items-start justify-between gap-1">
+          <span>{deal.title}</span>
+          {isRotting && (
+            <span className="flex items-center gap-1 text-[10px] text-rose-500 font-bold px-1.5 py-0.5 bg-rose-500/20 rounded shrink-0" title={`Idle for ${daysIdle} days`}>
+              <Flame className="h-3 w-3" /> ${daysIdle}d
+            </span>
+          )}
         </h4>
         {deal.status === "won" && (
           <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold text-primary">
