@@ -37,19 +37,7 @@ import { SkeletonCard } from '@/components/dashboard/skeleton';
 import { QuickActions } from '@/components/dashboard/quick-actions';
 import { ConversationsChart } from '@/components/dashboard/conversations-chart';
 import { PipelineDonut } from '@/components/dashboard/pipeline-donut';
-import dynamic from 'next/dynamic';
-
-const ResponseTimeChart = dynamic(
-  () => import('@/components/dashboard/response-time-chart').then((m) => m.ResponseTimeChart),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="zovaix-glass-panel flex h-64 items-center justify-center rounded-2xl text-muted-foreground text-sm">
-        Loading chart…
-      </div>
-    ),
-  }
-);
+import { ResponseTimeChart } from '@/components/dashboard/response-time-chart';
 import { ActivityFeed } from '@/components/dashboard/activity-feed';
 
 type RangeDays = 7 | 30 | 90;

@@ -79,7 +79,6 @@ const nextConfig: NextConfig = {
     optimizePackageImports: [
       'lucide-react',
       'date-fns',
-      'recharts',
       '@xyflow/react',
       '@dnd-kit/core',
       '@dnd-kit/sortable',
@@ -103,11 +102,6 @@ const nextConfig: NextConfig = {
    * Strip console.log in production builds. Debug logs are free in dev
    * but add noise + minor overhead in prod.
    */
-  compiler: {
-    removeConsole: process.env.NODE_ENV === 'production'
-      ? { exclude: ['error', 'warn'] }
-      : false,
-  },
 
   /**
    * Cache-Control policy.

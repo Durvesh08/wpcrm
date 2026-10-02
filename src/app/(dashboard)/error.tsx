@@ -36,7 +36,7 @@ export default function DashboardError({
         </p>
         {error.message ? (
           <pre className="border-border bg-muted text-muted-foreground mt-4 max-h-32 overflow-auto rounded-xl border p-3 text-left text-xs whitespace-pre-wrap">
-            {error.message}
+            {typeof error.message === 'string' ? error.message : JSON.stringify(error.message)}
           </pre>
         ) : null}
         <button
