@@ -20,7 +20,8 @@ import {
   FileDown,
   Link as LinkIcon,
   Mic,
-  Loader2, StickyNote } from 'lucide-react';
+  Loader2,
+, StickyNote} from 'lucide-react';
 import { format } from 'date-fns';
 import { ReplyQuote } from './reply-quote';
 import { MessageReactions } from './message-reactions';

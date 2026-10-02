@@ -583,7 +583,7 @@ export function MessageThread({
   }, [messages]);
 
   const handleSend = useCallback(
-    async (text: string, replyToId?: string) => {
+    async (text: string, replyToId?: string, isInternalNote?: boolean) => {
       if (!conversation) return;
 
       const tempId = `temp-${Date.now()}`;
@@ -593,7 +593,7 @@ export function MessageThread({
         id: tempId,
         conversation_id: conversation.id,
         sender_type: 'agent',
-        content_type: 'text',
+        content_type: isInternalNote ? 'note' : 'text',
         content_text: text,
         status: 'sending',
         created_at: new Date().toISOString(),
@@ -608,7 +608,7 @@ export function MessageThread({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             conversation_id: conversation.id,
-            message_type: 'text',
+            message_type: isInternalNote ? 'note' : 'text',
             content_text: text,
             reply_to_message_id: replyToId,
           }),

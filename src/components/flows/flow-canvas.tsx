@@ -780,3 +780,5 @@ function CanvasAddNodeButton() {
     </DropdownMenu>
   );
 }
+
+export default FlowCanvas;

@@ -1,4 +1,6 @@
-"use client";
+const fs = require('fs');
+
+const code = `"use client";
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { format, addDays, setHours, setMinutes } from "date-fns";
@@ -96,7 +98,7 @@ export function ContactSidebar({
     if (!contact) return;
     setExtractingAi(true);
     try {
-      const res = await fetch(`/api/contacts/${contact.id}/extract`, {
+      const res = await fetch(\`/api/contacts/\${contact.id}/extract\`, {
         method: "POST",
       });
       const json = await res.json();
@@ -104,7 +106,7 @@ export function ContactSidebar({
         toast.error(json.error || "Failed to extract lead profile");
         return;
       }
-      toast.success(`Extracted lead profile! Score: ${json.lead_score} (${json.lead_stage})`);
+      toast.success(\`Extracted lead profile! Score: \${json.lead_score} (\${json.lead_stage})\`);
       if (json.contact) {
         onContactUpdated?.(json.contact);
       }
@@ -213,7 +215,7 @@ export function ContactSidebar({
         toast.error(error.message);
         return;
       }
-      toast.success(`Conversation marked as ${status}`);
+      toast.success(\`Conversation marked as \${status}\`);
       onStatusChange?.(status);
     },
     [conversationId, onStatusChange],
@@ -332,7 +334,7 @@ export function ContactSidebar({
         body: JSON.stringify({
           contactId: contact.id,
           conversationId,
-          title: `Follow up with ${contact.name || contact.phone}`,
+          title: \`Follow up with \${contact.name || contact.phone}\`,
           dueAt: due.toISOString(),
         }),
       });
@@ -342,7 +344,7 @@ export function ContactSidebar({
         toast.error(json?.error || 'Could not save follow-up reminder');
         return;
       }
-      toast.success(`Follow-up scheduled for ${format(due, "MMM d, yyyy h:mm a")}`);
+      toast.success(\`Follow-up scheduled for \${format(due, "MMM d, yyyy h:mm a")}\`);
     },
     [contact, conversationId],
   );
@@ -408,7 +410,7 @@ export function ContactSidebar({
             </div>
             
             <DropdownMenu>
-              <DropdownMenuTrigger>
+              <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground rounded-full hover:bg-muted">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
@@ -418,9 +420,11 @@ export function ContactSidebar({
                   <Sparkles className="mr-2 h-4 w-4 text-purple-500" />
                   Auto-Profile with AI
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => { window.location.href = `/contacts/${contact.id}` }}>
+                <DropdownMenuItem asChild>
+                  <Link href={\`/contacts/\${contact.id}\`}>
                     <UserPlus className="mr-2 h-4 w-4" />
                     Full Contact Page
+                  </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -467,7 +471,7 @@ export function ContactSidebar({
                 key={tag.contact_tag_id}
                 variant="outline" 
                 className="pl-2 pr-1.5 py-0.5 h-6 text-[10px] font-semibold flex items-center gap-1 rounded-md transition-all hover:opacity-80 cursor-pointer"
-                style={{ backgroundColor: `${tag.color}15`, color: tag.color, borderColor: `${tag.color}30` }}
+                style={{ backgroundColor: \`\${tag.color}15\`, color: tag.color, borderColor: \`\${tag.color}30\` }}
                 onClick={() => handleRemoveTag(tag.contact_tag_id)}
               >
                 {tag.name}
@@ -476,7 +480,7 @@ export function ContactSidebar({
             ))}
             
             <Popover>
-              <PopoverTrigger>
+              <PopoverTrigger asChild>
                 <Button variant="outline" size="sm" className="h-6 rounded-md border-dashed border-border/70 px-2 text-[10px] text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors bg-transparent">
                   <Plus className="h-3 w-3 mr-1" /> Add Tag
                 </Button>
@@ -671,13 +675,13 @@ export function ContactSidebar({
                   deals.map((deal) => (
                     <Link
                       key={deal.id}
-                      href={`/pipelines?deal=${deal.id}`}
+                      href={\`/pipelines?deal=\${deal.id}\`}
                       className="group flex flex-col rounded-xl border border-border/70 bg-card p-3 shadow-sm transition-all hover:border-primary/40 hover:shadow-md"
                     >
                       <div className="flex items-start justify-between">
                         <span className="font-semibold text-sm line-clamp-1 group-hover:text-primary transition-colors">{deal.title}</span>
                         <span className="text-xs font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-md tabular-nums shrink-0">
-                          ${(deal.value ?? 0).toLocaleString()}
+                          $\{(deal.value ?? 0).toLocaleString()}
                         </span>
                       </div>
                       <div className="mt-2 flex items-center justify-between text-[10px] font-medium text-muted-foreground">
@@ -724,3 +728,6 @@ export function ContactSidebar({
     </div>
   );
 }
+`;
+
+fs.writeFileSync('src/components/inbox/contact-sidebar.tsx', code);

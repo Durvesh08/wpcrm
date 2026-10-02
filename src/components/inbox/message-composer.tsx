@@ -8,7 +8,7 @@ import {
   KeyboardEvent,
 } from "react";
 import {
-  Send,
+  Send, StickyNote,
   LayoutTemplate,
   Paperclip,
   Image as ImageIcon,
@@ -97,7 +97,7 @@ interface MediaDraft {
 interface MessageComposerProps {
   conversationId: string;
   sessionExpired: boolean;
-  onSend: (text: string, replyToId?: string) => void;
+  onSend: (text: string, replyToId?: string, isInternalNote?: boolean) => void;
   onSendMedia: (payload: SendMediaPayload) => void;
   onOpenTemplates: () => void;
   replyTo?: ReplyDraft | null;
@@ -126,6 +126,7 @@ export function MessageComposer({
 }: MessageComposerProps) {
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  const [isInternalNote, setIsInternalNote] = useState(false);
   const [drafting, setDrafting] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
@@ -669,7 +670,7 @@ export function MessageComposer({
             // wrapping pattern doesn't apply to non-button inputs.
             // The placeholder text also surfaces the read-only state.
             title={readOnly ? "Read-only — your role can't send messages" : undefined}
-            className={cn(
+            className={cn(isInternalNote && "bg-amber-500/5 placeholder:text-amber-600/50 text-amber-900 dark:text-amber-100", 
               "flex-1 resize-none rounded-xl border border-border bg-muted px-4 py-2.5 text-sm text-foreground placeholder-muted-foreground outline-none transition-colors focus:border-primary/50",
               (sessionExpired || readOnly) && "cursor-not-allowed opacity-50"
             )}

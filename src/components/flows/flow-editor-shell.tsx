@@ -31,7 +31,7 @@ import { FlowBuilder } from "./flow-builder";
 import dynamic from "next/dynamic";
 
 const FlowCanvas = dynamic(
-  () => import("./flow-canvas").then((m) => m.FlowCanvas),
+  () => import("./flow-canvas"),
   {
     ssr: false,
     loading: () => (
