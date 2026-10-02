@@ -1,6 +1,7 @@
+"use client";
 import { useMemo } from "react";
 import { useQuickReplies } from "@/hooks/use-quick-replies";
-"use client";
+
 
 import {
   useState,
