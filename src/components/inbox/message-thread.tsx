@@ -407,14 +407,15 @@ export function MessageThread({
         .from('messages')
         .select('*')
         .eq('conversation_id', conversationId)
-        .order('created_at', { ascending: true });
+        .order('created_at', { ascending: false })
+        .limit(100);
 
       if (cancelled) return;
 
       if (error) {
         console.error('Failed to fetch messages:', error);
       } else {
-        onMessagesLoadedRef.current(data ?? []);
+        onMessagesLoadedRef.current((data ?? []).reverse());
       }
 
       if (!cancelled) setLoading(false);
