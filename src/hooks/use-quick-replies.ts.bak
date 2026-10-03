@@ -24,13 +24,11 @@ export function useQuickReplies() {
         // eslint-disable-next-line
         setReplies(JSON.parse(stored));
       } else {
-        // eslint-disable-next-line
         setReplies(DEFAULT_REPLIES);
         localStorage.setItem('wpcrm_quick_replies', JSON.stringify(DEFAULT_REPLIES));
       }
     } catch (e) {
-      // eslint-disable-next-line
-        setReplies(DEFAULT_REPLIES);
+      setReplies(DEFAULT_REPLIES);
     }
     setIsLoaded(true);
   }, []);

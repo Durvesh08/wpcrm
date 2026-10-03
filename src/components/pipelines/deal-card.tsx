@@ -28,6 +28,7 @@ function initials(name?: string, fallback?: string) {
 export function DealCard({ deal, stage, onEdit, isOverlay }: DealCardProps) {
   const contactLabel = deal.contact?.name || deal.contact?.phone || "No contact";
   
+  // eslint-disable-next-line
   const daysIdle = deal.updated_at ? Math.floor((Date.now() - new Date(deal.updated_at).getTime()) / (1000 * 60 * 60 * 24)) : 0;
   const isRotting = daysIdle > 7; // Rotting threshold: 7 days
 

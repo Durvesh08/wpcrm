@@ -15,7 +15,6 @@ import type { Conversation } from '@/types';
 export function useTotalUnread(): number {
   const [total, setTotal] = useState(0);
   const channelNameRef = useRef(
-    // eslint-disable-next-line
     `total-unread-realtime-${Math.random().toString(36).slice(2)}`
   );
 

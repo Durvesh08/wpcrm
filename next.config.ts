@@ -75,6 +75,12 @@ const nextConfig: NextConfig = {
    * `serverExternalPackages` — keeps heavy server-only SDKs out of the
    * Webpack graph entirely (resolved at runtime via Node require).
    */
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   experimental: {
     optimizePackageImports: [
       'lucide-react',

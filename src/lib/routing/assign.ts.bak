@@ -49,8 +49,8 @@ export async function assignConversation(
     if (presence) {
       const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
       const onlineUserIds = presence
-        .filter((p: { user_id: string; last_seen_at: string; status: string }) => new Date(p.last_seen_at) >= twoMinutesAgo)
-        .map((p: { user_id: string; last_seen_at: string; status: string }) => p.user_id);
+        .filter((p: any) => new Date(p.last_seen_at) >= twoMinutesAgo)
+        .map((p: any) => p.user_id);
 
       const onlineAgents = eligibleAgents.filter((a) =>
         onlineUserIds.includes(a.user_id)
@@ -103,7 +103,7 @@ export async function assignConversation(
     });
 
     if (convCounts) {
-      convCounts.forEach((c: { assigned_agent_id: string; count: number }) => {
+      convCounts.forEach((c: any) => {
         if (c.assignee_id && counts[c.assignee_id] !== undefined) {
           counts[c.assignee_id]++;
         }

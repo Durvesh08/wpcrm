@@ -973,6 +973,15 @@ export function MessageThread({
   // Empty state — same WhatsApp-style doodle background as the active
   // thread below, so swapping between empty/selected doesn't change the
   // pattern under the user's eye.
+  const visibleMessages = useMemo(
+    () => messages.filter((msg) => !hiddenMessageIds.has(msg.id)),
+    [messages, hiddenMessageIds]
+  );
+  const messageGroups = useMemo(
+    () => groupMessagesByDate(visibleMessages),
+    [visibleMessages]
+  );
+
   if (!conversation || !contact) {
     return (
       <div
@@ -995,14 +1004,6 @@ export function MessageThread({
   }
 
   const displayName = contact.name || contact.phone;
-  const visibleMessages = useMemo(
-    () => messages.filter((msg) => !hiddenMessageIds.has(msg.id)),
-    [messages, hiddenMessageIds]
-  );
-  const messageGroups = useMemo(
-    () => groupMessagesByDate(visibleMessages),
-    [visibleMessages]
-  );
   const currentStatus = STATUS_OPTIONS.find(
     (s) => s.value === conversation.status
   );

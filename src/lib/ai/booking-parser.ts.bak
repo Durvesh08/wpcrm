@@ -217,7 +217,7 @@ export function normalizeAiLabels(
 
   let industry = labels?.industry
   let service = labels?.service
-  const businessType = labels?.businessType
+  let businessType = labels?.businessType
   let tags = labels?.tags ? [...labels.tags] : []
   let chatLabel = labels?.chatLabel
 

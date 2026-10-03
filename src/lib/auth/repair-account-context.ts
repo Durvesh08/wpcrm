@@ -1,6 +1,6 @@
 import { createClient as createAdminClient } from '@supabase/supabase-js';
 
-type SupabaseAdminClient = ReturnType<typeof createAdminClient<any>>;
+type SupabaseAdminClient = ReturnType<typeof createAdminClient<Database>>;
 
 type RepairableUser = {
   id: string;
@@ -12,7 +12,7 @@ let adminClient: SupabaseAdminClient | null = null;
 
 function admin() {
   if (!adminClient) {
-    adminClient = createAdminClient<any>(
+    adminClient = createAdminClient<Database>(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
