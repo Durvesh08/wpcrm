@@ -1,15 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/automations/cron",
-      "schedule": "*/5 * * * *"
-    },
-    {
-      "path": "/api/flows/cron",
-      "schedule": "*/5 * * * *"
-    },
-    {
-      "path": "/api/broadcasts/cron",
+      "path": "/api/master/cron",
       "schedule": "*/5 * * * *"
     }
   ]
