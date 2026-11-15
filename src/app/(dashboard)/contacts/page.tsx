@@ -830,7 +830,14 @@ export default function ContactsPage() {
                     />
                   </TableCell>
                   <TableCell className="text-foreground font-medium">
-                    {contact.name || <span className="text-muted-foreground italic">Unnamed</span>}
+                    <div className="flex items-center gap-2.5">
+                      <div className="bg-primary/15 text-primary flex size-8 shrink-0 items-center justify-center rounded-[10px] text-xs font-bold border border-primary/25 shadow-xs">
+                        {(contact.name || contact.phone || '?').charAt(0).toUpperCase()}
+                      </div>
+                      <span className="truncate max-w-[180px]">
+                        {contact.name || <span className="text-muted-foreground italic">Unnamed</span>}
+                      </span>
+                    </div>
                   </TableCell>
                   <TableCell className="text-muted-foreground font-mono text-xs">
                     {maskPhoneNumber(contact.phone, canViewRawPhoneNumbers)}

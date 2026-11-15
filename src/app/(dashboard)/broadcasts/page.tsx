@@ -211,47 +211,52 @@ export default function BroadcastsPage() {
         </GatedButton>
       </div>
 
-      {broadcasts.length > 0 && (
-        <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-4">
-          <div className="bento-card-white flex flex-col justify-between rounded-[22px] p-4 shadow-xs">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Total Campaigns</span>
-            <div className="mt-2 text-2xl font-black text-foreground">{campaignStats.totalCampaigns}</div>
-          </div>
-          <div className="bento-card-white flex flex-col justify-between rounded-[22px] p-4 shadow-xs">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Audience Reached</span>
-            <div className="mt-2 text-2xl font-black text-foreground">{campaignStats.totalRecipients.toLocaleString()}</div>
-          </div>
-          <div className="bento-card-white flex flex-col justify-between rounded-[22px] p-4 shadow-xs">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Delivery Rate</span>
-            <div className="mt-2 flex items-baseline gap-1.5">
-              <span className="text-2xl font-black text-foreground">{campaignStats.deliveryRate}%</span>
-              <span className="text-xs font-semibold text-emerald-500">verified</span>
-            </div>
-          </div>
-          <div className="bento-card-white flex flex-col justify-between rounded-[22px] p-4 shadow-xs">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Read Rate</span>
-            <div className="mt-2 flex items-baseline gap-1.5">
-              <span className="text-2xl font-black text-foreground">{campaignStats.readRate}%</span>
-              <span className="text-xs font-semibold text-blue-500">opened</span>
-            </div>
-          </div>
+      {/* 4 Neo-Bento Metric Stat Capsules */}
+      <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-4">
+        <div className="rounded-[22px] bg-card/75 border border-border/80 p-4.5 flex flex-col justify-between shadow-xs backdrop-blur-xl">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Total Campaigns</span>
+          <div className="mt-2 text-2xl sm:text-3xl font-black font-mono text-foreground tracking-tight">{campaignStats.totalCampaigns}</div>
+          <div className="mt-2 text-[10px] text-muted-foreground">Active & archived</div>
         </div>
-      )}
+        <div className="rounded-[22px] bg-card/75 border border-border/80 p-4.5 flex flex-col justify-between shadow-xs backdrop-blur-xl">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Audience Reached</span>
+          <div className="mt-2 text-2xl sm:text-3xl font-black font-mono text-foreground tracking-tight">{campaignStats.totalRecipients.toLocaleString()}</div>
+          <div className="mt-2 text-[10px] text-muted-foreground">Total message targets</div>
+        </div>
+        <div className="rounded-[22px] bg-card/75 border border-border/80 p-4.5 flex flex-col justify-between shadow-xs backdrop-blur-xl">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Delivery Rate</span>
+          <div className="mt-2 flex items-baseline gap-1.5">
+            <span className="text-2xl sm:text-3xl font-black font-mono text-foreground tracking-tight">{campaignStats.deliveryRate}%</span>
+            <span className="text-[10px] font-mono font-bold text-emerald-400">Meta API</span>
+          </div>
+          <div className="mt-2 text-[10px] text-muted-foreground">Delivered / Sent</div>
+        </div>
+        <div className="rounded-[22px] bg-card/75 border border-border/80 p-4.5 flex flex-col justify-between shadow-xs backdrop-blur-xl">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-primary">Read Rate</span>
+          <div className="mt-2 flex items-baseline gap-1.5">
+            <span className="text-2xl sm:text-3xl font-black font-mono text-foreground tracking-tight">{campaignStats.readRate}%</span>
+            <span className="text-[10px] font-mono font-bold text-primary">Opened</span>
+          </div>
+          <div className="mt-2 text-[10px] text-muted-foreground">Read receipts received</div>
+        </div>
+      </div>
 
       {broadcasts.length === 0 ? (
-        <div className="bento-card-white flex h-64 flex-col items-center justify-center rounded-[26px] border border-border/70">
-          <Radio className="mb-3 h-10 w-10 text-muted-foreground" />
-          <p className="text-sm font-medium text-foreground">No broadcasts yet</p>
+        <div className="flex h-64 flex-col items-center justify-center rounded-[26px] border border-border/80 bg-card/75 backdrop-blur-xl shadow-xs">
+          <div className="flex h-12 w-12 items-center justify-center rounded-[16px] bg-primary/15 text-primary border border-primary/25 shadow-xs mb-3">
+            <Radio className="h-6 w-6 text-primary" />
+          </div>
+          <p className="text-sm font-bold text-foreground">No broadcasts yet</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Create your first broadcast to reach your contacts at scale.
+            Create your first broadcast campaign to reach your WhatsApp contacts at scale.
           </p>
           <GatedButton
             canAct={canCreate}
             gateReason="create broadcasts"
             onClick={() => router.push('/broadcasts/new')}
-            className="mt-4 rounded-full bg-[#D7FA00] text-[#0D120D] hover:bg-[#c6e600] font-bold px-4 shadow-xs"
+            className="mt-4 rounded-full bg-primary text-primary-foreground font-black px-5 py-2.5 shadow-xs hover:brightness-110"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-4 w-4 stroke-[2.5]" />
             New Broadcast
           </GatedButton>
         </div>

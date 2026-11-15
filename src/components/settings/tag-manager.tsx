@@ -213,7 +213,7 @@ export function TagManager() {
                 maxLength={40}
                 className="min-w-[180px] flex-1"
               />
-              <div className="flex gap-1.5">
+              <div className="flex gap-1.5 items-center">
                 {PRESET_COLORS.map((color) => (
                   <button
                     key={color.value}
@@ -222,9 +222,9 @@ export function TagManager() {
                     aria-label={`Use ${color.name}`}
                     aria-pressed={selectedColor === color.value}
                     className={cn(
-                      'size-6 rounded-md transition-transform hover:scale-110',
+                      'size-7 rounded-[8px] transition-transform hover:scale-110 shadow-xs',
                       selectedColor === color.value &&
-                        'outline outline-2 outline-offset-2 outline-primary',
+                        'ring-2 ring-primary ring-offset-2 ring-offset-background scale-105',
                     )}
                     style={{ backgroundColor: color.value }}
                     title={color.name}
@@ -232,15 +232,15 @@ export function TagManager() {
                 ))}
               </div>
               <Button
-                variant="outline"
                 size="sm"
                 onClick={handleCreate}
                 disabled={saving || !newTagName.trim()}
+                className="rounded-full bg-primary text-primary-foreground font-black px-4 py-2 shadow-xs hover:brightness-110"
               >
                 {saving ? (
                   <Loader2 className="size-4 animate-spin" />
                 ) : (
-                  <Plus className="size-4" />
+                  <Plus className="size-4 stroke-[2.5]" />
                 )}
                 Add tag
               </Button>

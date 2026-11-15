@@ -285,39 +285,69 @@ export function MembersTab() {
         description="People with access to this account. Roles control what each teammate can do."
         action={
           <RequireRole min="admin">
-            <Button onClick={() => setInviteOpen(true)}>
-              <Plus className="size-4" />
+            <Button
+              onClick={() => setInviteOpen(true)}
+              className="rounded-full bg-primary text-primary-foreground font-black px-5 py-2.5 shadow-xs hover:brightness-110"
+            >
+              <Plus className="size-4 stroke-[2.5]" />
               Invite member
             </Button>
           </RequireRole>
         }
       />
 
-      {/* Live presence summary across the roster. Updates without a
-          full refresh as heartbeats and the local re-derive tick land. */}
-      {members.length > 0 &&
-        (() => {
-          const counts = summarize(members.map((m) => getPresence(m.user_id)));
-          return (
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-              <span className="inline-flex items-center gap-1.5">
-                <PresenceDot status="online" />
-                {counts.online} online
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <PresenceDot status="away" />
-                {counts.away} away
-              </span>
-              <span className="inline-flex items-center gap-1.5">
-                <PresenceDot status="offline" />
-                {counts.offline} offline
-              </span>
-              <span className="text-muted-foreground/70">
-                · {members.length} member{members.length === 1 ? '' : 's'}
-              </span>
+      {/* 3 Top Bento Metric Stat Capsules */}
+      {members.length > 0 && (() => {
+        const counts = summarize(members.map((m) => getPresence(m.user_id)));
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            <div className="rounded-[22px] bg-card/75 border border-border/80 p-4.5 flex items-center gap-3.5 backdrop-blur-xl shadow-xs">
+              <div className="w-10 h-10 rounded-[12px] bg-primary/10 border border-primary/25 flex items-center justify-center text-primary shrink-0 shadow-xs">
+                <UsersRound className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Total Teammates
+                </div>
+                <div className="text-xl sm:text-2xl font-black font-mono text-foreground">
+                  {members.length}
+                </div>
+              </div>
             </div>
-          );
-        })()}
+
+            <div className="rounded-[22px] bg-card/75 border border-border/80 p-4.5 flex items-center gap-3.5 backdrop-blur-xl shadow-xs">
+              <div className="w-10 h-10 rounded-[12px] bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400 shrink-0 shadow-xs">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
+                </span>
+              </div>
+              <div>
+                <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Online Now
+                </div>
+                <div className="text-xl sm:text-2xl font-black font-mono text-emerald-400">
+                  {counts.online}
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-[22px] bg-card/75 border border-border/80 p-4.5 flex items-center gap-3.5 backdrop-blur-xl shadow-xs">
+              <div className="w-10 h-10 rounded-[12px] bg-muted/80 border border-border/60 flex items-center justify-center text-muted-foreground shrink-0 shadow-xs">
+                <Mail className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Pending Invites
+                </div>
+                <div className="text-xl sm:text-2xl font-black font-mono text-foreground">
+                  {invitations.length}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Roster */}
       <Card>

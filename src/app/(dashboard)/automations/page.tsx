@@ -202,13 +202,13 @@ export default function AutomationsPage() {
       )}
 
       {automations.length === 0 ? (
-        <div className="flex h-48 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card/40">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+        <div className="flex h-56 flex-col items-center justify-center rounded-[26px] border border-border/80 bg-card/75 backdrop-blur-xl shadow-xs">
+          <div className="flex h-12 w-12 items-center justify-center rounded-[16px] bg-primary/15 text-primary border border-primary/25 shadow-xs">
             <Zap className="h-6 w-6 text-primary" />
           </div>
-          <p className="mt-3 text-sm font-medium text-foreground">No automations yet</p>
+          <p className="mt-3 text-sm font-bold text-foreground">No automations yet</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Pick a template above or create one from scratch.
+            Pick a quick-start template above or create one from scratch.
           </p>
         </div>
       ) : (

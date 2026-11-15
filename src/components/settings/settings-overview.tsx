@@ -223,37 +223,49 @@ export function SettingsOverview({
   ];
 
   return (
-    <section className="animate-in fade-in-50 duration-200">
+    <section className="animate-in fade-in-50 duration-200 space-y-4">
       {/* Identity (Bento Hero) */}
-      <Card className="bento-card-white flex-row items-center gap-4.5 rounded-[26px] p-5.5 shadow-xs border border-border/70">
-        <Avatar size="lg" className="size-14 rounded-2xl border border-primary/20">
-          {profile?.avatar_url ? (
-            <AvatarImage src={profile.avatar_url} alt={displayName} className="rounded-2xl" />
-          ) : null}
-          <AvatarFallback className="bg-primary/15 text-xl font-bold text-primary rounded-2xl">
-            {initial}
-          </AvatarFallback>
-        </Avatar>
-        <div className="min-w-0 flex-1">
-          <div className="truncate text-base font-bold text-foreground">
-            {displayName}
-          </div>
-          {profile?.email ? (
-            <div className="truncate text-xs text-muted-foreground mt-0.5 font-mono">
-              {profile.email}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-[26px] bg-gradient-to-br from-card/90 via-card/70 to-primary/5 border border-border/80 p-5.5 sm:p-6 backdrop-blur-xl shadow-xs">
+        <div className="flex items-center gap-4 min-w-0">
+          <Avatar size="lg" className="size-14 sm:size-16 rounded-[18px] border-2 border-primary/30 shadow-[0_0_16px_rgba(215,250,0,0.15)] shrink-0">
+            {profile?.avatar_url ? (
+              <AvatarImage src={profile.avatar_url} alt={displayName} className="rounded-[18px]" />
+            ) : null}
+            <AvatarFallback className="bg-primary/15 text-xl font-black text-primary rounded-[18px]">
+              {initial}
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2.5">
+              <h2 className="truncate text-base sm:text-lg font-bold text-foreground">
+                {displayName}
+              </h2>
+              {roleMeta && RoleIcon ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-2.5 py-0.5 text-[11px] font-mono font-bold text-primary border border-primary/30 shadow-xs">
+                  <RoleIcon className="size-3" />
+                  {roleMeta.label}
+                </span>
+              ) : null}
             </div>
-          ) : null}
+            {profile?.email ? (
+              <div className="truncate text-xs text-muted-foreground mt-0.5 font-mono">
+                {profile.email}
+              </div>
+            ) : null}
+          </div>
         </div>
-        {roleMeta && RoleIcon ? (
-          <SettingsChip variant={roleMeta.variant}>
-            <RoleIcon />
-            {roleMeta.label}
-          </SettingsChip>
-        ) : null}
-      </Card>
+
+        <button
+          type="button"
+          onClick={() => onSelect('profile')}
+          className="self-start sm:self-auto rounded-full bg-muted/80 hover:bg-muted text-foreground px-4 py-2 text-xs font-semibold border border-border/60 hover:border-primary/40 transition-all shadow-xs"
+        >
+          Edit Profile
+        </button>
+      </div>
 
       {/* Status tiles (Neo-Bento Grid) */}
-      <div className="mt-4 grid gap-3.5 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-3.5 sm:grid-cols-2 xl:grid-cols-3">
         {tiles.map(({ section, loading, subtitle }) => {
           const meta = SECTION_META[section];
           const Icon = meta.icon;
@@ -262,26 +274,28 @@ export function SettingsOverview({
               key={section}
               type="button"
               onClick={() => onSelect(section)}
-              className="bento-card-white group flex items-start gap-3.5 rounded-[22px] p-4.5 text-left transition-all hover:border-primary/50 shadow-xs hover:-translate-y-0.5"
+              className="group flex flex-col justify-between rounded-[24px] bg-card/75 border border-border/80 p-5 text-left transition-all duration-200 hover:border-primary/50 hover:-translate-y-1 backdrop-blur-xl shadow-xs"
             >
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-primary/15 text-primary border border-primary/20 group-hover:scale-105 transition-all">
-                <Icon className="size-4.5" />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block text-sm font-bold text-foreground">
+              <div className="flex items-start justify-between gap-3 w-full">
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-[14px] bg-primary/10 text-primary border border-primary/25 group-hover:scale-105 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-200 shadow-xs">
+                  <Icon className="size-5" />
+                </span>
+                <ChevronRight className="size-4 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-1 group-hover:text-primary mt-1" />
+              </div>
+              <div className="mt-4 min-w-0">
+                <span className="block text-sm font-bold text-foreground tracking-tight">
                   {meta.label}
                 </span>
-                <span className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+                <span className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
                   {loading ? (
                     <>
-                      <Loader2 className="size-3 animate-spin" /> Loading…
+                      <Loader2 className="size-3 animate-spin text-primary" /> Loading…
                     </>
                   ) : (
                     subtitle
                   )}
                 </span>
-              </span>
-              <ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+              </div>
             </button>
           );
         })}

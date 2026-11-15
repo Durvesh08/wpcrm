@@ -184,34 +184,39 @@ export function AiKnowledgeCard({
             )}
 
             {docs.length > 0 && (
-              <ul className="divide-y divide-border rounded-md border border-border">
+              <ul className="space-y-2">
                 {docs.map((doc) => (
                   <li
                     key={doc.id}
-                    className="flex items-center justify-between gap-2 px-3 py-2"
+                    className="flex items-center justify-between gap-3 rounded-[16px] border border-border/80 bg-background/60 p-3.5 backdrop-blur-xl transition-all hover:border-border"
                   >
-                    <span className="min-w-0 truncate text-sm text-foreground">
-                      {doc.title}
-                    </span>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex size-8 shrink-0 items-center justify-center rounded-[10px] bg-primary/10 border border-primary/25 text-primary">
+                        <BookOpen className="size-4" />
+                      </div>
+                      <span className="min-w-0 truncate text-sm font-semibold text-foreground">
+                        {doc.title}
+                      </span>
+                    </div>
                     {canEdit && (
-                      <span className="flex shrink-0 gap-1">
+                      <span className="flex shrink-0 gap-1.5">
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-8 w-8 p-0"
+                          className="h-8 w-8 rounded-full p-0 text-muted-foreground hover:text-foreground hover:bg-muted"
                           onClick={() => void openEdit(doc.id)}
                           title="Edit"
                         >
-                          <Pencil className="h-4 w-4" />
+                          <Pencil className="h-3.5 w-3.5" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                          className="h-8 w-8 rounded-full p-0 text-destructive/80 hover:text-destructive hover:bg-destructive/10"
                           onClick={() => void remove(doc.id)}
                           title="Delete"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </span>
                     )}
@@ -255,9 +260,13 @@ export function AiKnowledgeCard({
               </div>
             ) : (
               canEdit && (
-                <div className="flex items-center justify-between">
-                  <Button variant="outline" size="sm" onClick={openNew}>
-                    <Plus className="mr-2 h-4 w-4" /> Add document
+                <div className="flex items-center justify-between pt-1">
+                  <Button
+                    size="sm"
+                    onClick={openNew}
+                    className="rounded-full bg-primary text-primary-foreground font-black px-4 py-2 shadow-xs hover:brightness-110"
+                  >
+                    <Plus className="mr-1.5 h-3.5 w-3.5 stroke-[2.5]" /> Add document
                   </Button>
                   {hasEmbeddingsKey && docs.length > 0 && (
                     <Button

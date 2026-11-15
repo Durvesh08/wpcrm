@@ -92,10 +92,10 @@ export function DealsSettings() {
               value={selected}
               onChange={(e) => setSelected(e.target.value)}
               disabled={!canEditSettings || profileLoading}
-              className="h-9 w-full rounded-lg border border-border bg-muted px-2.5 text-sm text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
+              className="h-10 w-full rounded-[14px] border border-border/80 bg-background/80 px-3.5 text-xs sm:text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs disabled:cursor-not-allowed disabled:opacity-60"
             >
               {CURRENCIES.map((c) => (
-                <option key={c.code} value={c.code}>
+                <option key={c.code} value={c.code} className="bg-card text-foreground">
                   {c.code} — {c.label}
                 </option>
               ))}
@@ -111,7 +111,7 @@ export function DealsSettings() {
             <Button
               onClick={handleSave}
               disabled={saving || !dirty}
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
+              className="rounded-full bg-primary text-primary-foreground font-black px-6 py-2.5 shadow-xs hover:brightness-110"
             >
               {saving ? (
                 <>

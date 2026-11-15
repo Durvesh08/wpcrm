@@ -220,11 +220,11 @@ export function ProfileForm() {
           <CardContent className="space-y-6">
           {/* Avatar row */}
           <div className="flex flex-wrap items-center gap-5">
-            <Avatar size="lg" className="size-16">
+            <Avatar size="lg" className="size-18 rounded-[20px] border-2 border-primary/30 shadow-[0_0_16px_rgba(215,250,0,0.18)]">
               {currentAvatar ? (
-                <AvatarImage src={currentAvatar} alt={fullName || 'Avatar'} />
+                <AvatarImage src={currentAvatar} alt={fullName || 'Avatar'} className="rounded-[20px]" />
               ) : null}
-              <AvatarFallback className="bg-primary/10 text-base text-primary">
+              <AvatarFallback className="bg-primary/15 text-xl font-black text-primary rounded-[20px]">
                 {initial}
               </AvatarFallback>
             </Avatar>
@@ -242,8 +242,9 @@ export function ProfileForm() {
                 variant="outline"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={saving}
+                className="rounded-full border-border/80 text-xs font-semibold px-4 py-2"
               >
-                <Upload className="size-4" />
+                <Upload className="size-3.5" />
                 {currentAvatar ? 'Change photo' : 'Upload photo'}
               </Button>
               {currentAvatar && (
@@ -252,9 +253,9 @@ export function ProfileForm() {
                   variant="ghost"
                   onClick={onRemoveAvatar}
                   disabled={saving}
-                  className="text-muted-foreground hover:text-foreground"
+                  className="rounded-full text-muted-foreground hover:text-foreground text-xs"
                 >
-                  <Trash2 className="size-4" />
+                  <Trash2 className="size-3.5" />
                   Remove
                 </Button>
               )}
@@ -341,7 +342,11 @@ export function ProfileForm() {
         </Card>
 
         <div className="flex justify-end">
-          <Button type="submit" disabled={saving || !dirty || !profile}>
+          <Button
+            type="submit"
+            disabled={saving || !dirty || !profile}
+            className="rounded-full bg-primary text-primary-foreground font-black px-6 py-2.5 shadow-xs hover:brightness-110"
+          >
             {saving ? (
               <>
                 <Loader2 className="size-4 animate-spin" />

@@ -146,29 +146,53 @@ export function ApiKeysSettings() {
         }
         action={
           <RequireRole min="admin">
-            <Button onClick={() => setCreateOpen(true)}>
-              <Plus className="size-4" />
+            <Button
+              onClick={() => setCreateOpen(true)}
+              className="rounded-full bg-primary text-primary-foreground font-black px-5 py-2.5 shadow-xs hover:brightness-110"
+            >
+              <Plus className="size-4 stroke-[2.5]" />
               New API key
             </Button>
           </RequireRole>
         }
       />
 
+      {/* Security & Endpoint Bento Banner */}
+      <div className="rounded-[22px] bg-gradient-to-br from-card/90 via-card/70 to-primary/5 border border-border/80 p-5 backdrop-blur-xl shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-start gap-3.5">
+          <div className="size-10 rounded-[12px] bg-primary/10 border border-primary/25 flex items-center justify-center text-primary shrink-0 shadow-xs mt-0.5">
+            <KeyRound className="size-5" />
+          </div>
+          <div>
+            <div className="text-sm font-bold text-foreground">
+              Production REST API v1
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+              API tokens use SHA-256 hash validation and can access contacts, deals, and messages. Never share your secret key publicly.
+            </p>
+          </div>
+        </div>
+        <div className="shrink-0 bg-background/80 border border-border/70 rounded-[12px] px-3 py-1.5 font-mono text-[11px] text-muted-foreground">
+          Base: <span className="text-primary font-bold">/api/v1</span>
+        </div>
+      </div>
+
       {keys.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-10 text-center">
-            <KeyRound className="text-muted-foreground size-6" />
-            <p className="text-muted-foreground mt-2 text-sm">
-              No API keys yet.
+        <Card className="rounded-[26px] border-border/80 bg-card/75">
+          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="size-12 rounded-[16px] bg-muted/80 border border-border/60 flex items-center justify-center text-muted-foreground mb-3 shadow-xs">
+              <KeyRound className="size-6 text-primary" />
+            </div>
+            <p className="text-foreground font-bold text-sm">
+              No API keys yet
             </p>
             {canEditSettings ? (
-              <p className="text-muted-foreground mt-1 text-xs">
-                Click <span className="text-foreground">New API key</span> to
-                create one.
+              <p className="text-muted-foreground mt-1 text-xs max-w-sm">
+                Create an API key to securely connect custom webhooks, workflows, and automated bots.
               </p>
             ) : (
               <p className="text-muted-foreground mt-1 text-xs">
-                Ask an admin to create one.
+                Ask an admin to create an API key for this workspace.
               </p>
             )}
           </CardContent>

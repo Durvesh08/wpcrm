@@ -48,9 +48,10 @@ export function SettingsRail({
     <nav
       aria-label="Settings sections"
       className={cn(
-        'flex gap-1 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
-        'border-b border-border',
-        'lg:sticky lg:top-0 lg:flex-col lg:overflow-visible lg:border-b-0 lg:pb-0',
+        'flex gap-1.5 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+        'border-b border-border/60',
+        'lg:sticky lg:top-4 lg:flex-col lg:overflow-visible lg:border-b-0 lg:pb-0',
+        'lg:rounded-[24px] lg:bg-card/65 lg:border lg:border-border/75 lg:p-3 lg:backdrop-blur-xl lg:shadow-xs',
       )}
     >
       {RAIL_GROUPS.map(({ label, group }) => {
@@ -60,10 +61,10 @@ export function SettingsRail({
         return (
           <div
             key={group}
-            className="flex shrink-0 gap-1 lg:flex-col lg:gap-0.5"
+            className="flex shrink-0 gap-1 lg:flex-col lg:gap-1"
           >
             {label ? (
-              <div className="hidden px-3 pt-3.5 pb-1.5 text-[11px] font-semibold tracking-[0.09em] text-muted-foreground uppercase lg:block">
+              <div className="hidden px-3 pt-3 pb-1 text-[10px] font-mono font-black tracking-widest text-muted-foreground/70 uppercase lg:block">
                 {label}
               </div>
             ) : null}
@@ -79,20 +80,31 @@ export function SettingsRail({
                   onClick={() => onSelect(s)}
                   aria-current={isActive ? 'page' : undefined}
                   className={cn(
-                    'flex shrink-0 items-center gap-2.5 rounded-full px-3.5 py-2 text-left text-sm font-semibold whitespace-nowrap transition-all',
-                    'lg:w-full',
+                    'group flex shrink-0 items-center gap-2.5 rounded-full px-3.5 py-2 text-left text-xs font-semibold whitespace-nowrap transition-all duration-150',
+                    'lg:w-full lg:rounded-[14px] lg:px-3 lg:py-2.5',
                     isActive
-                      ? 'bg-[#D7FA00] text-[#0D120D] shadow-xs'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                      ? 'bg-primary text-primary-foreground font-black shadow-[0_2px_12px_rgba(215,250,0,0.22)]'
+                      : 'text-muted-foreground hover:bg-muted/70 hover:text-foreground',
                   )}
                 >
-                  <Icon className="size-4 shrink-0" />
-                  <span className="flex-1">{meta.label}</span>
+                  <span
+                    className={cn(
+                      'flex size-6.5 shrink-0 items-center justify-center rounded-[8px] transition-transform group-hover:scale-105',
+                      isActive
+                        ? 'bg-primary-foreground/15 text-primary-foreground'
+                        : 'bg-muted/60 text-muted-foreground border border-border/50 group-hover:text-foreground group-hover:bg-muted',
+                    )}
+                  >
+                    <Icon className="size-3.5" />
+                  </span>
+                  <span className="flex-1 truncate">{meta.label}</span>
                   {hints?.[s] != null ? (
                     <span
                       className={cn(
-                        'hidden items-center gap-1.5 text-xs lg:inline-flex',
-                        isActive ? 'text-[#0D120D]/80 font-bold' : 'text-muted-foreground',
+                        'hidden items-center gap-1.5 text-[11px] font-mono lg:inline-flex',
+                        isActive
+                          ? 'text-primary-foreground/80 font-bold'
+                          : 'text-muted-foreground/70',
                       )}
                     >
                       {hints[s]}

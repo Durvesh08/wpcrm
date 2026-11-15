@@ -429,25 +429,70 @@ export function WhatsAppConfig() {
           </Alert>
         )}
 
-        {/* Connection Status */}
-        <Alert className="bg-card border-border">
-          <div className="flex items-center gap-2">
-            {connectionStatus === 'connected' ? (
-              <CheckCircle2 className="size-4 text-primary" />
-            ) : (
-              <XCircle className="size-4 text-red-500" />
-            )}
-            <AlertTitle className="text-foreground mb-0">
-              {connectionStatus === 'connected' ? 'Credentials valid' : 'Not Connected'}
-            </AlertTitle>
+        {/* Connection Status Hero Bento Card */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-[24px] bg-gradient-to-br from-card/90 via-card/70 to-primary/10 border border-primary/30 p-5.5 backdrop-blur-xl shadow-xs">
+          <div className="flex items-center gap-3.5">
+            <div
+              className={`w-11 h-11 rounded-[14px] flex items-center justify-center shrink-0 border shadow-xs ${
+                connectionStatus === 'connected'
+                  ? 'bg-primary/15 border-primary/35 text-primary'
+                  : 'bg-red-500/10 border-red-500/25 text-red-400'
+              }`}
+            >
+              {connectionStatus === 'connected' ? (
+                <CheckCircle2 className="size-5 stroke-[2.5]" />
+              ) : (
+                <XCircle className="size-5 stroke-[2.5]" />
+              )}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-foreground">
+                  Meta Cloud API Gateway
+                </span>
+                <span
+                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold border ${
+                    connectionStatus === 'connected'
+                      ? 'bg-primary/15 text-primary border-primary/30'
+                      : 'bg-red-500/15 text-red-400 border-red-500/30'
+                  }`}
+                >
+                  <span
+                    className={`size-1.5 rounded-full ${
+                      connectionStatus === 'connected'
+                        ? 'bg-primary animate-pulse'
+                        : 'bg-red-400'
+                    }`}
+                  />
+                  {connectionStatus === 'connected' ? 'Credentials Valid' : 'Not Connected'}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {connectionStatus === 'connected'
+                  ? 'Your access token authenticates with Meta Cloud API v21.0.'
+                  : statusMessage ||
+                    'Configure your Meta API credentials below to connect your WhatsApp Business account.'}
+              </p>
+            </div>
           </div>
-          <AlertDescription className="text-muted-foreground">
-            {connectionStatus === 'connected'
-              ? 'Your access token authenticates with Meta. See Registration status below for whether webhooks are actually wired.'
-              : statusMessage ||
-                'Configure your Meta API credentials below to connect your WhatsApp Business account.'}
-          </AlertDescription>
-        </Alert>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleTestConnection}
+              disabled={testing || !config}
+              className="rounded-full border-border/80 hover:border-primary/40 text-xs font-semibold px-4 py-2"
+            >
+              {testing ? (
+                <Loader2 className="size-3.5 animate-spin text-primary" />
+              ) : (
+                <Zap className="size-3.5 text-primary" />
+              )}
+              Test Connection
+            </Button>
+          </div>
+        </div>
 
         {/* Registration Status — the "is it actually live?" check.
             Credentials being valid is necessary but not sufficient;
@@ -704,7 +749,7 @@ export function WhatsAppConfig() {
           <Button
             onClick={handleSave}
             disabled={saving}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground"
+            className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-black px-6 py-2.5 shadow-xs hover:brightness-110"
           >
             {saving ? (
               <>
@@ -719,7 +764,7 @@ export function WhatsAppConfig() {
             variant="outline"
             onClick={handleTestConnection}
             disabled={testing || !config}
-            className="border-border text-muted-foreground hover:text-foreground hover:bg-muted"
+            className="rounded-full border-border text-muted-foreground hover:text-foreground hover:bg-muted font-semibold px-5 py-2.5"
           >
             {testing ? (
               <>
