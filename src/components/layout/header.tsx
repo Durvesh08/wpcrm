@@ -522,21 +522,16 @@ export function Header({ onOpenSidebar }: HeaderProps) {
   return (
     <header className="border-border/50 bg-background/65 sticky top-0 z-20 border-b shadow-lg shadow-black/20 backdrop-blur-md">
       <div className="flex h-16 items-center justify-between gap-2 px-3 sm:px-6 lg:px-7">
-        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+        {/* Mobile menu trigger */}
+        <div className="flex items-center gap-2 lg:hidden">
           <button
             type="button"
             onClick={onOpenSidebar}
             aria-label="Open menu"
-            className="text-muted-foreground hover:bg-card-2 hover:text-foreground inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-colors lg:hidden"
+            className="text-muted-foreground hover:bg-card-2 hover:text-foreground inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-colors"
           >
             <Menu className="h-5 w-5" />
           </button>
-
-          <div className="min-w-0">
-            <h1 className="text-foreground truncate text-sm font-semibold sm:text-base md:text-lg">
-              {title}
-            </h1>
-          </div>
         </div>
 
         <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5 sm:gap-2 lg:gap-3">

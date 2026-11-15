@@ -236,7 +236,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
                         className={cn(
                           'group flex items-center gap-3 rounded-[16px] px-3 py-2.5 text-sm font-semibold transition-all duration-200',
                           isActive
-                            ? 'bg-[#D7FA00] text-[#0D120D] shadow-[0_4px_16px_rgba(215,250,0,0.22)] font-extrabold'
+                            ? 'bg-[#D7FA00] text-[#0D120D] border border-black/10 dark:border-transparent shadow-[0_4px_16px_rgba(215,250,0,0.22)] font-extrabold'
                             : 'text-muted-foreground hover:bg-card/70 hover:translate-x-1 hover:text-foreground'
                         )}
                       >

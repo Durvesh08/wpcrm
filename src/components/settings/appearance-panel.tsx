@@ -1,32 +1,37 @@
 "use client";
 
-import { Check, Moon, Palette, SunMoon, Sun, Sparkles, TrendingUp, ArrowUpRight } from "lucide-react";
+import { useEffect } from "react";
+import { Check, Moon, SunMoon, Sun, Sparkles, TrendingUp, ArrowUpRight } from "lucide-react";
 
 import { useTheme } from "@/hooks/use-theme";
-import { MODES, THEMES, type Mode, type ThemeId } from "@/lib/themes";
+import { MODES, type Mode } from "@/lib/themes";
 import { cn } from "@/lib/utils";
 import { SettingsPanelHead } from "./settings-panel-head";
 
 /**
- * Appearance panel — light/dark mode + accent-color picker.
+ * Appearance panel — light/dark mode selection.
  *
- * Two independent controls: a mode toggle (light / dark) and the
- * accent grid. Either applies + persists immediately. No save button:
- * each change is a single attribute swap on <html>, there's nothing
- * to roll back.
+ * Workspace accent is permanently locked to ZOVAIX Electric Lime (#D7FA00).
+ * Users can toggle between Clean Light and Deep Obsidian Dark mode.
  *
  * Persistence: localStorage only (device-scoped). The boot script in
- * layout.tsx replays both choices before first paint on subsequent
- * loads.
+ * layout.tsx replays choices before first paint on subsequent loads.
  */
 export function AppearancePanel() {
   const { theme, setTheme, mode, setMode } = useTheme();
+
+  // Permanently lock the workspace accent to ZOVAIX Electric Lime
+  useEffect(() => {
+    if (theme !== "zovaix") {
+      setTheme("zovaix");
+    }
+  }, [theme, setTheme]);
 
   return (
     <section className="max-w-4xl animate-in fade-in-50 duration-200 space-y-7">
       <SettingsPanelHead
         title="Appearance"
-        description="Set the visual theme and accent colour used across the entire workspace. Saved locally on this device and updates live in real-time."
+        description="Choose between Clean Light and Deep Obsidian Dark mode. The signature Electric Lime accent is permanently active across your entire workspace."
       />
 
       {/* Live Interactive Preview Bento Widget */}
@@ -41,7 +46,7 @@ export function AppearancePanel() {
             </span>
           </div>
           <span className="text-[11px] font-mono text-muted-foreground">
-            Current: <span className="text-foreground font-bold capitalize">{theme}</span> ({mode})
+            Accent: <span className="text-foreground font-bold">Electric Lime</span> ({mode})
           </span>
         </div>
 
@@ -116,28 +121,6 @@ export function AppearancePanel() {
               mode={m}
               isActive={m === mode}
               onPick={() => setMode(m)}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Accent Color Selection */}
-      <div className="space-y-4">
-        <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
-          <Palette className="size-4 text-primary" />
-          Accent Color Theme
-        </h3>
-
-        <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
-          {THEMES.map((t) => (
-            <ThemeCard
-              key={t.id}
-              id={t.id}
-              name={t.name}
-              tagline={t.tagline}
-              swatch={t.swatch}
-              isActive={t.id === theme}
-              onPick={() => setTheme(t.id)}
             />
           ))}
         </div>
@@ -233,79 +216,6 @@ function ModeCard({
         </div>
         <div className="w-2 h-2 rounded-full bg-primary" />
       </div>
-    </button>
-  );
-}
-
-function ThemeCard({
-  id,
-  name,
-  tagline,
-  swatch,
-  isActive,
-  onPick,
-}: {
-  id: ThemeId;
-  name: string;
-  tagline: string;
-  swatch: string;
-  isActive: boolean;
-  onPick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onPick}
-      aria-pressed={isActive}
-      aria-label={`Use ${name} theme`}
-      className={cn(
-        "group flex flex-col justify-between rounded-[22px] border p-4.5 text-left transition-all duration-200 backdrop-blur-xl shadow-xs",
-        isActive
-          ? "border-primary bg-primary/10 shadow-[0_0_16px_rgba(215,250,0,0.18)] ring-1 ring-primary"
-          : "border-border/80 bg-card/75 hover:border-border hover:bg-card",
-      )}
-    >
-      <div className="flex items-center justify-between w-full">
-        <span
-          aria-hidden
-          className="size-9 shrink-0 rounded-[11px] shadow-sm transition-transform group-hover:scale-105"
-          style={{
-            background: swatch,
-            boxShadow: `0 0 12px ${swatch}50, inset 0 0 0 1px oklch(1 0 0 / 0.2)`,
-          }}
-        />
-        {isActive ? (
-          <span className="inline-flex items-center gap-1 rounded-full bg-primary text-primary-foreground px-2.5 py-0.5 text-[11px] font-black shadow-xs">
-            <Check className="size-3 stroke-[3]" />
-            Active
-          </span>
-        ) : (
-          <span className="text-[10px] font-mono font-bold text-muted-foreground/60 uppercase">
-            {id}
-          </span>
-        )}
-      </div>
-
-      <div className="mt-3.5">
-        <div className="text-sm font-bold text-foreground tracking-tight">
-          {name}
-        </div>
-        <div className="mt-1 text-xs leading-relaxed text-muted-foreground font-medium">
-          {tagline}
-        </div>
-      </div>
-
-      {/* Palette Strip */}
-      <div
-        className="mt-3 flex h-2 w-full overflow-hidden rounded-full border border-border/40"
-        aria-hidden
-      >
-        <span className="flex-1" style={{ background: swatch }} />
-        <span className="w-4 bg-muted-foreground/40" />
-        <span className="w-4 bg-muted/80" />
-        <span className="w-4 bg-card" />
-      </div>
-      <span className="sr-only">Theme id: {id}</span>
     </button>
   );
 }
