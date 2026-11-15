@@ -391,19 +391,13 @@ html[data-mode='light'][data-theme='whatsapp'] .zovaix-whatsapp-chat-surface {
 }
 
 .zovaix-glass-panel {
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in oklch, var(--card) 75%, white 5%),
-      color-mix(in oklch, var(--card-2) 65%, transparent 35%)
-    );
-  border: 1px solid color-mix(in oklch, var(--border) 60%, white 25%);
+  background: color-mix(in oklch, var(--card) 72%, transparent);
+  border: 1px solid color-mix(in oklch, var(--border) 70%, transparent);
   box-shadow:
-    0 1px 1px 0 rgba(255, 255, 255, 0.22) inset,
-    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
-    0 20px 48px -10px color-mix(in oklch, black 55%, transparent);
-  backdrop-filter: blur(12px) saturate(150%);
-  -webkit-backdrop-filter: blur(12px) saturate(150%);
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.4),
+    0 2px 12px -2px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
 .zovaix-icon-tile {
@@ -483,23 +477,25 @@ html[data-mode='light'][data-theme='whatsapp'] .zovaix-whatsapp-chat-surface {
 
 html[data-mode='dark'] .zovaix-premium-panel {
   box-shadow:
-    0 1px 1px 0 rgba(255, 255, 255, 0.18) inset,
-    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
-    0 16px 36px -8px color-mix(in oklch, black 65%, transparent);
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.12),
+    0 8px 24px -4px rgba(0, 0, 0, 0.5);
 }
 
 html[data-mode='dark'] .zovaix-glass-panel {
+  background: color-mix(in oklch, var(--card) 75%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow:
-    0 1px 1px 0 rgba(255, 255, 255, 0.22) inset,
-    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
-    0 24px 56px -12px color-mix(in oklch, black 70%, transparent);
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 12px 32px -8px rgba(0, 0, 0, 0.6);
 }
 
 html[data-mode='dark'] .zovaix-premium-hover:hover {
+  border-color: color-mix(in oklch, var(--primary) 45%, transparent);
   box-shadow:
-    0 1px 1px 0 rgba(255, 255, 255, 0.30) inset,
-    0 20px 42px -6px color-mix(in oklch, black 70%, transparent),
-    0 0 24px -4px color-mix(in oklch, var(--primary) 30%, transparent);
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.18),
+    0 12px 32px -6px rgba(0, 0, 0, 0.6),
+    0 0 20px -2px color-mix(in oklch, var(--primary) 25%, transparent);
 }
 
 @keyframes zovaix-enter {
@@ -518,18 +514,13 @@ html[data-mode='dark'] .zovaix-premium-hover:hover {
  * ============================================================ */
 
 .zovaix-glass-card {
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in oklch, var(--card) 80%, white 6%),
-      color-mix(in oklch, var(--card-2) 65%, transparent 35%)
-    );
-  border: 1px solid color-mix(in oklch, var(--border) 60%, white 25%);
+  background: color-mix(in oklch, var(--card) 75%, transparent);
+  border: 1px solid color-mix(in oklch, var(--border) 70%, transparent);
   box-shadow:
-    0 1px 1px 0 rgba(255, 255, 255, 0.20) inset,
-    0 14px 36px -8px color-mix(in oklch, black 50%, transparent);
-  backdrop-filter: blur(10px) saturate(140%);
-  -webkit-backdrop-filter: blur(10px) saturate(140%);
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.3),
+    0 4px 16px -2px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
 }
 
 .zovaix-bottom-nav {

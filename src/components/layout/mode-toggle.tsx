@@ -23,14 +23,14 @@ export function ModeToggle({ className }: { className?: string }) {
       aria-label={`Switch to ${goingTo} mode`}
       title={`Switch to ${goingTo} mode`}
       className={cn(
-        "flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
+        "flex h-9.5 w-9.5 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground",
         className,
       )}
     >
       {mode === "dark" ? (
-        <Moon className="h-5 w-5" />
+        <Moon className="h-4 w-4" />
       ) : (
-        <Sun className="h-5 w-5" />
+        <Sun className="h-4 w-4" />
       )}
     </button>
   );

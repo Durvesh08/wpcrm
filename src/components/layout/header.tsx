@@ -545,28 +545,23 @@ export function Header({ onOpenSidebar }: HeaderProps) {
             type="button"
             onClick={() => setSearchOpen(true)}
             aria-label="Search"
-            className="zovaix-glass-panel zovaix-premium-hover text-muted-foreground hover:text-foreground inline-flex h-9 w-9 items-center justify-center rounded-xl md:hidden"
+            className="zovaix-glass-panel zovaix-premium-hover text-muted-foreground hover:text-foreground inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full md:hidden"
           >
             <Search className="h-4 w-4" />
           </button>
 
           <Popover open={searchOpen} onOpenChange={setSearchOpen}>
             <PopoverTrigger
-              className="zovaix-glass-panel zovaix-premium-hover focus:ring-primary/30 hidden min-w-0 flex-1 items-center gap-3 rounded-2xl px-4 py-2.5 text-left focus:ring-2 focus:outline-none md:flex md:max-w-xl"
+              className="zovaix-glass-panel zovaix-premium-hover group hidden h-9.5 min-w-0 flex-1 max-w-xs md:max-w-sm xl:max-w-md items-center gap-2.5 rounded-full px-3.5 text-xs text-muted-foreground transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 md:flex"
               aria-label="Open command center"
             >
-              <Search className="text-muted-foreground h-4 w-4 shrink-0" />
-              <div className="min-w-0 flex-1">
-                <p className="text-foreground truncate text-sm font-medium">
-                  Command center
-                </p>
-                <p className="text-muted-foreground truncate text-xs">
-                  Search CRM data, commands, settings, and recent work
-                </p>
-              </div>
-              <span className="border-border bg-card-2 text-muted-foreground hidden items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-medium lg:inline-flex">
-                <Command className="h-3 w-3" />K
+              <Search className="size-3.5 shrink-0 text-muted-foreground/70 transition-colors group-hover:text-primary" />
+              <span className="min-w-0 flex-1 truncate text-left font-medium text-muted-foreground/80 group-hover:text-foreground">
+                Search CRM data, commands...
               </span>
+              <kbd className="hidden shrink-0 items-center gap-0.5 rounded-md border border-border/70 bg-card/60 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-muted-foreground shadow-xs lg:inline-flex">
+                <Command className="size-2.5" />K
+              </kbd>
             </PopoverTrigger>
             <PopoverContent
               align="end"
@@ -640,20 +635,13 @@ export function Header({ onOpenSidebar }: HeaderProps) {
             }}
           >
             <PopoverTrigger
-              className="zovaix-glass-panel zovaix-premium-hover focus:ring-primary/30 flex min-w-0 items-center gap-2 rounded-xl sm:rounded-2xl p-2 xl:px-4 xl:py-2.5 text-left focus:ring-2 focus:outline-none xl:w-[23rem]"
+              className="zovaix-glass-panel zovaix-premium-hover group flex h-9.5 shrink-0 items-center gap-2 rounded-full border-primary/25 bg-primary/10 hover:bg-primary/15 px-3 py-1.5 text-xs font-semibold text-foreground transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/25 shadow-xs"
               aria-label="Open AI copilot"
             >
-              <span className="zovaix-icon-tile inline-flex h-7 w-7 sm:h-8 sm:w-8 xl:h-9 xl:w-9 shrink-0 items-center justify-center rounded-lg sm:rounded-xl text-primary-foreground">
-                <Sparkles className="h-3.5 w-3.5 xl:h-4 xl:w-4" />
+              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_0_10px_rgba(215,250,0,0.35)]">
+                <Sparkles className="size-3" />
               </span>
-              <div className="hidden min-w-0 flex-1 xl:block">
-                <p className="text-foreground truncate text-sm font-medium">
-                  AI Copilot
-                </p>
-                <p className="text-muted-foreground truncate text-xs">
-                  {copilotSuggestions.map((item) => item.label).join(' · ')}
-                </p>
-              </div>
+              <span className="font-semibold text-xs text-foreground tracking-tight">AI Copilot</span>
             </PopoverTrigger>
             <PopoverContent
               align="end"
@@ -807,7 +795,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
 
           <button
             type="button"
-            className="zovaix-glass-panel zovaix-premium-hover text-muted-foreground hover:text-foreground relative inline-flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl"
+            className="zovaix-glass-panel zovaix-premium-hover text-muted-foreground hover:text-foreground relative inline-flex h-9 w-9 sm:h-9.5 sm:w-9.5 shrink-0 items-center justify-center rounded-full"
             aria-label="Tasks"
           >
             <CheckSquare className="h-4 w-4" />
@@ -820,7 +808,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
 
           <Link
             href="/calendar"
-            className="zovaix-glass-panel zovaix-premium-hover text-muted-foreground hover:text-foreground hidden h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl sm:inline-flex"
+            className="zovaix-glass-panel zovaix-premium-hover text-muted-foreground hover:text-foreground hidden h-9 w-9 sm:h-9.5 sm:w-9.5 shrink-0 items-center justify-center rounded-full sm:inline-flex"
             aria-label="Calendar"
           >
             <CalendarDays className="h-4 w-4" />
@@ -828,7 +816,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
 
           <Link
             href="/notifications"
-            className="zovaix-glass-panel zovaix-premium-hover text-muted-foreground hover:text-foreground relative inline-flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl"
+            className="zovaix-glass-panel zovaix-premium-hover text-muted-foreground hover:text-foreground relative inline-flex h-9 w-9 sm:h-9.5 sm:w-9.5 shrink-0 items-center justify-center rounded-full"
             aria-label="Notifications"
           >
             <Bell className="h-4 w-4" />
@@ -839,11 +827,11 @@ export function Header({ onOpenSidebar }: HeaderProps) {
             )}
           </Link>
 
-          <ModeToggle />
+          <ModeToggle className="zovaix-glass-panel zovaix-premium-hover text-muted-foreground hover:text-foreground inline-flex h-9 w-9 sm:h-9.5 sm:w-9.5 shrink-0 items-center justify-center rounded-full" />
 
           <DropdownMenu>
             <DropdownMenuTrigger
-              className="zovaix-premium-panel zovaix-premium-hover inline-flex items-center gap-2 rounded-xl sm:rounded-2xl p-1 sm:px-2 sm:py-1.5 focus:outline-none"
+              className="zovaix-glass-panel zovaix-premium-hover inline-flex shrink-0 items-center gap-2 rounded-full p-1 sm:pl-1.5 sm:pr-3 sm:py-1 focus:outline-none"
               aria-label="Open account menu"
             >
               <Avatar className="size-7 sm:size-8">

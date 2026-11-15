@@ -734,10 +734,10 @@ export function MessageComposer({
             onKeyDown={handleKeyDown}
             placeholder={
               readOnly
-                ? "Read-only — viewers can browse but not reply"
+                ? "Read-only — viewers cannot reply"
                 : sessionExpired
-                  ? "Session expired - use a template"
-                  : "Type a message... (Shift+Enter for new line)"
+                  ? "Session expired — use a template"
+                  : "Type a message..."
             }
             disabled={sessionExpired || readOnly}
             rows={1}
@@ -746,7 +746,7 @@ export function MessageComposer({
             // The placeholder text also surfaces the read-only state.
             title={readOnly ? "Read-only — your role can't send messages" : undefined}
             className={cn(isInternalNote && "bg-amber-500/5 placeholder:text-amber-600/50 text-amber-900 dark:text-amber-100", 
-              "flex-1 resize-none rounded-2xl border border-border/70 bg-background/80 px-4 py-2 text-sm text-foreground placeholder-muted-foreground outline-none transition-all focus:border-[#D7FA00]/60 focus:ring-2 focus:ring-[#D7FA00]/20",
+              "min-w-0 flex-1 resize-none rounded-2xl border border-border/70 bg-background/80 px-4 py-2 text-sm text-foreground placeholder-muted-foreground outline-none transition-all focus:border-[#D7FA00]/60 focus:ring-2 focus:ring-[#D7FA00]/20",
               (sessionExpired || readOnly) && "cursor-not-allowed opacity-50"
             )}
           />
