@@ -52,7 +52,7 @@ export function QuickActions() {
           <Link
             key={a.href}
             href={a.href}
-            className="group relative flex items-center justify-between overflow-hidden rounded-[22px] bg-card/75 border border-border/80 backdrop-blur-xl p-4 shadow-xs transition-all duration-200 hover:border-primary/40 hover:shadow-md hover:scale-[1.01]"
+            className="zovaix-glass-card group relative flex items-center justify-between overflow-hidden rounded-[22px] p-4 transition-all duration-200 hover:border-primary/50 hover:scale-[1.01]"
           >
             <div className="flex items-center gap-3.5 min-w-0">
               <div

@@ -46,8 +46,8 @@ export function ConversationsChart({ series, loading, range, onRangeChange }: Co
   }, [data])
 
   return (
-    <section className="relative flex h-full flex-col overflow-hidden rounded-[26px] bg-card/75 border border-border/80 backdrop-blur-xl shadow-xs">
-      <header className="flex items-center justify-between border-b border-border/70 px-5 sm:px-6 py-4 bg-muted/20">
+    <section className="zovaix-glass-card relative flex h-full flex-col overflow-hidden rounded-[26px]">
+      <header className="flex items-center justify-between border-b border-border/60 px-5 sm:px-6 py-4 bg-muted/20">
         <div>
           <h2 className="text-sm font-bold text-foreground tracking-tight">Conversations Over Time</h2>
           <p className="mt-0.5 text-xs text-muted-foreground">Daily message volume by direction</p>

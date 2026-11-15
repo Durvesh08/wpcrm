@@ -88,7 +88,7 @@ export function PipelineAnalytics({ stages, deals }: PipelineAnalyticsProps) {
   return (
     <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 xl:grid-cols-6 mb-2">
       {/* 1. Total Deals */}
-      <div className="rounded-[22px] bg-card/75 border border-border/80 p-4 flex flex-col justify-between shadow-xs hover:border-primary/40 hover:-translate-y-0.5 transition-all group relative overflow-hidden backdrop-blur-xl">
+      <div className="zovaix-glass-card rounded-[22px] p-4 flex flex-col justify-between hover:border-primary/40 hover:-translate-y-0.5 transition-all group relative overflow-hidden">
         <div className="flex items-center justify-between gap-1 mb-2">
           <span className="text-[10px] sm:text-[11px] font-bold tracking-wider text-muted-foreground uppercase truncate">
             Total Deals
@@ -148,7 +148,7 @@ export function PipelineAnalytics({ stages, deals }: PipelineAnalyticsProps) {
       </div>
 
       {/* 3. Avg Deal Size */}
-      <div className="rounded-[22px] bg-card/75 border border-border/80 p-4 flex flex-col justify-between shadow-xs hover:border-primary/40 hover:-translate-y-0.5 transition-all group relative overflow-hidden backdrop-blur-xl">
+      <div className="zovaix-glass-card rounded-[22px] p-4 flex flex-col justify-between hover:border-primary/40 hover:-translate-y-0.5 transition-all group relative overflow-hidden">
         <div className="flex items-center justify-between gap-1 mb-2">
           <span className="text-[10px] sm:text-[11px] font-bold tracking-wider text-muted-foreground uppercase truncate">
             Avg Deal Size
@@ -178,7 +178,7 @@ export function PipelineAnalytics({ stages, deals }: PipelineAnalyticsProps) {
       </div>
 
       {/* 4. Weighted Value */}
-      <div className="rounded-[22px] bg-card/75 border border-border/80 p-4 flex flex-col justify-between shadow-xs hover:border-primary/40 hover:-translate-y-0.5 transition-all group relative overflow-hidden backdrop-blur-xl">
+      <div className="zovaix-glass-card rounded-[22px] p-4 flex flex-col justify-between hover:border-primary/40 hover:-translate-y-0.5 transition-all group relative overflow-hidden">
         <div className="flex items-center justify-between gap-1 mb-2">
           <span className="text-[10px] sm:text-[11px] font-bold tracking-wider text-muted-foreground uppercase truncate">
             Weighted Value
@@ -208,7 +208,7 @@ export function PipelineAnalytics({ stages, deals }: PipelineAnalyticsProps) {
       </div>
 
       {/* 5. Won This Month */}
-      <div className="rounded-[22px] bg-card/75 border border-border/80 p-4 flex flex-col justify-between shadow-xs hover:border-emerald-500/40 hover:-translate-y-0.5 transition-all group relative overflow-hidden backdrop-blur-xl">
+      <div className="zovaix-glass-card rounded-[22px] p-4 flex flex-col justify-between hover:border-emerald-500/40 hover:-translate-y-0.5 transition-all group relative overflow-hidden">
         <div className="flex items-center justify-between gap-1 mb-2">
           <span className="text-[10px] sm:text-[11px] font-bold tracking-wider text-emerald-400 uppercase truncate">
             Won Month
@@ -238,7 +238,7 @@ export function PipelineAnalytics({ stages, deals }: PipelineAnalyticsProps) {
       </div>
 
       {/* 6. Lost This Month */}
-      <div className="rounded-[22px] bg-card/75 border border-border/80 p-4 flex flex-col justify-between shadow-xs hover:border-rose-500/40 hover:-translate-y-0.5 transition-all group relative overflow-hidden backdrop-blur-xl">
+      <div className="zovaix-glass-card rounded-[22px] p-4 flex flex-col justify-between hover:border-rose-500/40 hover:-translate-y-0.5 transition-all group relative overflow-hidden">
         <div className="flex items-center justify-between gap-1 mb-2">
           <span className="text-[10px] sm:text-[11px] font-bold tracking-wider text-rose-400 uppercase truncate">
             Lost Month

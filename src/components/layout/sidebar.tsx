@@ -180,11 +180,11 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
       <aside
         className={cn(
           // Mobile: fixed drawer that slides in from the left.
-          'border-border/50 bg-sidebar/75 fixed inset-y-0 left-0 z-50 flex h-full w-72 flex-col border-r shadow-2xl shadow-black/30 backdrop-blur-2xl',
+          'border-border/50 bg-white/85 dark:bg-sidebar/75 fixed inset-y-0 left-0 z-50 flex h-full w-72 flex-col border-r shadow-xl shadow-slate-900/5 dark:shadow-black/40 backdrop-blur-2xl',
           'transition-transform duration-200 ease-out will-change-transform',
           open ? 'translate-x-0' : '-translate-x-full',
           // Desktop: static, always visible — reset all the mobile framing.
-          'lg:static lg:z-0 lg:w-72 lg:translate-x-0 lg:transition-none'
+          'lg:static lg:z-0 lg:w-72 lg:translate-x-0 lg:transition-none lg:shadow-none'
         )}
         aria-label="Primary"
       >
@@ -247,7 +247,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
                           'group flex items-center gap-3 rounded-[16px] px-3 py-2.5 text-sm font-semibold transition-all duration-200',
                           isActive
                             ? 'bg-[#D7FA00] text-[#0D120D] shadow-[0_4px_16px_rgba(215,250,0,0.22)] font-extrabold'
-                            : 'text-muted-foreground hover:bg-card/70 hover:translate-x-1 hover:text-foreground'
+                            : 'text-slate-600 dark:text-muted-foreground hover:bg-slate-100/80 dark:hover:bg-card/70 hover:translate-x-1 hover:text-slate-900 dark:hover:text-foreground'
                         )}
                       >
                         <span
@@ -255,7 +255,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
                             'flex h-8 w-8 items-center justify-center rounded-[10px] transition-all shrink-0',
                             isActive
                               ? 'bg-[#0D120D] text-[#D7FA00] shadow-xs'
-                              : 'bg-card/60 border border-border/60 text-muted-foreground group-hover:text-foreground group-hover:border-border'
+                              : 'bg-white/80 dark:bg-card/60 border border-slate-200/70 dark:border-border/60 text-slate-600 dark:text-muted-foreground group-hover:text-foreground group-hover:border-border shadow-2xs'
                           )}
                         >
                           <item.icon className="h-4 w-4" />

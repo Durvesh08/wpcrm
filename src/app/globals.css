@@ -117,32 +117,32 @@ html[data-mode='dark'] {
 }
 
 html[data-mode='light'] {
-  --background: oklch(0.965 0.012 155);
-  --foreground: oklch(0.245 0.02 185);
-  --card: oklch(0.995 0.003 155);
-  --card-2: oklch(0.952 0.017 155);
-  --card-foreground: oklch(0.245 0.02 185);
-  --popover: oklch(0.995 0.003 155);
-  --popover-foreground: oklch(0.245 0.02 185);
-  --secondary: oklch(0.94 0.018 155);
-  --secondary-foreground: oklch(0.275 0.02 185);
-  --muted: oklch(0.94 0.018 155);
-  --muted-foreground: oklch(0.5 0.023 185);
-  --accent: oklch(0.925 0.022 155);
-  --accent-foreground: oklch(0.275 0.02 185);
+  --background: oklch(0.978 0.006 250);
+  --foreground: oklch(0.18 0.02 260);
+  --card: oklch(1 0 0 / 0.82);
+  --card-2: oklch(0.965 0.008 250 / 0.75);
+  --card-foreground: oklch(0.18 0.02 260);
+  --popover: oklch(1 0 0 / 0.94);
+  --popover-foreground: oklch(0.18 0.02 260);
+  --secondary: oklch(0.955 0.008 250);
+  --secondary-foreground: oklch(0.22 0.02 260);
+  --muted: oklch(0.955 0.008 250);
+  --muted-foreground: oklch(0.48 0.025 250);
+  --accent: oklch(0.94 0.012 250);
+  --accent-foreground: oklch(0.20 0.02 260);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.875 0.025 155);
-  --input: oklch(0.875 0.025 155);
+  --border: oklch(0.89 0.008 250 / 0.65);
+  --input: oklch(0.89 0.008 250 / 0.65);
   --chart-2: oklch(0.6 0.1 260);
   --chart-3: oklch(0.7 0.06 260);
   --chart-4: oklch(0.8 0.04 260);
   --chart-5: oklch(0.87 0.03 260);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0.006 155);
-  --sidebar-foreground: oklch(0.245 0.02 185);
-  --sidebar-accent: oklch(0.925 0.022 155);
-  --sidebar-accent-foreground: oklch(0.275 0.02 185);
-  --sidebar-border: oklch(0.875 0.025 155);
+  --radius: 0.75rem;
+  --sidebar: oklch(0.985 0.005 250 / 0.85);
+  --sidebar-foreground: oklch(0.18 0.02 260);
+  --sidebar-accent: oklch(0.94 0.012 250);
+  --sidebar-accent-foreground: oklch(0.20 0.02 260);
+  --sidebar-border: oklch(0.89 0.008 250 / 0.65);
 }
 
 /* ---- ACCENT: primary color ---- */
@@ -252,6 +252,21 @@ html[data-theme='rose'] {
   body {
     @apply bg-background text-foreground;
     overscroll-behavior: none;
+  }
+  html[data-mode='light'] body {
+    background-color: #F8FAFC;
+    background-image:
+      radial-gradient(at 10% 12%, rgba(215, 250, 0, 0.05) 0px, transparent 45%),
+      radial-gradient(at 90% 88%, rgba(147, 197, 253, 0.20) 0px, transparent 50%),
+      radial-gradient(at 50% 50%, rgba(255, 255, 255, 0.85) 0px, transparent 70%);
+    background-attachment: fixed;
+  }
+  html[data-mode='dark'] body {
+    background-color: oklch(0.105 0.025 260);
+    background-image:
+      radial-gradient(at 10% 12%, rgba(215, 250, 0, 0.03) 0px, transparent 40%),
+      radial-gradient(at 90% 88%, rgba(20, 30, 60, 0.4) 0px, transparent 50%);
+    background-attachment: fixed;
   }
   html {
     @apply font-sans;
@@ -390,14 +405,37 @@ html[data-mode='light'][data-theme='whatsapp'] .zovaix-whatsapp-chat-surface {
   -webkit-backdrop-filter: blur(10px) saturate(140%);
 }
 
-.zovaix-glass-panel {
-  background: color-mix(in oklch, var(--card) 72%, transparent);
-  border: 1px solid color-mix(in oklch, var(--border) 70%, transparent);
+.zovaix-glass-panel,
+.zovaix-glass-card {
+  background: color-mix(in oklch, var(--card) 80%, transparent);
+  border: 1px solid var(--border);
   box-shadow:
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.4),
-    0 2px 12px -2px rgba(0, 0, 0, 0.06);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.45),
+    0 4px 16px -2px rgba(15, 23, 42, 0.04),
+    0 1px 3px 0 rgba(15, 23, 42, 0.02);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+
+html[data-mode='light'] .zovaix-glass-panel,
+html[data-mode='light'] .zovaix-glass-card {
+  background: rgba(255, 255, 255, 0.80);
+  border: 1px solid rgba(0, 0, 0, 0.055);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.95),
+    0 4px 20px -2px rgba(15, 23, 42, 0.04),
+    0 1px 3px 0 rgba(15, 23, 42, 0.02);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+
+html[data-mode='light'] .zovaix-premium-hover:hover {
+  transform: translateY(-2px);
+  border-color: rgba(215, 250, 0, 0.7);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 1),
+    0 12px 28px -4px rgba(15, 23, 42, 0.06),
+    0 0 16px -2px rgba(215, 250, 0, 0.35);
 }
 
 .zovaix-icon-tile {
@@ -440,15 +478,6 @@ html[data-mode='light'][data-theme='whatsapp'] .zovaix-whatsapp-chat-surface {
     box-shadow 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.zovaix-premium-hover:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in oklch, var(--primary) 45%, var(--border));
-  box-shadow:
-    0 1px 1px 0 rgba(255, 255, 255, 0.28) inset,
-    0 18px 38px -6px color-mix(in oklch, black 60%, transparent),
-    0 0 20px -4px color-mix(in oklch, var(--primary) 25%, transparent);
-}
-
 .zovaix-kpi-glow {
   position: relative;
   overflow: hidden;
@@ -481,13 +510,16 @@ html[data-mode='dark'] .zovaix-premium-panel {
     0 8px 24px -4px rgba(0, 0, 0, 0.5);
 }
 
-html[data-mode='dark'] .zovaix-glass-panel {
+html[data-mode='dark'] .zovaix-glass-panel,
+html[data-mode='dark'] .zovaix-glass-card {
   background: color-mix(in oklch, var(--card) 75%, transparent);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow:
     inset 0 1px 0 0 rgba(255, 255, 255, 0.12),
     inset 0 0 0 1px rgba(255, 255, 255, 0.03),
     0 12px 32px -8px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
 html[data-mode='dark'] .zovaix-premium-hover:hover {
@@ -512,16 +544,6 @@ html[data-mode='dark'] .zovaix-premium-hover:hover {
 /* ============================================================
  * MOBILE & PLAY STORE GLASSMORPHISM UTILITIES
  * ============================================================ */
-
-.zovaix-glass-card {
-  background: color-mix(in oklch, var(--card) 75%, transparent);
-  border: 1px solid color-mix(in oklch, var(--border) 70%, transparent);
-  box-shadow:
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.3),
-    0 4px 16px -2px rgba(0, 0, 0, 0.08);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-}
 
 .zovaix-bottom-nav {
   background:
@@ -564,33 +586,47 @@ html[data-mode='dark'] .zovaix-premium-hover:hover {
 }
 
 .bento-card-white {
-  background-color: #ffffff;
-  color: #0f1411;
+  background-color: rgba(255, 255, 255, 0.82);
+  color: #0f172a;
   border-radius: 28px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 8px 30px -8px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.055);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.95),
+    0 4px 20px -2px rgba(15, 23, 42, 0.04),
+    0 1px 3px 0 rgba(15, 23, 42, 0.02);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
 }
 
 html[data-mode='dark'] .bento-card-white {
-  background-color: #171b1d;
+  background-color: rgba(23, 27, 29, 0.78);
   color: #f3f5f4;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 30px -8px rgba(0, 0, 0, 0.5);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.12),
+    0 12px 32px -8px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
 .bento-card-dark {
-  background-color: #111417;
+  background: linear-gradient(145deg, #181d24 0%, #0d1117 100%);
   color: #ffffff;
   border-radius: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.16),
+    0 12px 32px -8px rgba(0, 0, 0, 0.45);
 }
 
 .bento-card-olive {
-  background-color: #3b4938;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   color: #ffffff;
   border-radius: 28px;
-  box-shadow: 0 10px 30px -10px rgba(59, 73, 56, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
+    0 10px 30px -10px rgba(15, 23, 42, 0.35);
 }
 
 .bento-card-gradient {

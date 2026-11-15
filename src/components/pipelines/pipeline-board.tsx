@@ -203,7 +203,7 @@ function StageColumn({
   const { setNodeRef, isOver } = useDroppable({ id: stage.id });
 
   return (
-    <div className="flex w-[85vw] min-w-[280px] max-w-[340px] shrink-0 snap-start flex-col rounded-[26px] bg-card/65 border border-border/75 p-4.5 shadow-sm backdrop-blur-xl lg:w-auto lg:max-w-none lg:flex-1 lg:basis-[280px] lg:shrink lg:snap-none transition-all">
+    <div className="flex w-[85vw] min-w-[280px] max-w-[340px] shrink-0 snap-start flex-col rounded-[26px] bg-slate-100/70 dark:bg-card/40 border border-slate-200/80 dark:border-white/[0.08] p-4.5 shadow-xs backdrop-blur-xl lg:w-auto lg:max-w-none lg:flex-1 lg:basis-[280px] lg:shrink lg:snap-none transition-all">
       {/* Stage Header */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
@@ -217,18 +217,18 @@ function StageColumn({
           <h3 className="truncate text-sm font-bold text-foreground">
             {stage.name}
           </h3>
-          <span className="px-2 py-0.5 rounded-[8px] bg-muted/80 text-foreground text-xs font-mono font-bold border border-border/60">
+          <span className="px-2 py-0.5 rounded-full bg-white/80 dark:bg-muted/80 text-foreground text-xs font-mono font-bold border border-slate-200/60 dark:border-border/60 shadow-2xs">
             {deals.length}
           </span>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
-          <span className="text-xs font-mono font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-[8px] border border-primary/20">
+          <span className="text-xs font-mono font-bold text-primary bg-primary/10 px-2.5 py-0.5 rounded-full border border-primary/20">
             {formatCurrency(totalValue, currency)}
           </span>
           <button
             type="button"
             onClick={() => onAddDeal(stage.id)}
-            className="w-7 h-7 rounded-[9px] bg-muted/60 hover:bg-primary hover:text-primary-foreground text-muted-foreground flex items-center justify-center transition-all shadow-xs"
+            className="w-7 h-7 rounded-full bg-white/80 dark:bg-muted/60 hover:bg-primary hover:text-primary-foreground text-muted-foreground flex items-center justify-center transition-all shadow-xs border border-slate-200/60 dark:border-border/60"
             title="Add Deal"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -237,7 +237,7 @@ function StageColumn({
       </div>
 
       {/* Stage Color Progress Bar */}
-      <div className="w-full h-1 bg-muted/40 rounded-full overflow-hidden mt-2.5 mb-3">
+      <div className="w-full h-1 bg-slate-200/60 dark:bg-muted/40 rounded-full overflow-hidden mt-2.5 mb-3">
         <div
           className="h-full rounded-full transition-all duration-300"
           style={{
@@ -259,9 +259,9 @@ function StageColumn({
         {deals.length === 0 ? (
           <div
             onClick={() => onAddDeal(stage.id)}
-            className="flex flex-1 flex-col items-center justify-center rounded-[20px] border border-dashed border-border/80 bg-muted/15 p-6 text-center group cursor-pointer hover:border-primary/50 hover:bg-primary/[0.03] transition-all"
+            className="flex flex-1 flex-col items-center justify-center rounded-[20px] border border-dashed border-slate-300/80 dark:border-border/80 bg-white/40 dark:bg-muted/15 p-6 text-center group cursor-pointer hover:border-primary/50 hover:bg-primary/[0.03] transition-all"
           >
-            <div className="w-9 h-9 rounded-[12px] bg-muted/60 text-muted-foreground group-hover:text-primary group-hover:bg-primary/15 flex items-center justify-center mb-2 transition-all">
+            <div className="w-9 h-9 rounded-full bg-white/80 dark:bg-muted/60 text-muted-foreground group-hover:text-primary group-hover:bg-primary/15 flex items-center justify-center mb-2 transition-all shadow-2xs">
               <Plus className="w-4 h-4" />
             </div>
             <p className="text-xs font-semibold text-foreground/80 group-hover:text-primary transition-colors">
@@ -286,7 +286,7 @@ function StageColumn({
       <button
         type="button"
         onClick={() => onAddDeal(stage.id)}
-        className="mt-3 w-full py-2.5 rounded-full border border-dashed border-border/80 bg-muted/30 text-xs font-bold text-muted-foreground hover:border-primary/50 hover:bg-primary hover:text-primary-foreground transition-all flex items-center justify-center gap-1.5 shadow-2xs"
+        className="mt-3 w-full py-2.5 rounded-full border border-dashed border-slate-300/80 dark:border-border/80 bg-white/60 dark:bg-muted/30 text-xs font-bold text-muted-foreground hover:border-primary/50 hover:bg-primary hover:text-primary-foreground transition-all flex items-center justify-center gap-1.5 shadow-2xs"
       >
         <Plus className="h-3.5 w-3.5" />
         Add Deal

@@ -112,6 +112,8 @@ export function BentoEfficiencyWave({
 
   return (
     <div className="bento-card-dark p-5 flex flex-col justify-between min-h-[175px] relative overflow-hidden transition-all duration-300">
+      {/* Ambient subtle violet glow inspired by mobile analytics reference */}
+      <div className="pointer-events-none absolute -right-6 -top-6 h-28 w-28 rounded-full bg-violet-500/15 blur-2xl" />
       {/* Top Header: Title & Dynamic Range Selector */}
       <div className="flex items-center justify-between gap-2 z-10">
         <h4 className="text-sm font-bold text-white tracking-tight flex items-center gap-1.5">

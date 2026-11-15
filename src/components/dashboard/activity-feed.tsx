@@ -47,8 +47,8 @@ export function ActivityFeed({ items, loading }: ActivityFeedProps) {
     i === 0 || totalLoaded > PAGE_SIZES[i - 1]
 
   return (
-    <section className="relative overflow-hidden rounded-[26px] bg-card/75 border border-border/80 backdrop-blur-xl shadow-xs">
-      <header className="flex items-center justify-between border-b border-border/70 px-5 sm:px-6 py-4 bg-muted/20">
+    <section className="zovaix-glass-card relative overflow-hidden rounded-[26px]">
+      <header className="flex items-center justify-between border-b border-border/60 px-5 sm:px-6 py-4 bg-muted/20">
         <div className="flex items-center gap-2.5">
           <div className="flex h-7 w-7 items-center justify-center rounded-[9px] bg-primary/15 text-primary border border-primary/25">
             <Activity className="h-4 w-4" />

@@ -133,7 +133,7 @@ export function BentoUpcomingFollowups({ initialReminders }: BentoUpcomingFollow
                 className={`relative flex flex-col items-center justify-center py-3.5 sm:py-4 px-1 rounded-full transition-all duration-200 cursor-pointer ${
                   isSelected
                     ? 'bg-[#D7FA00] text-[#0D120D] font-bold shadow-[0_6px_20px_-4px_rgba(215,250,0,0.6)] scale-[1.04]'
-                    : 'bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground font-medium'
+                    : 'bg-slate-100/90 hover:bg-slate-200/90 dark:bg-muted/40 text-slate-700 dark:text-muted-foreground hover:text-slate-900 dark:hover:text-foreground font-medium'
                 }`}
               >
                 <span className="text-base sm:text-lg font-bold leading-none">

@@ -8,8 +8,8 @@ export function BentoDateCapsule() {
 
   return (
     <div className="bento-card-white p-4.5 flex items-center gap-3.5 rounded-[24px] shadow-sm transition-all hover:scale-[1.02]">
-      {/* High-contrast Black Circle Day Badge */}
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#111417] text-white font-extrabold text-lg shadow-sm">
+      {/* High-contrast Day Badge */}
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-slate-900 dark:bg-card text-white dark:text-foreground font-black text-lg shadow-sm border border-slate-800 dark:border-white/10">
         {dayNumber}
       </div>
 

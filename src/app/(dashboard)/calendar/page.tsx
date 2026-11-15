@@ -268,12 +268,12 @@ export default function CalendarPage() {
       {/* Top 3 Bento Stat Capsules */}
       <div className="grid gap-4 sm:grid-cols-3">
         {/* Scheduled */}
-        <div className="group relative overflow-hidden rounded-[22px] bg-card/75 border border-border/80 p-5 shadow-xs transition-all duration-200 hover:border-primary/40 hover:shadow-md">
+        <div className="group relative overflow-hidden rounded-[24px] zovaix-glass-card p-5.5 shadow-xs transition-all duration-200 hover:border-primary/40 hover:shadow-md">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
               Scheduled Items
             </span>
-            <div className="flex h-10 w-10 items-center justify-center rounded-[13px] bg-primary/15 border border-primary/25 text-primary group-hover:scale-105 transition-transform">
+            <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-primary/15 border border-primary/25 text-primary group-hover:scale-105 transition-transform shadow-xs">
               <CalendarDays className="h-5 w-5" />
             </div>
           </div>
@@ -288,12 +288,12 @@ export default function CalendarPage() {
         </div>
 
         {/* Overdue */}
-        <div className="group relative overflow-hidden rounded-[22px] bg-card/75 border border-border/80 p-5 shadow-xs transition-all duration-200 hover:border-rose-500/40 hover:shadow-md">
+        <div className="group relative overflow-hidden rounded-[24px] zovaix-glass-card p-5.5 shadow-xs transition-all duration-200 hover:border-rose-500/40 hover:shadow-md">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
               Overdue Tasks
             </span>
-            <div className="flex h-10 w-10 items-center justify-center rounded-[13px] bg-rose-500/15 border border-rose-500/25 text-rose-400 group-hover:scale-105 transition-transform">
+            <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-rose-500/15 border border-rose-500/25 text-rose-400 group-hover:scale-105 transition-transform shadow-xs">
               <Clock3 className="h-5 w-5" />
             </div>
           </div>
@@ -313,12 +313,12 @@ export default function CalendarPage() {
         </div>
 
         {/* Today */}
-        <div className="group relative overflow-hidden rounded-[22px] bg-card/75 border border-border/80 p-5 shadow-xs transition-all duration-200 hover:border-amber-400/40 hover:shadow-md">
+        <div className="group relative overflow-hidden rounded-[24px] zovaix-glass-card p-5.5 shadow-xs transition-all duration-200 hover:border-amber-400/40 hover:shadow-md">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
               Due Today
             </span>
-            <div className="flex h-10 w-10 items-center justify-center rounded-[13px] bg-amber-400/15 border border-amber-400/25 text-amber-300 group-hover:scale-105 transition-transform">
+            <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-amber-400/15 border border-amber-400/25 text-amber-300 group-hover:scale-105 transition-transform shadow-xs">
               <Sparkles className="h-5 w-5" />
             </div>
           </div>
@@ -336,14 +336,14 @@ export default function CalendarPage() {
       {/* Main Grid: Calendar on Left, Scheduler Sidecar on Right */}
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_23rem]">
         {/* Calendar Surface */}
-        <section className="relative overflow-hidden rounded-[26px] bg-card/75 border border-border/80 backdrop-blur-xl shadow-xs">
+        <section className="relative overflow-hidden rounded-[26px] zovaix-glass-card shadow-xs">
           {/* Calendar Header */}
-          <div className="flex items-center justify-between gap-3 border-b border-border/80 px-5 sm:px-6 py-4 bg-muted/20">
+          <div className="flex items-center justify-between gap-3 border-b border-border/60 px-5 sm:px-6 py-4 bg-muted/20">
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setMonth((value) => subMonths(value, 1))}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-[11px] border border-border/80 bg-card/80 text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border/80 bg-white/70 dark:bg-card/80 text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all shadow-xs"
                 aria-label="Previous month"
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -351,7 +351,7 @@ export default function CalendarPage() {
               <button
                 type="button"
                 onClick={() => setMonth((value) => addMonths(value, 1))}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-[11px] border border-border/80 bg-card/80 text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border/80 bg-white/70 dark:bg-card/80 text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all shadow-xs"
                 aria-label="Next month"
               >
                 <ChevronRight className="h-4 w-4" />
@@ -363,7 +363,7 @@ export default function CalendarPage() {
                   setMonth(startOfMonth(now));
                   setSelectedDay(now);
                 }}
-                className="rounded-full border border-border/80 bg-card/70 px-3 py-1 text-xs font-bold text-muted-foreground hover:text-foreground hover:bg-card transition-all"
+                className="rounded-full border border-border/80 bg-white/70 dark:bg-card/70 px-3.5 py-1 text-xs font-bold text-muted-foreground hover:text-foreground hover:bg-card transition-all shadow-xs"
               >
                 Today
               </button>
@@ -383,7 +383,7 @@ export default function CalendarPage() {
           </div>
 
           {/* Weekday Row */}
-          <div className="grid grid-cols-7 border-b border-border/70 bg-muted/30">
+          <div className="grid grid-cols-7 border-b border-border/60 bg-muted/25">
             {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
               <p
                 key={day}
@@ -410,7 +410,7 @@ export default function CalendarPage() {
                   type="button"
                   onClick={() => setSelectedDay(day)}
                   className={cn(
-                    'group relative min-h-16 border-r border-b border-border/60 p-1.5 text-left transition-all hover:bg-muted/40 sm:min-h-24 sm:p-2.5',
+                    'group relative min-h-16 border-r border-b border-border/50 p-1.5 text-left transition-all hover:bg-slate-100/50 dark:hover:bg-muted/40 sm:min-h-24 sm:p-2.5',
                     selected && 'bg-primary/10 ring-1 ring-inset ring-primary/50',
                     muted && 'opacity-35'
                   )}
@@ -467,7 +467,7 @@ export default function CalendarPage() {
         </section>
 
         {/* Right Scheduler Sidecar */}
-        <aside className="space-y-4 rounded-[26px] bg-card/75 border border-border/80 backdrop-blur-xl p-5 sm:p-6 shadow-xs">
+        <aside className="space-y-4 rounded-[26px] zovaix-glass-card p-5 sm:p-6 shadow-xs">
           {/* Sidecar Header */}
           <div className="flex items-center gap-3 pb-3 border-b border-border/70">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-primary text-primary-foreground font-black text-sm shadow-[0_0_12px_rgba(215,250,0,0.35)]">
@@ -492,7 +492,7 @@ export default function CalendarPage() {
               <select
                 value={kind}
                 onChange={(event) => setKind(event.target.value as Kind)}
-                className="h-10 w-full rounded-[14px] border border-border/80 bg-background/80 px-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                className="h-10 w-full rounded-[14px] border border-border/80 bg-white/70 dark:bg-background/80 px-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-2xs"
               >
                 <option value="follow_up">Follow-up Task</option>
                 <option value="call">Phone Call</option>
@@ -509,7 +509,7 @@ export default function CalendarPage() {
               <select
                 value={contactId}
                 onChange={(event) => setContactId(event.target.value)}
-                className="h-10 w-full rounded-[14px] border border-border/80 bg-background/80 px-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                className="h-10 w-full rounded-[14px] border border-border/80 bg-white/70 dark:bg-background/80 px-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-2xs"
               >
                 <option value="">Choose contact</option>
                 {contacts.map((contact) => (
@@ -527,7 +527,7 @@ export default function CalendarPage() {
               <select
                 value={assignedUserId}
                 onChange={(event) => setAssignedUserId(event.target.value)}
-                className="h-10 w-full rounded-[14px] border border-border/80 bg-background/80 px-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                className="h-10 w-full rounded-[14px] border border-border/80 bg-white/70 dark:bg-background/80 px-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-2xs"
               >
                 <option value="">Assign to me</option>
                 {profiles.map((profile) => (
@@ -554,7 +554,7 @@ export default function CalendarPage() {
                       ? 'Note to remember'
                       : 'Follow-up task'
                 }
-                className="h-10 w-full rounded-[14px] border border-border/80 bg-background/80 px-3 text-xs text-foreground placeholder:text-muted-foreground/60 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                className="h-10 w-full rounded-[14px] border border-border/80 bg-white/70 dark:bg-background/80 px-3 text-xs text-foreground placeholder:text-muted-foreground/60 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-2xs"
               />
             </div>
 
@@ -568,7 +568,7 @@ export default function CalendarPage() {
                     value={meetingUrl}
                     onChange={(event) => setMeetingUrl(event.target.value)}
                     placeholder="https://meet.google.com/..."
-                    className="h-10 w-full rounded-[14px] border border-border/80 bg-background/80 px-3 text-xs text-foreground placeholder:text-muted-foreground/60 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                    className="h-10 w-full rounded-[14px] border border-border/80 bg-white/70 dark:bg-background/80 px-3 text-xs text-foreground placeholder:text-muted-foreground/60 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-2xs"
                   />
                 </div>
                 <div className="space-y-1">
@@ -579,7 +579,7 @@ export default function CalendarPage() {
                     value={meetingLocation}
                     onChange={(event) => setMeetingLocation(event.target.value)}
                     placeholder="Google Meet, Office, Call"
-                    className="h-10 w-full rounded-[14px] border border-border/80 bg-background/80 px-3 text-xs text-foreground placeholder:text-muted-foreground/60 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                    className="h-10 w-full rounded-[14px] border border-border/80 bg-white/70 dark:bg-background/80 px-3 text-xs text-foreground placeholder:text-muted-foreground/60 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-2xs"
                   />
                 </div>
               </>
@@ -594,7 +594,7 @@ export default function CalendarPage() {
                   type="time"
                   value={time}
                   onChange={(event) => setTime(event.target.value)}
-                  className="h-10 w-full rounded-[14px] border border-border/80 bg-background/80 px-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                  className="h-10 w-full rounded-[14px] border border-border/80 bg-white/70 dark:bg-background/80 px-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-2xs"
                 />
               </div>
 
@@ -605,7 +605,7 @@ export default function CalendarPage() {
                 <select
                   value={reminderMinutesBefore}
                   onChange={(event) => setReminderMinutesBefore(event.target.value)}
-                  className="h-10 w-full rounded-[14px] border border-border/80 bg-background/80 px-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                  className="h-10 w-full rounded-[14px] border border-border/80 bg-white/70 dark:bg-background/80 px-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-2xs"
                 >
                   <option value="0">At time</option>
                   <option value="15">15m before</option>
@@ -660,7 +660,7 @@ export default function CalendarPage() {
                     <div
                       key={item.id}
                       className={cn(
-                        'rounded-[18px] border border-border/80 bg-background/70 p-3 transition-all hover:border-border',
+                        'rounded-[18px] border border-slate-200/70 dark:border-border/80 bg-white/80 dark:bg-card/70 p-3 transition-all hover:border-primary/40 shadow-2xs',
                         item.completed_at && 'opacity-60'
                       )}
                     >

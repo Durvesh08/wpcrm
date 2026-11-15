@@ -32,7 +32,7 @@ export function BentoPipelineRoadmap({ pipeline }: BentoPipelineRoadmapProps) {
 
         <Link
           href="/pipelines"
-          className="rounded-full bg-[#111417] text-white hover:bg-black px-4 py-2 text-xs font-bold flex items-center gap-1.5 shadow-xs active:scale-95 transition-all"
+          className="rounded-full bg-slate-900 dark:bg-card text-white hover:bg-black px-4 py-2 text-xs font-bold flex items-center gap-1.5 shadow-xs border border-slate-800 dark:border-white/10 active:scale-95 transition-all"
         >
           <Plus className="h-3.5 w-3.5" />
           <span>Add deal</span>
