@@ -4,10 +4,12 @@ import {
   type AccountRole,
   canDeleteAccount,
   canEditSettings,
+  canExportContacts,
   canManageMembers,
   canSendMessages,
   canTransferOwnership,
   canViewOnly,
+  canViewRawPhoneNumbers,
   hasMinRole,
   isAccountRole,
   roleRank,
@@ -126,5 +128,19 @@ describe("capability predicates", () => {
     expect(canTransferOwnership("admin")).toBe(false);
     expect(canTransferOwnership("agent")).toBe(false);
     expect(canTransferOwnership("viewer")).toBe(false);
+  });
+
+  it("canViewRawPhoneNumbers: owner (super admin) only", () => {
+    expect(canViewRawPhoneNumbers("owner")).toBe(true);
+    expect(canViewRawPhoneNumbers("admin")).toBe(false);
+    expect(canViewRawPhoneNumbers("agent")).toBe(false);
+    expect(canViewRawPhoneNumbers("viewer")).toBe(false);
+  });
+
+  it("canExportContacts: owner (super admin) only", () => {
+    expect(canExportContacts("owner")).toBe(true);
+    expect(canExportContacts("admin")).toBe(false);
+    expect(canExportContacts("agent")).toBe(false);
+    expect(canExportContacts("viewer")).toBe(false);
   });
 });

@@ -66,8 +66,8 @@ export function RoutingSettings() {
       }
 
       toast.success('Routing configuration updated');
-    } catch (err: Error | unknown) {
-      toast.error(err.message || 'An error occurred while saving.');
+    } catch (err: any) {
+      toast.error(err?.message || 'An error occurred while saving.');
     } finally {
       setSaving(false);
     }

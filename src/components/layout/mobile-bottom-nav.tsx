@@ -104,21 +104,21 @@ export function MobileBottomNav() {
               className={cn(
                 'zovaix-touch-press relative flex flex-1 flex-col items-center justify-center py-1 transition-all',
                 isActive
-                  ? 'text-primary font-semibold'
+                  ? 'text-[#D7FA00] font-bold'
                   : 'text-muted-foreground hover:text-foreground'
               )}
             >
               <div className="relative">
-                <Icon className={cn('h-5 w-5', isActive && 'stroke-[2.25]')} />
+                <Icon className={cn('h-5 w-5', isActive && 'stroke-[2.25] text-[#D7FA00]')} />
                 {tab.badge !== undefined && tab.badge > 0 && (
-                  <span className="bg-primary text-primary-foreground absolute -top-1.5 -right-2.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold">
+                  <span className="bg-[#D7FA00] text-[#0D120D] absolute -top-1.5 -right-2.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-extrabold shadow-xs">
                     {tab.badge > 99 ? '99+' : tab.badge}
                   </span>
                 )}
               </div>
               <span className="mt-1 text-[10px] tracking-tight">{tab.label}</span>
               {isActive && (
-                <span className="bg-primary zovaix-pill-glow absolute -bottom-1 h-1 w-6 rounded-full" />
+                <span className="bg-[#D7FA00] zovaix-pill-glow absolute -bottom-1 h-1 w-6 rounded-full" />
               )}
             </Link>
           );

@@ -431,7 +431,7 @@ interface HeaderProps {
 export function Header({ onOpenSidebar }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { profile, signOut, account } = useAuth();
+  const { profile, signOut, account, isOwner, isAdmin } = useAuth();
   const unreadNotifications = useUnreadNotifications();
   const totalUnread = useTotalUnread();
   const title = getPageTitle(pathname);
@@ -858,9 +858,22 @@ export function Header({ onOpenSidebar }: HeaderProps) {
                 </AvatarFallback>
               </Avatar>
               <div className="hidden min-w-0 text-left sm:block">
-                <p className="text-foreground truncate text-sm font-medium">
-                  {profile?.full_name ?? 'User'}
-                </p>
+                <div className="flex items-center gap-1.5">
+                  <p className="text-foreground truncate text-sm font-medium">
+                    {profile?.full_name ?? 'User'}
+                  </p>
+                  <span
+                    className={`inline-block px-1.5 py-0.2 rounded-full text-[9px] font-bold ${
+                      isOwner
+                        ? 'bg-[#D7FA00] text-[#0D120D]'
+                        : isAdmin
+                        ? 'bg-primary/20 text-primary'
+                        : 'bg-muted text-muted-foreground'
+                    }`}
+                  >
+                    {isOwner ? 'Super Admin' : isAdmin ? 'Admin' : 'Agent'}
+                  </span>
+                </div>
                 <p className="text-muted-foreground truncate text-[11px]">
                   {account?.name ?? profile?.email ?? ''}
                 </p>

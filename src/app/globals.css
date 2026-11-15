@@ -561,6 +561,82 @@ html[data-mode='dark'] .zovaix-premium-hover:hover {
 }
 
 
+/* ============================================================
+ * NEO-BENTO DESIGN SYSTEM (LIME & CHALK SIGNATURE PALETTE)
+ * ============================================================ */
+
+.bento-card-lime {
+  background-color: #d7fa00;
+  color: #0d120d;
+  border-radius: 28px;
+  box-shadow: 0 12px 36px -12px rgba(215, 250, 0, 0.45), 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.bento-card-white {
+  background-color: #ffffff;
+  color: #0f1411;
+  border-radius: 28px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 30px -8px rgba(0, 0, 0, 0.06);
+}
+
+html[data-mode='dark'] .bento-card-white {
+  background-color: #171b1d;
+  color: #f3f5f4;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 30px -8px rgba(0, 0, 0, 0.5);
+}
+
+.bento-card-dark {
+  background-color: #111417;
+  color: #ffffff;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.6);
+}
+
+.bento-card-olive {
+  background-color: #3b4938;
+  color: #ffffff;
+  border-radius: 28px;
+  box-shadow: 0 10px 30px -10px rgba(59, 73, 56, 0.4);
+}
+
+.bento-card-gradient {
+  background: linear-gradient(135deg, #d7fa00 0%, #cee810 50%, #e2aa85 100%);
+  color: #0d120d;
+  border-radius: 28px;
+  box-shadow: 0 12px 36px -12px rgba(215, 250, 0, 0.4);
+}
+
+.bento-pill {
+  border-radius: 9999px;
+  transition: all 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.bento-pill:active {
+  transform: scale(0.96);
+}
+
+.bento-date-token {
+  width: 52px;
+  height: 68px;
+  border-radius: 9999px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 200ms ease;
+  user-select: none;
+}
+
+.bento-date-token-active {
+  background-color: #d7fa00 !important;
+  color: #0d120d !important;
+  font-weight: 700;
+  box-shadow: 0 6px 18px -4px rgba(215, 250, 0, 0.5);
+}
+
 /* Disable continuous infinite animations on mobile to save battery and GPU */
 @media (max-width: 768px) {
   .zovaix-brand-mark {

@@ -103,9 +103,10 @@ export async function assignConversation(
     });
 
     if (convCounts) {
-      convCounts.forEach((c: { assigned_agent_id: string; count: number }) => {
-        if (c.assignee_id && counts[c.assignee_id] !== undefined) {
-          counts[c.assignee_id]++;
+      convCounts.forEach((c: any) => {
+        const id = c.assignee_id ?? c.assigned_agent_id;
+        if (id && counts[id] !== undefined) {
+          counts[id]++;
         }
       });
     }

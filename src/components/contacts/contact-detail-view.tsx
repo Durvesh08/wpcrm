@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/hooks/use-auth';
+import { maskPhoneNumber } from '@/lib/auth/phone-mask';
 import { formatCurrency } from '@/lib/currency';
 import { calculateLeadScore, type LeadStage } from '@/lib/contacts/lead-scoring';
 import { toast } from 'sonner';
@@ -88,7 +89,7 @@ export function ContactDetailView({
   onUpdated,
 }: ContactDetailViewProps) {
   const supabase = createClient();
-  const { accountId, defaultCurrency } = useAuth();
+  const { accountId, defaultCurrency, canViewRawPhoneNumbers } = useAuth();
 
   const [contact, setContact] = useState<Contact | null>(null);
   const [loading, setLoading] = useState(false);
@@ -269,7 +270,7 @@ export function ContactDetailView({
   }, [open, contactId, fetchContact, fetchTags, fetchNotes, fetchCustomFields, fetchDeals, fetchTeamMembers]);
 
   async function copyPhone() {
-    if (!contact) return;
+    if (!contact || !canViewRawPhoneNumbers) return;
     await navigator.clipboard.writeText(contact.phone);
     setCopiedPhone(true);
     setTimeout(() => setCopiedPhone(false), 2000);
@@ -548,18 +549,26 @@ export function ContactDetailView({
                     Contact details
                   </SheetDescription>
                   <div className="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-muted-foreground">
-                    <button
-                      onClick={copyPhone}
-                      className="flex items-center gap-1 hover:text-primary transition-colors cursor-pointer"
-                    >
-                      <Phone className="size-3" />
-                      {contact.phone}
-                      {copiedPhone ? (
-                        <Check className="size-3 text-primary" />
-                      ) : (
-                        <Copy className="size-3" />
-                      )}
-                    </button>
+                    {canViewRawPhoneNumbers ? (
+                      <button
+                        onClick={copyPhone}
+                        className="flex items-center gap-1 hover:text-primary transition-colors cursor-pointer"
+                        title="Copy phone"
+                      >
+                        <Phone className="size-3" />
+                        {contact.phone}
+                        {copiedPhone ? (
+                          <Check className="size-3 text-primary" />
+                        ) : (
+                          <Copy className="size-3" />
+                        )}
+                      </button>
+                    ) : (
+                      <span className="flex items-center gap-1 text-muted-foreground">
+                        <Phone className="size-3" />
+                        {maskPhoneNumber(contact.phone, false)}
+                      </span>
+                    )}
                     {contact.email && (
                       <span className="flex items-center gap-1">
                         <Mail className="size-3" />

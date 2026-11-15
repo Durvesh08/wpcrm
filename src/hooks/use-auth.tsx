@@ -15,8 +15,10 @@ import type { User } from '@supabase/supabase-js';
 import { DEFAULT_CURRENCY } from '@/lib/currency';
 import {
   canEditSettings as canEditSettingsFor,
+  canExportContacts as canExportContactsFor,
   canManageMembers as canManageMembersFor,
   canSendMessages as canSendMessagesFor,
+  canViewRawPhoneNumbers as canViewRawPhoneNumbersFor,
   isAccountRole,
   type AccountRole,
 } from '@/lib/auth/roles';
@@ -102,6 +104,10 @@ interface AuthContextValue {
   canEditSettings: boolean;
   /** True if the caller can send messages and edit operational data (agent+). */
   canSendMessages: boolean;
+  /** True if the caller can view unmasked raw client phone numbers (Super Admin only). */
+  canViewRawPhoneNumbers: boolean;
+  /** True if the caller can export contact lists (Super Admin only). */
+  canExportContacts: boolean;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -346,6 +352,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       canManageMembers: role ? canManageMembersFor(role) : false,
       canEditSettings: role ? canEditSettingsFor(role) : false,
       canSendMessages: role ? canSendMessagesFor(role) : false,
+      canViewRawPhoneNumbers: role ? canViewRawPhoneNumbersFor(role) : false,
+      canExportContacts: role ? canExportContactsFor(role) : false,
     };
   }, [profile?.account_role, profile?.account_id]);
 
@@ -399,6 +407,8 @@ export function useAuth(): AuthContextValue {
       canManageMembers: false,
       canEditSettings: false,
       canSendMessages: false,
+      canViewRawPhoneNumbers: false,
+      canExportContacts: false,
     };
   }
   return ctx;

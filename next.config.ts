@@ -63,7 +63,7 @@ const SECURITY_HEADERS = [
   },
 ] as const;
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   /**
    * Bundle optimizations.
    *
@@ -173,4 +173,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+export default withNextIntl(nextConfig as any);

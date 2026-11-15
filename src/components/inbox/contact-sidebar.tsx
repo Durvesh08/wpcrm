@@ -5,6 +5,7 @@ import { format, addDays, setHours, setMinutes } from "date-fns";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { maskPhoneNumber, formatContactIdentifier } from "@/lib/auth/phone-mask";
 import { cn } from "@/lib/utils";
 import type { Contact, Deal, ContactNote, Tag, ConversationStatus } from "@/types";
 import Link from "next/link";
@@ -75,7 +76,7 @@ export function ContactSidebar({
   onStatusChange,
   onContactUpdated,
 }: ContactSidebarProps) {
-  const { accountId } = useAuth();
+  const { accountId, canViewRawPhoneNumbers } = useAuth();
   const [copied, setCopied] = useState(false);
   const [deals, setDeals] = useState<Deal[]>([]);
   const [notes, setNotes] = useState<ContactNote[]>([]);
@@ -155,11 +156,11 @@ export function ContactSidebar({
   );
 
   const handleCopyPhone = useCallback(async () => {
-    if (!contact?.phone) return;
+    if (!contact?.phone || !canViewRawPhoneNumbers) return;
     await navigator.clipboard.writeText(contact.phone);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  }, [contact]);
+  }, [contact, canViewRawPhoneNumbers]);
 
   const insertNote = useCallback(
     async (text: string) => {
@@ -384,7 +385,7 @@ export function ContactSidebar({
     );
   }
 
-  const displayName = contact.name || contact.phone;
+  const displayName = formatContactIdentifier(contact.name, contact.phone, canViewRawPhoneNumbers);
   const initials = displayName.charAt(0).toUpperCase();
   const needsName = !contact.name?.trim();
 
@@ -449,7 +450,7 @@ export function ContactSidebar({
             <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground font-medium">
               <span className="flex items-center gap-1">
                 <Phone className="h-3 w-3" />
-                {contact.phone}
+                {maskPhoneNumber(contact.phone, canViewRawPhoneNumbers)}
               </span>
               {contact.email && (
                 <span className="flex items-center gap-1">

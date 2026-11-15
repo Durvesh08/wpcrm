@@ -51,7 +51,10 @@ import {
   X,
   MessageSquare,
   Phone,
+  Download,
 } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
+import { maskPhoneNumber } from '@/lib/auth/phone-mask';
 import { ContactForm } from '@/components/contacts/contact-form';
 import { ContactDetailView } from '@/components/contacts/contact-detail-view';
 import { ImportModal } from '@/components/contacts/import-modal';
@@ -103,8 +106,32 @@ interface ContactWithTags extends Contact {
 export default function ContactsPage() {
   const router = useRouter();
   const supabase = createClient();
+  const { canViewRawPhoneNumbers, canExportContacts } = useAuth();
   const canEdit = useCan('send-messages');
   const canEditSettings = useCan('edit-settings');
+
+  const handleExportCsv = () => {
+    if (!canExportContacts) return;
+    const header = ['ID', 'Name', 'Phone', 'Email', 'Lead Stage', 'Lead Score', 'Company'];
+    const rows = contacts.map(c => [
+      c.id,
+      `"${(c.name || '').replace(/"/g, '""')}"`,
+      `"${c.phone || ''}"`,
+      `"${c.email || ''}"`,
+      `"${c.lead_stage || ''}"`,
+      c.lead_score ?? '',
+      `"${(c.company || '').replace(/"/g, '""')}"`
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,' + [header.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `contacts_export_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('Contacts exported successfully');
+  };
 
   const [contacts, setContacts] = useState<ContactWithTags[]>([]);
   const [loading, setLoading] = useState(true);
@@ -386,6 +413,16 @@ export default function ContactsPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {canExportContacts && (
+            <Button
+              variant="outline"
+              onClick={handleExportCsv}
+              className="border-border text-muted-foreground hover:bg-muted"
+            >
+              <Download className="size-4 mr-1.5" />
+              Export CSV
+            </Button>
+          )}
           {canEditSettings && (
             <Button
               variant="outline"
@@ -620,19 +657,21 @@ export default function ContactsPage() {
                       {contact.name || <span className="text-muted-foreground italic">Unnamed</span>}
                     </h4>
                     <p className="text-muted-foreground font-mono text-xs truncate">
-                      {contact.phone}
+                      {maskPhoneNumber(contact.phone, canViewRawPhoneNumbers)}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
-                  <a
-                    href={`tel:${contact.phone}`}
-                    className="text-muted-foreground hover:text-foreground inline-flex h-8 w-8 items-center justify-center rounded-lg bg-muted/60"
-                    title="Call"
-                  >
-                    <Phone className="h-3.5 w-3.5" />
-                  </a>
+                  {canViewRawPhoneNumbers && (
+                    <a
+                      href={`tel:${contact.phone}`}
+                      className="text-muted-foreground hover:text-foreground inline-flex h-8 w-8 items-center justify-center rounded-lg bg-muted/60"
+                      title="Call"
+                    >
+                      <Phone className="h-3.5 w-3.5" />
+                    </a>
+                  )}
                   <Button
                     size="icon-xs"
                     variant="default"
@@ -796,7 +835,7 @@ export default function ContactsPage() {
                     {contact.name || <span className="text-muted-foreground italic">Unnamed</span>}
                   </TableCell>
                   <TableCell className="text-muted-foreground font-mono text-xs">
-                    {contact.phone}
+                    {maskPhoneNumber(contact.phone, canViewRawPhoneNumbers)}
                   </TableCell>
                   <TableCell className="hidden xl:table-cell">
                     <span

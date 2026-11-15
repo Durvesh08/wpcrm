@@ -41,9 +41,9 @@ const ROLE_CHIP: Record<
 > = {
   owner: {
     icon: Crown,
-    label: 'Owner',
-    // Amber: scarce, immutable, "the boss" — gets visual emphasis.
-    className: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
+    label: 'Super Admin',
+    // Acid lime & high-contrast: Super Admin indicator
+    className: 'border-[#D7FA00]/60 bg-[#D7FA00]/20 text-[#D7FA00] font-bold shadow-xs',
   },
   admin: {
     icon: Shield,

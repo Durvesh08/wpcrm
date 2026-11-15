@@ -107,3 +107,21 @@ export function canDeleteAccount(role: AccountRole): boolean {
 export function canTransferOwnership(role: AccountRole): boolean {
   return role === "owner";
 }
+
+/**
+ * Super Admin (Owner) only: view raw unmasked client phone numbers.
+ * Regular Admins, Agents, and Viewers see masked phone numbers
+ * (e.g. +91 98765 •••••) to protect company leads from being stolen.
+ */
+export function canViewRawPhoneNumbers(role: AccountRole): boolean {
+  return role === "owner";
+}
+
+/**
+ * Super Admin (Owner) only: export full contact lists / databases (CSV, Excel).
+ * Blocked for regular Admins and Agents for lead privacy.
+ */
+export function canExportContacts(role: AccountRole): boolean {
+  return role === "owner";
+}
+

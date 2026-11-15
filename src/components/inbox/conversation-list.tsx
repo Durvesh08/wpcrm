@@ -20,6 +20,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useAuth } from "@/hooks/use-auth";
+import { formatContactIdentifier } from "@/lib/auth/phone-mask";
 
 interface ConversationListProps {
   activeConversationId: string | null;
@@ -452,8 +454,9 @@ const ConversationItem = memo(function ConversationItem({
   isActive,
   onSelect,
 }: ConversationItemProps) {
+  const { canViewRawPhoneNumbers } = useAuth();
   const contact = conversation.contact;
-  const displayName = contact?.name || contact?.phone || "Unknown";
+  const displayName = formatContactIdentifier(contact?.name, contact?.phone, canViewRawPhoneNumbers);
   const initials = displayName.charAt(0).toUpperCase();
 
   const handleClick = useCallback(() => {

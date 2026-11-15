@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/hooks/use-auth';
+import { maskPhoneNumber, formatContactIdentifier } from '@/lib/auth/phone-mask';
 import { usePresence } from '@/hooks/use-presence';
 import { PresenceDot } from '@/components/presence/presence-dot';
 import { presenceLabel } from '@/lib/presence';
@@ -256,7 +257,7 @@ export function MessageThread({
   contactPanelOpen,
   onToggleContactPanel,
 }: MessageThreadProps) {
-  const { user } = useAuth();
+  const { user, canViewRawPhoneNumbers } = useAuth();
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
@@ -1003,7 +1004,7 @@ export function MessageThread({
     );
   }
 
-  const displayName = contact.name || contact.phone;
+  const displayName = formatContactIdentifier(contact.name, contact.phone, canViewRawPhoneNumbers);
   const currentStatus = STATUS_OPTIONS.find(
     (s) => s.value === conversation.status
   );
@@ -1047,7 +1048,7 @@ export function MessageThread({
               {displayName}
             </h2>
             <p className="text-muted-foreground truncate text-xs">
-              {contact.phone}
+              {maskPhoneNumber(contact.phone, canViewRawPhoneNumbers)}
             </p>
           </div>
           {/* Session timer badge — hidden on the narrowest phones so
@@ -1065,14 +1066,16 @@ export function MessageThread({
         </div>
 
         <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Quick Call Action */}
-          <a
-            href={`tel:${contact.phone}`}
-            className="text-muted-foreground hover:text-foreground inline-flex h-7 w-7 items-center justify-center rounded-md hover:bg-muted transition-colors"
-            title="Call"
-          >
-            <Phone className="h-3.5 w-3.5" />
-          </a>
+          {/* Quick Call Action — Super Admin only */}
+          {canViewRawPhoneNumbers && (
+            <a
+              href={`tel:${contact.phone}`}
+              className="text-muted-foreground hover:text-foreground inline-flex h-7 w-7 items-center justify-center rounded-md hover:bg-muted transition-colors"
+              title="Call"
+            >
+              <Phone className="h-3.5 w-3.5" />
+            </a>
+          )}
 
           {/* Status dropdown — always accessible */}
           <DropdownMenu>

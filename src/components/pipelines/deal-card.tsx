@@ -3,6 +3,8 @@
 import type { Deal, PipelineStage } from "@/types";
 import { Calendar, Check, X, Flame } from "lucide-react";
 import { formatCurrency } from "@/lib/currency";
+import { useAuth } from "@/hooks/use-auth";
+import { formatContactIdentifier } from "@/lib/auth/phone-mask";
 
 interface DealCardProps {
   deal: Deal;
@@ -26,7 +28,10 @@ function initials(name?: string, fallback?: string) {
 }
 
 export function DealCard({ deal, stage, onEdit, isOverlay }: DealCardProps) {
-  const contactLabel = deal.contact?.name || deal.contact?.phone || "No contact";
+  const { canViewRawPhoneNumbers } = useAuth();
+  const contactLabel = deal.contact
+    ? formatContactIdentifier(deal.contact.name, deal.contact.phone, canViewRawPhoneNumbers)
+    : "No contact";
   
   // eslint-disable-next-line
   const daysIdle = deal.updated_at ? Math.floor((Date.now() - new Date(deal.updated_at).getTime()) / (1000 * 60 * 60 * 24)) : 0;
