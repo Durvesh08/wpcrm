@@ -169,7 +169,7 @@ export default function AutomationsPage() {
           canAct={canCreate}
           gateReason="create automations"
           onClick={() => router.push("/automations/new")}
-          className="bg-primary text-primary-foreground hover:bg-primary/90"
+          className="rounded-full bg-[#D7FA00] text-[#0D120D] hover:bg-[#c6e600] font-bold px-4 shadow-xs active:scale-95 transition-all"
         >
           <Plus className="h-4 w-4" />
           Create Automation
@@ -178,8 +178,8 @@ export default function AutomationsPage() {
 
       {showTemplates && (
         <section>
-          <h2 className="mb-3 text-sm font-semibold text-muted-foreground">Quick-start templates</h2>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">Quick-start templates</h2>
+          <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2 xl:grid-cols-4">
             {TEMPLATE_ORDER.map((slug) => {
               const t = AUTOMATION_TEMPLATES[slug]
               const Icon = TEMPLATE_ICON[slug]
@@ -187,13 +187,13 @@ export default function AutomationsPage() {
                 <button
                   key={slug}
                   onClick={() => startFromTemplate(slug)}
-                  className="group flex flex-col items-start rounded-xl border border-border bg-card p-4 text-left transition-colors hover:border-primary/50 hover:bg-card/80"
+                  className="bento-card-white group flex flex-col items-start rounded-[24px] p-5 text-left transition-all hover:border-primary/50 shadow-xs hover:-translate-y-0.5"
                 >
-                  <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary/15">
+                  <div className="mb-3.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/15 text-primary border border-primary/20 group-hover:scale-105 transition-all">
                     <Icon className="h-5 w-5" />
                   </div>
-                  <div className="text-sm font-semibold text-foreground">{t.name}</div>
-                  <p className="mt-1 text-xs text-muted-foreground">{t.description}</p>
+                  <div className="text-sm font-bold text-foreground">{t.name}</div>
+                  <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{t.description}</p>
                 </button>
               )
             })}
@@ -277,10 +277,10 @@ function AutomationCard({
 }) {
   const meta = triggerMeta(automation.trigger_type)
   return (
-    <li className="rounded-xl border border-border bg-card transition-colors hover:border-border">
-      <div className="flex items-center gap-4 p-4">
+    <li className="bento-card-white rounded-[24px] border border-border/70 transition-all hover:border-primary/40 shadow-xs">
+      <div className="flex items-center gap-4 p-4.5">
         <div
-          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10"
+          className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-primary/15 text-primary border border-primary/20"
           aria-hidden
         >
           <Zap className="h-5 w-5 text-primary" />

@@ -232,25 +232,25 @@ export function ConversationList({
       {/* Search + Filter */}
       <div className="space-y-2 border-b border-border/70 bg-card/55 p-3">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={search}
             onChange={handleSearchChange}
             placeholder="Search conversations..."
-            className="h-10 rounded-xl border-border bg-background/70 pl-9 text-sm text-foreground shadow-sm placeholder-muted-foreground focus:border-primary/50"
+            className="h-9.5 rounded-full border-border/70 bg-background/80 pl-9.5 pr-4 text-xs font-medium text-foreground shadow-xs placeholder-muted-foreground focus:border-[#D7FA00]/60 focus:ring-2 focus:ring-[#D7FA00]/20 transition-all"
           />
         </div>
 
-        <div className="flex items-center gap-1 overflow-x-auto pb-0.5 no-scrollbar">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
           {(["all", "unread"] as const).map((opt) => (
             <button
               key={opt}
               type="button"
               onClick={() => setFilter(opt)}
               className={cn(
-                "inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-xs font-medium transition-colors",
+                "inline-flex shrink-0 items-center rounded-full px-3 py-1 text-xs font-semibold transition-all",
                 filter === opt
-                  ? "bg-primary text-primary-foreground shadow-sm"
+                  ? "bg-[#D7FA00] text-[#0D120D] font-bold shadow-xs scale-102"
                   : "bg-muted/70 text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
@@ -473,16 +473,16 @@ const ConversationItem = memo(function ConversationItem({
     <button
       onClick={handleClick}
       className={cn(
-        "group flex w-full items-start gap-3 rounded-2xl border border-transparent px-3 py-3 text-left transition-all hover:border-border/70 hover:bg-muted/50",
-        isActive && "border-primary/30 bg-primary/10 shadow-primary/10 shadow-sm"
+        "group flex w-full items-start gap-3 rounded-[20px] border border-transparent px-3 py-3 text-left transition-all hover:border-border/70 hover:bg-muted/50",
+        isActive && "border-[#D7FA00]/40 bg-[#D7FA00]/10 shadow-xs shadow-[#D7FA00]/5"
       )}
     >
       {/* Avatar */}
       <div
         className={cn(
-          "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border text-sm font-semibold text-foreground shadow-sm",
+          "flex h-10 w-10 shrink-0 items-center justify-center rounded-[16px] border text-sm font-bold text-foreground shadow-xs transition-colors",
           isActive
-            ? "border-primary/25 bg-primary/15 text-primary"
+            ? "border-[#D7FA00]/40 bg-[#D7FA00]/20 text-[#D7FA00]"
             : "border-border/70 bg-muted"
         )}
       >
@@ -490,7 +490,7 @@ const ConversationItem = memo(function ConversationItem({
           <img
             src={contact.avatar_url}
             alt={displayName}
-            className="h-10 w-10 rounded-2xl object-cover"
+            className="h-10 w-10 rounded-[16px] object-cover"
           />
         ) : (
           initials

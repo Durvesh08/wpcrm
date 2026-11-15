@@ -224,22 +224,22 @@ export function SettingsOverview({
 
   return (
     <section className="animate-in fade-in-50 duration-200">
-      {/* Identity */}
-      <Card className="flex-row items-center gap-4 px-5 py-5">
-        <Avatar size="lg" className="size-14">
+      {/* Identity (Bento Hero) */}
+      <Card className="bento-card-white flex-row items-center gap-4.5 rounded-[26px] p-5.5 shadow-xs border border-border/70">
+        <Avatar size="lg" className="size-14 rounded-2xl border border-primary/20">
           {profile?.avatar_url ? (
-            <AvatarImage src={profile.avatar_url} alt={displayName} />
+            <AvatarImage src={profile.avatar_url} alt={displayName} className="rounded-2xl" />
           ) : null}
-          <AvatarFallback className="bg-primary/10 text-xl text-primary">
+          <AvatarFallback className="bg-primary/15 text-xl font-bold text-primary rounded-2xl">
             {initial}
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
-          <div className="truncate text-base font-semibold text-foreground">
+          <div className="truncate text-base font-bold text-foreground">
             {displayName}
           </div>
           {profile?.email ? (
-            <div className="truncate text-sm text-muted-foreground">
+            <div className="truncate text-xs text-muted-foreground mt-0.5 font-mono">
               {profile.email}
             </div>
           ) : null}
@@ -252,8 +252,8 @@ export function SettingsOverview({
         ) : null}
       </Card>
 
-      {/* Status tiles */}
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      {/* Status tiles (Neo-Bento Grid) */}
+      <div className="mt-4 grid gap-3.5 sm:grid-cols-2 xl:grid-cols-3">
         {tiles.map(({ section, loading, subtitle }) => {
           const meta = SECTION_META[section];
           const Icon = meta.icon;
@@ -262,16 +262,13 @@ export function SettingsOverview({
               key={section}
               type="button"
               onClick={() => onSelect(section)}
-              className={cn(
-                'group flex items-start gap-3.5 rounded-xl border border-border bg-card p-4 text-left transition-colors',
-                'hover:border-primary-soft-2 hover:bg-card-2',
-              )}
+              className="bento-card-white group flex items-start gap-3.5 rounded-[22px] p-4.5 text-left transition-all hover:border-primary/50 shadow-xs hover:-translate-y-0.5"
             >
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary">
-                <Icon className="size-4" />
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-primary/15 text-primary border border-primary/20 group-hover:scale-105 transition-all">
+                <Icon className="size-4.5" />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-sm font-semibold text-foreground">
+                <span className="block text-sm font-bold text-foreground">
                   {meta.label}
                 </span>
                 <span className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">

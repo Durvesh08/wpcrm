@@ -176,6 +176,7 @@ export default function NotificationsPage() {
           size="sm"
           disabled={unreadIds.length === 0 || markingAll}
           onClick={markAllRead}
+          className="rounded-full border-border/70 hover:border-primary/50 shadow-xs"
         >
           {markingAll ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -187,11 +188,11 @@ export default function NotificationsPage() {
       </div>
 
       {notifications.length === 0 ? (
-        <div className="flex h-48 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/40">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+        <div className="bento-card-white flex h-52 flex-col items-center justify-center rounded-[26px] border border-border/70">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/15 text-primary border border-primary/20">
             <Bell className="h-6 w-6 text-primary" />
           </div>
-          <p className="mt-3 text-sm font-medium text-foreground">
+          <p className="mt-3 text-sm font-bold text-foreground">
             No notifications yet
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -200,7 +201,7 @@ export default function NotificationsPage() {
           </p>
         </div>
       ) : (
-        <ul className="space-y-2">
+        <ul className="space-y-2.5">
           {notifications.map((n) => {
             const Icon = TYPE_ICON[n.type] ?? Bell;
             const isUnread = !n.read_at;
@@ -210,23 +211,23 @@ export default function NotificationsPage() {
                   type="button"
                   onClick={() => handleClick(n)}
                   className={cn(
-                    "flex w-full items-start gap-3 rounded-xl border p-4 text-left transition-colors",
+                    "bento-card-white flex w-full items-start gap-3.5 rounded-[22px] border p-4 text-left transition-all hover:border-primary/40 shadow-xs",
                     isUnread
-                      ? "border-primary/30 bg-primary/5 hover:border-primary/50"
-                      : "border-border bg-card hover:border-border/70",
+                      ? "border-[#D7FA00]/40 bg-[#D7FA00]/10"
+                      : "border-border/70",
                   )}
                 >
                   <div
                     className={cn(
-                      "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg",
-                      isUnread ? "bg-primary/15" : "bg-muted",
+                      "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl border",
+                      isUnread ? "border-[#D7FA00]/40 bg-[#D7FA00]/20 text-[#D7FA00]" : "border-border/60 bg-muted",
                     )}
                     aria-hidden
                   >
                     <Icon
                       className={cn(
                         "h-5 w-5",
-                        isUnread ? "text-primary" : "text-muted-foreground",
+                        isUnread ? "text-[#D7FA00]" : "text-muted-foreground",
                       )}
                     />
                   </div>

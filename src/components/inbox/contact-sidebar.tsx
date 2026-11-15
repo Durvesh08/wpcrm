@@ -390,13 +390,13 @@ export function ContactSidebar({
   const needsName = !contact.name?.trim();
 
   return (
-    <div className="flex h-full w-[340px] flex-col border-l border-border bg-card/95 backdrop-blur-xl shadow-2xl">
+    <div className="flex h-full w-[340px] flex-col bg-card/90 backdrop-blur-xl">
       <ScrollArea className="flex-1">
         
         {/* PREMIUM HEADER */}
-        <div className="relative border-b border-border/50 bg-gradient-to-b from-primary/5 to-transparent p-6 pb-5">
+        <div className="relative border-b border-border/50 bg-gradient-to-b from-primary/5 to-transparent p-5 pb-4">
           <div className="flex items-start justify-between">
-            <div className="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 text-xl font-bold text-primary shadow-inner border border-primary/20">
+            <div className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-[20px] bg-gradient-to-br from-primary/20 to-primary/10 text-xl font-bold text-primary shadow-xs border border-primary/20">
               {contact.avatar_url ? (
                 <img
                   src={contact.avatar_url}
@@ -527,9 +527,9 @@ export function ContactSidebar({
           </div>
         </div>
 
-        {/* PREMIUM METRICS SUMMARY */}
+        {/* PREMIUM METRICS SUMMARY (Bento Mini Cards) */}
         <div className="px-5 py-4 grid grid-cols-2 gap-3">
-          <div className="rounded-xl border border-border/50 bg-muted/30 p-3 flex flex-col justify-center">
+          <div className="rounded-[20px] border border-border/70 bg-card/70 p-3.5 flex flex-col justify-center shadow-xs">
             <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">Lead Score</span>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-black text-foreground">{contact.lead_score ?? 0}</span>
@@ -537,15 +537,15 @@ export function ContactSidebar({
             </div>
           </div>
           
-          <div className="rounded-xl border border-border/50 bg-muted/30 p-3 flex flex-col justify-center">
+          <div className="rounded-[20px] border border-border/70 bg-card/70 p-3.5 flex flex-col justify-center shadow-xs">
              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">Chat Status</span>
              <Select value={conversationStatus} onValueChange={(val) => handleStatusChange(val as ConversationStatus)} disabled={savingStatus}>
-                <SelectTrigger className="h-8 border-none bg-background/50 px-2 py-0 text-sm font-bold shadow-sm ring-1 ring-border/50 focus:ring-primary rounded-lg transition-all">
+                <SelectTrigger className="h-8 border-none bg-background/70 px-2 py-0 text-sm font-bold shadow-xs ring-1 ring-border/70 focus:ring-[#D7FA00]/60 rounded-full transition-all">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent align="end" className="rounded-xl min-w-[120px]">
+                <SelectContent align="end" className="rounded-2xl min-w-[120px]">
                   {Object.entries(STATUS_LABEL).map(([val, lbl]) => (
-                    <SelectItem key={val} value={val} className="text-xs font-medium rounded-lg focus:bg-primary/10 focus:text-primary">
+                    <SelectItem key={val} value={val} className="text-xs font-medium rounded-xl focus:bg-primary/10 focus:text-primary">
                       {lbl}
                     </SelectItem>
                   ))}
@@ -557,18 +557,18 @@ export function ContactSidebar({
         {/* TABS (Intelligence, Notes, Deals) */}
         <div className="px-5 pb-6">
           <Tabs defaultValue="intel" className="w-full">
-            <TabsList className="w-full grid grid-cols-3 h-9 rounded-xl bg-muted/50 p-1">
-              <TabsTrigger value="intel" className="rounded-lg text-[11px] font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm">Intel</TabsTrigger>
-              <TabsTrigger value="notes" className="rounded-lg text-[11px] font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm">Notes</TabsTrigger>
-              <TabsTrigger value="deals" className="rounded-lg text-[11px] font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm">Deals</TabsTrigger>
+            <TabsList className="w-full grid grid-cols-3 h-10 rounded-full bg-muted/60 p-1">
+              <TabsTrigger value="intel" className="rounded-full text-[11px] font-bold data-[state=active]:bg-[#D7FA00] data-[state=active]:text-[#0D120D] data-[state=active]:shadow-xs transition-all">Intel</TabsTrigger>
+              <TabsTrigger value="notes" className="rounded-full text-[11px] font-bold data-[state=active]:bg-[#D7FA00] data-[state=active]:text-[#0D120D] data-[state=active]:shadow-xs transition-all">Notes</TabsTrigger>
+              <TabsTrigger value="deals" className="rounded-full text-[11px] font-bold data-[state=active]:bg-[#D7FA00] data-[state=active]:text-[#0D120D] data-[state=active]:shadow-xs transition-all">Deals</TabsTrigger>
             </TabsList>
 
             {/* TAB: INTELLIGENCE */}
             <TabsContent value="intel" className="mt-4 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
               {/* Profile Details Card */}
-              <div className="rounded-xl border border-border/60 bg-card p-3 shadow-sm">
+              <div className="rounded-[22px] border border-border/70 bg-card/90 p-4 shadow-xs">
                 <h4 className="mb-3 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  <Briefcase className="h-3.5 w-3.5 text-primary/70" />
+                  <Briefcase className="h-3.5 w-3.5 text-primary" />
                   Profile Details
                 </h4>
                 
@@ -697,9 +697,9 @@ export function ContactSidebar({
             </TabsContent>
           </Tabs>
 
-          {/* FOLLOW-UP REMINDER BLOCK */}
-          <div className="mt-8 rounded-xl border border-border/60 bg-muted/20 overflow-hidden shadow-sm">
-            <div className="bg-muted/50 px-3 py-2 flex items-center gap-1.5 border-b border-border/60">
+          {/* FOLLOW-UP REMINDER BLOCK (Neo-Bento) */}
+          <div className="mt-8 rounded-[22px] border border-border/70 bg-card/60 overflow-hidden shadow-xs">
+            <div className="bg-muted/40 px-3.5 py-2.5 flex items-center gap-1.5 border-b border-border/60">
               <Clock3 className="h-3.5 w-3.5 text-primary" />
               <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Set Follow-up</h4>
             </div>
@@ -710,7 +710,7 @@ export function ContactSidebar({
                     key={r.label}
                     variant="outline"
                     size="sm"
-                    className="h-8 rounded-lg text-[10px] font-semibold border-border hover:border-primary/50 hover:bg-primary/5 transition-colors"
+                    className="h-8 rounded-full text-[10px] font-bold border-border/80 hover:border-[#D7FA00]/60 hover:bg-[#D7FA00]/10 hover:text-foreground transition-all"
                     onClick={() => handleReminder(r.days, r.hour)}
                     disabled={savingReminder}
                   >

@@ -380,7 +380,7 @@ export default function PipelinesPage() {
             gateReason="create deals"
             disabled={!selectedPipelineId || stages.length === 0}
             onClick={() => handleAddDeal()}
-            className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-4 shadow-sm active:scale-95 transition-all"
+            className="rounded-full bg-[#D7FA00] text-[#0D120D] hover:bg-[#c6e600] font-bold px-4 shadow-xs active:scale-95 transition-all"
           >
             <Plus className="mr-1 h-4 w-4" />
             Add Deal

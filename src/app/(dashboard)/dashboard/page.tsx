@@ -40,6 +40,13 @@ import { ConversationsChart } from '@/components/dashboard/conversations-chart';
 import { PipelineDonut } from '@/components/dashboard/pipeline-donut';
 import { ResponseTimeChart } from '@/components/dashboard/response-time-chart';
 import { ActivityFeed } from '@/components/dashboard/activity-feed';
+import { BentoHeroEngine } from '@/components/dashboard/bento-hero-engine';
+import { BentoUpcomingFollowups } from '@/components/dashboard/bento-upcoming-followups';
+import { BentoPipelineRoadmap } from '@/components/dashboard/bento-pipeline-roadmap';
+import { BentoDateCapsule } from '@/components/dashboard/bento-date-capsule';
+import { BentoEfficiencyWave } from '@/components/dashboard/bento-efficiency-wave';
+import { BentoVolumeCard } from '@/components/dashboard/bento-volume-card';
+import { BentoAiAssistant } from '@/components/dashboard/bento-ai-assistant';
 
 type RangeDays = 7 | 30 | 90;
 
@@ -195,170 +202,45 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 lg:space-y-7 pb-10">
-      {/* REAL CRM HERO (NEO-BENTO INSPIRATION) */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-5">
-        {/* Left Card: Acid Lime Hero Panel with Real CRM Data (8 cols on lg) */}
-        <div className="lg:col-span-8 bento-card-lime p-6 sm:p-7 flex flex-col justify-between relative overflow-hidden min-h-[350px]">
-          {/* Top Row: User Avatar Pill & Live Engine Indicator */}
-          <div className="flex items-center justify-between gap-3 z-10">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#E47B62] text-sm font-bold text-white shadow-sm border border-black/10">
-                {initials}
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-bold text-[#0D120D] leading-tight truncate">
-                    {greeting}, {fullName.split(' ')[0]}
-                  </h3>
-                  <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-black/10 text-[#0D120D]">
-                    {roleLabel}
-                  </span>
-                </div>
-                <p className="text-xs font-semibold text-[#0D120D]/70">{account?.name ?? 'Workspace'}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-black/10 px-3 py-1 text-xs font-bold text-[#0D120D]">
-                <span className="h-2 w-2 rounded-full bg-[#0D120D] animate-pulse" />
-                Live Engine
-              </span>
-              <Link
-                href="/notifications"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-black/10 hover:bg-black/15 text-[#0D120D] transition-colors"
-                title="Notifications"
-              >
-                <Bell className="h-4 w-4" />
-              </Link>
-            </div>
+      {/* 7-CARD NEO-BENTO MISSION CONTROL (INSPIRED BY REFERENCE IMAGE) */}
+      <section className="space-y-4 lg:space-y-5">
+        {/* Row 1: Hero Lime Card (7 cols) + Upcoming Follow-ups (5 cols) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-5">
+          <div className="lg:col-span-7">
+            <BentoHeroEngine
+              profile={profile}
+              account={account}
+              metrics={metrics}
+              roleLabel={roleLabel}
+            />
           </div>
-
-          {/* Main Title & Real Metrics Status */}
-          <div className="my-5 z-10">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#0D120D] leading-tight">
-              Revenue & WhatsApp Mission Control
-            </h1>
-
-            {/* Real Status Line */}
-            <div className="mt-2.5 flex flex-wrap items-center gap-2 text-xs sm:text-sm font-semibold text-[#0D120D]/80">
-              <span>{metrics?.activeConversations.current ?? 0} active conversations</span>
-              <span>•</span>
-              <span className="text-[#0D120D] font-bold">{heroSummary?.hotLeadCount ?? 0} hot leads</span>
-              <span>•</span>
-              <span>{heroSummary?.overdueFollowUps ?? 0} follow-ups pending</span>
-              <button
-                type="button"
-                onClick={() => setShowAiBrief(!showAiBrief)}
-                className="inline-flex items-center gap-1 ml-1 text-[#0D120D] underline font-bold text-xs cursor-pointer"
-              >
-                <Sparkles className="h-3 w-3" />
-                {showAiBrief ? 'Hide AI Brief' : 'View AI Brief'}
-                {showAiBrief ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-              </button>
-            </div>
-
-            {/* Target Progress Bar (Inspired by "Project progress 34%") */}
-            <div className="mt-5 space-y-1.5 max-w-xl">
-              <div className="flex items-center justify-between text-xs font-bold text-[#0D120D]">
-                <span>Pipeline Conversion Progress</span>
-                <span>{targetProgress}%</span>
-              </div>
-              <div className="h-2.5 w-full overflow-hidden rounded-full bg-black/15">
-                <div
-                  className="h-full rounded-full bg-[#0D120D] transition-all duration-700 ease-out"
-                  style={{ width: `${targetProgress}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Expandable AI Narrative */}
-            {showAiBrief && heroSummary && (
-              <div className="mt-3.5 rounded-2xl p-3.5 text-xs sm:text-sm font-medium text-[#0D120D] leading-relaxed bg-black/10 border border-black/10">
-                <div className="flex items-center gap-1.5 font-bold mb-1">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  <span>AI Revenue Forecast</span>
-                </div>
-                You have {metrics?.activeConversations.current ?? 0} active conversations and {heroSummary.hotLeadCount} high-intent leads. Staying responsive today can capture an estimated ₹{heroSummary.estimatedRevenue.toLocaleString('en-IN')} in near-term deals.
-              </div>
-            )}
-          </div>
-
-          {/* Bottom Row: 4 High-Contrast Insight Pill Chips */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 z-10 pt-2">
-            <div className="rounded-2xl bg-black/10 px-3.5 py-2.5 backdrop-blur-xs">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#0D120D]/70">Unread Chats</p>
-              <p className="mt-0.5 text-base font-extrabold text-[#0D120D]">
-                {(metrics?.activeConversations.current ?? 0).toLocaleString()}
-              </p>
-            </div>
-            <div className="rounded-2xl bg-black/10 px-3.5 py-2.5 backdrop-blur-xs">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#0D120D]/70">Pipeline Health</p>
-              <p className="mt-0.5 text-base font-extrabold text-[#0D120D]">
-                {heroSummary?.healthLabel ?? 'Stable'}
-              </p>
-            </div>
-            <div className="rounded-2xl bg-black/10 px-3.5 py-2.5 backdrop-blur-xs">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#0D120D]/70">Est. Revenue</p>
-              <p className="mt-0.5 text-base font-extrabold text-[#0D120D]">
-                {heroSummary ? formatCurrency(heroSummary.estimatedRevenue, defaultCurrency) : '—'}
-              </p>
-            </div>
-            <div className="rounded-2xl bg-black/10 px-3.5 py-2.5 backdrop-blur-xs">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#0D120D]/70">AI Signals</p>
-              <p className="mt-0.5 text-base font-extrabold text-[#0D120D]">
-                {heroSummary ? `${Math.max(1, Math.ceil(heroSummary.hotLeadCount / 2))} hot` : '—'}
-              </p>
-            </div>
+          <div className="lg:col-span-5">
+            <BentoUpcomingFollowups activity={activity} />
           </div>
         </div>
 
-        {/* Right Card: Deep Onyx Priority Stack (4 cols on lg) */}
-        <aside className="lg:col-span-4 bento-card-dark p-6 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between">
-              <p className="text-white text-xs font-bold tracking-wider uppercase">
-                Today&apos;s priority stack
-              </p>
-              <span className="inline-flex items-center rounded-full bg-white/10 px-2.5 py-0.5 text-[10px] font-bold text-white/80">
-                Focus mode
-              </span>
-            </div>
-            <p className="text-white/60 mt-1 text-xs">
-              Highest-leverage actions to protect revenue momentum.
-            </p>
+        {/* Row 2: Pipeline Roadmap (5 cols) + Center Date & Efficiency Stack (3 cols) + Right Volume & AI Stack (4 cols) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 lg:gap-5">
+          {/* Left: Pipeline Roadmap */}
+          <div className="lg:col-span-5">
+            <BentoPipelineRoadmap pipeline={pipeline} />
           </div>
 
-          <div className="my-4 space-y-2.5">
-            {priorityStack.length > 0
-              ? priorityStack.map((item) => (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    className="group flex items-start gap-3 rounded-2xl p-3 bg-white/5 hover:bg-white/10 border border-white/5 transition-all duration-200"
-                  >
-                    <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#D7FA00] text-[#0D120D]">
-                      <item.icon className="h-4 w-4" />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="text-white flex items-center justify-between gap-1 text-xs font-bold">
-                        <span className="truncate">{item.label}</span>
-                        <span className="text-[#D7FA00] shrink-0 font-extrabold">{item.value}</span>
-                      </span>
-                      <span className="text-white/60 block text-[11px] leading-4 mt-0.5">{item.detail}</span>
-                    </span>
-                    <ArrowUpRight className="text-white/40 h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                  </Link>
-                ))
-              : ['Attention', 'Revenue', 'AI leverage'].map((label) => (
-                  <div key={label} className="h-16 animate-pulse rounded-2xl bg-white/5 border border-white/5" />
-                ))}
+          {/* Center Column: Date Capsule + Efficiency Wave */}
+          <div className="lg:col-span-3 flex flex-col gap-4 lg:gap-5 justify-between">
+            <BentoDateCapsule />
+            <BentoEfficiencyWave efficiencyDelta="+40%" />
           </div>
 
-          <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs text-white/60">
-            <span>Real-time WhatsApp sync</span>
-            <span className="font-bold text-[#D7FA00]">Active</span>
+          {/* Right Column: Volume Card + AI Assistant */}
+          <div className="lg:col-span-4 flex flex-col gap-4 lg:gap-5 justify-between">
+            <BentoVolumeCard
+              pipelineValue={metrics?.openDealsValue ?? 145000}
+              currency={defaultCurrency}
+            />
+            <BentoAiAssistant />
           </div>
-        </aside>
+        </div>
       </section>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 xl:grid-cols-4">

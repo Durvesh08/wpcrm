@@ -746,7 +746,7 @@ export function MessageComposer({
             // The placeholder text also surfaces the read-only state.
             title={readOnly ? "Read-only — your role can't send messages" : undefined}
             className={cn(isInternalNote && "bg-amber-500/5 placeholder:text-amber-600/50 text-amber-900 dark:text-amber-100", 
-              "flex-1 resize-none rounded-xl border border-border bg-muted px-4 py-2.5 text-sm text-foreground placeholder-muted-foreground outline-none transition-colors focus:border-primary/50",
+              "flex-1 resize-none rounded-2xl border border-border/70 bg-background/80 px-4 py-2 text-sm text-foreground placeholder-muted-foreground outline-none transition-all focus:border-[#D7FA00]/60 focus:ring-2 focus:ring-[#D7FA00]/20",
               (sessionExpired || readOnly) && "cursor-not-allowed opacity-50"
             )}
           />
@@ -757,7 +757,7 @@ export function MessageComposer({
             gateReason="send messages"
             disabled={!text.trim() || sessionExpired || sending}
             onClick={handleSend}
-            className="h-9 w-9 shrink-0 bg-primary p-0 hover:bg-primary/90 disabled:opacity-40"
+            className="h-9.5 w-9.5 shrink-0 rounded-full bg-[#D7FA00] text-[#0D120D] p-0 hover:bg-[#c6e600] disabled:opacity-40 font-bold shadow-xs transition-all active:scale-95"
           >
             <Send className="h-4 w-4" />
           </GatedButton>

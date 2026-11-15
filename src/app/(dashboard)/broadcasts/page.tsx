@@ -92,6 +92,22 @@ export default function BroadcastsPage() {
     [broadcasts],
   );
 
+  const campaignStats = useMemo(() => {
+    const totalRecipients = broadcasts.reduce((sum, b) => sum + (b.total_recipients || 0), 0);
+    const totalDelivered = broadcasts.reduce((sum, b) => sum + (b.delivered_count || 0), 0);
+    const totalRead = broadcasts.reduce((sum, b) => sum + (b.read_count || 0), 0);
+    const deliveryRate = totalRecipients > 0 ? Math.round((totalDelivered / totalRecipients) * 100) : 0;
+    const readRate = totalDelivered > 0 ? Math.round((totalRead / totalDelivered) * 100) : 0;
+    return {
+      totalCampaigns: broadcasts.length,
+      totalRecipients,
+      totalDelivered,
+      totalRead,
+      deliveryRate,
+      readRate,
+    };
+  }, [broadcasts]);
+
   useEffect(() => {
     function startPolling() {
       if (pollTimer.current) return;
@@ -188,15 +204,42 @@ export default function BroadcastsPage() {
           canAct={canCreate}
           gateReason="create broadcasts"
           onClick={() => router.push('/broadcasts/new')}
-          className="bg-primary text-primary-foreground hover:bg-primary/90"
+          className="rounded-full bg-[#D7FA00] text-[#0D120D] hover:bg-[#c6e600] font-bold px-4 shadow-xs active:scale-95 transition-all"
         >
           <Plus className="h-4 w-4" />
           New Broadcast
         </GatedButton>
       </div>
 
+      {broadcasts.length > 0 && (
+        <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-4">
+          <div className="bento-card-white flex flex-col justify-between rounded-[22px] p-4 shadow-xs">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Total Campaigns</span>
+            <div className="mt-2 text-2xl font-black text-foreground">{campaignStats.totalCampaigns}</div>
+          </div>
+          <div className="bento-card-white flex flex-col justify-between rounded-[22px] p-4 shadow-xs">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Audience Reached</span>
+            <div className="mt-2 text-2xl font-black text-foreground">{campaignStats.totalRecipients.toLocaleString()}</div>
+          </div>
+          <div className="bento-card-white flex flex-col justify-between rounded-[22px] p-4 shadow-xs">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Delivery Rate</span>
+            <div className="mt-2 flex items-baseline gap-1.5">
+              <span className="text-2xl font-black text-foreground">{campaignStats.deliveryRate}%</span>
+              <span className="text-xs font-semibold text-emerald-500">verified</span>
+            </div>
+          </div>
+          <div className="bento-card-white flex flex-col justify-between rounded-[22px] p-4 shadow-xs">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Read Rate</span>
+            <div className="mt-2 flex items-baseline gap-1.5">
+              <span className="text-2xl font-black text-foreground">{campaignStats.readRate}%</span>
+              <span className="text-xs font-semibold text-blue-500">opened</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {broadcasts.length === 0 ? (
-        <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-border bg-card">
+        <div className="bento-card-white flex h-64 flex-col items-center justify-center rounded-[26px] border border-border/70">
           <Radio className="mb-3 h-10 w-10 text-muted-foreground" />
           <p className="text-sm font-medium text-foreground">No broadcasts yet</p>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -206,14 +249,14 @@ export default function BroadcastsPage() {
             canAct={canCreate}
             gateReason="create broadcasts"
             onClick={() => router.push('/broadcasts/new')}
-            className="mt-4 bg-primary text-primary-foreground hover:bg-primary/90"
+            className="mt-4 rounded-full bg-[#D7FA00] text-[#0D120D] hover:bg-[#c6e600] font-bold px-4 shadow-xs"
           >
             <Plus className="h-4 w-4" />
             New Broadcast
           </GatedButton>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-border bg-card">
+        <div className="bento-card-white overflow-x-auto rounded-[26px] border border-border/70 shadow-xs">
           <Table>
             <TableHeader>
               <TableRow className="border-border hover:bg-transparent">

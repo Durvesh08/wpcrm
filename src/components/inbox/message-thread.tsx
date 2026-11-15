@@ -1026,7 +1026,7 @@ export function MessageThread({
     <div className={cn('flex min-w-0 flex-1 flex-col', DOODLE_BG_CLASSES)}>
       {/* Header — solid card surface sits on top of the doodle so the
           name/avatar/dropdowns stay legible. */}
-      <div className="border-border bg-card flex items-center justify-between gap-2 border-b px-3 py-3 sm:px-4">
+      <div className="border-border/70 bg-card/85 backdrop-blur-md flex items-center justify-between gap-2 border-b px-3.5 py-3 sm:px-5">
         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           {/* Back-to-list button — mobile only. Hidden on lg+ where the
               conversation list is always visible next to the thread. */}
@@ -1035,19 +1035,19 @@ export function MessageThread({
               type="button"
               onClick={onBack}
               aria-label="Back to conversations"
-              className="text-muted-foreground hover:bg-muted hover:text-foreground flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md lg:hidden"
+              className="text-muted-foreground hover:bg-muted hover:text-foreground flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full lg:hidden"
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
           )}
-          <div className="bg-muted text-foreground flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-sm font-medium">
+          <div className="bg-muted/80 text-foreground flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-[16px] border border-border/70 text-sm font-bold shadow-xs">
             {displayName.charAt(0).toUpperCase()}
           </div>
           <div className="min-w-0">
             <h2 className="text-foreground truncate text-sm font-semibold">
               {displayName}
             </h2>
-            <p className="text-muted-foreground truncate text-xs">
+            <p className="text-muted-foreground truncate text-xs font-mono">
               {maskPhoneNumber(contact.phone, canViewRawPhoneNumbers)}
             </p>
           </div>
@@ -1056,8 +1056,8 @@ export function MessageThread({
           <Badge
             variant="outline"
             className={cn(
-              'border-border ml-1 hidden gap-1 text-[10px] sm:ml-2 sm:inline-flex',
-              sessionInfo.expired ? 'text-red-400' : 'text-primary'
+              'ml-1 hidden gap-1 text-[10px] rounded-full px-2.5 py-0.5 sm:ml-2 sm:inline-flex font-semibold',
+              sessionInfo.expired ? 'border-red-500/30 bg-red-500/10 text-red-400' : 'border-[#D7FA00]/40 bg-[#D7FA00]/15 text-primary'
             )}
           >
             <Clock className="h-3 w-3" />

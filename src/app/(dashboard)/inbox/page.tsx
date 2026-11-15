@@ -614,7 +614,7 @@ export default function InboxPage() {
             thread can occupy the full width. Always visible on lg+. */}
         <div
           className={cn(
-            "flex h-full flex-1 overflow-hidden lg:flex-none lg:rounded-l-[24px] lg:border lg:border-r-0 lg:border-border/70",
+            "flex h-full flex-1 overflow-hidden lg:flex-none lg:rounded-l-[28px] lg:border lg:border-r-0 lg:border-border/70 lg:bg-card/50 lg:backdrop-blur-xl lg:shadow-xs",
             hasActiveConv ? "hidden lg:flex" : "flex",
           )}
         >
@@ -639,7 +639,8 @@ export default function InboxPage() {
             on the right. Issue #165. */}
         <div
           className={cn(
-            "flex h-full min-w-0 flex-1 overflow-hidden lg:flex lg:border-y lg:border-border/70",
+            "flex h-full min-w-0 flex-1 overflow-hidden lg:flex lg:border-y lg:border-r lg:border-border/70 lg:bg-card/30",
+            !contactPanelOpen && "lg:rounded-r-[28px]",
             hasActiveConv ? "flex" : "hidden lg:flex",
           )}
         >
@@ -666,7 +667,7 @@ export default function InboxPage() {
             On mobile it's always hidden (the `lg:block` below), so the
             toggle — which is itself desktop-only — never affects it. */}
         {contactPanelOpen && (
-          <div className="hidden lg:block">
+          <div className="hidden lg:block lg:rounded-r-[28px] lg:border-y lg:border-r lg:border-border/70 overflow-hidden lg:bg-card/60 lg:backdrop-blur-xl lg:shadow-xs">
             <ContactSidebar
               contact={activeContact}
               conversationId={activeConversation?.id}
