@@ -125,16 +125,6 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
   const { profile, profileLoading, account, accountRole, signOut } = useAuth();
   const totalUnread = useTotalUnread();
   const unreadNotifications = useUnreadNotifications();
-  // Only surface the account-name strip when it actually carries
-  // information. A solo user's personal account is named after them
-  // (the 017 signup trigger seeds it from `full_name`), so showing it
-  // here would just duplicate the user name in the footer below. Once
-  // the account is renamed or the user joins a shared account, the
-  // name diverges and the strip becomes meaningful — that's the signal
-  // we gate on. Wait for the profile fetch to settle first, otherwise
-  // the strip flashes in once the row resolves (a layout jump).
-  const showAccountStrip =
-    !profileLoading && !!account?.name && account.name !== profile?.full_name;
 
   // Close the drawer when route changes — users opened it to navigate,
   // so once they pick a destination the drawer should get out of the way.
@@ -180,7 +170,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
       <aside
         className={cn(
           // Mobile: fixed drawer that slides in from the left.
-          'border-border/50 bg-white/85 dark:bg-sidebar/75 fixed inset-y-0 left-0 z-50 flex h-full w-72 flex-col border-r shadow-xl shadow-slate-900/5 dark:shadow-black/40 backdrop-blur-2xl',
+          'border-border/50 bg-sidebar fixed inset-y-0 left-0 z-50 flex h-full w-72 flex-col border-r shadow-xl shadow-black/20 backdrop-blur-2xl',
           'transition-transform duration-200 ease-out will-change-transform',
           open ? 'translate-x-0' : '-translate-x-full',
           // Desktop: static, always visible — reset all the mobile framing.
@@ -247,7 +237,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
                           'group flex items-center gap-3 rounded-[16px] px-3 py-2.5 text-sm font-semibold transition-all duration-200',
                           isActive
                             ? 'bg-[#D7FA00] text-[#0D120D] shadow-[0_4px_16px_rgba(215,250,0,0.22)] font-extrabold'
-                            : 'text-slate-600 dark:text-muted-foreground hover:bg-slate-100/80 dark:hover:bg-card/70 hover:translate-x-1 hover:text-slate-900 dark:hover:text-foreground'
+                            : 'text-muted-foreground hover:bg-card/70 hover:translate-x-1 hover:text-foreground'
                         )}
                       >
                         <span
@@ -255,7 +245,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
                             'flex h-8 w-8 items-center justify-center rounded-[10px] transition-all shrink-0',
                             isActive
                               ? 'bg-[#0D120D] text-[#D7FA00] shadow-xs'
-                              : 'bg-white/80 dark:bg-card/60 border border-slate-200/70 dark:border-border/60 text-slate-600 dark:text-muted-foreground group-hover:text-foreground group-hover:border-border shadow-2xs'
+                              : 'bg-card/60 border border-border/60 text-muted-foreground group-hover:text-foreground group-hover:border-border shadow-2xs'
                           )}
                         >
                           <item.icon className="h-4 w-4" />
@@ -311,30 +301,6 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
 
         {/* User section */}
         <div className="border-border/70 bg-sidebar/50 shrink-0 border-t p-3 backdrop-blur-md space-y-2">
-          {showAccountStrip && account?.name ? (
-            <div className="border-border/80 bg-card/75 text-foreground flex items-center gap-2.5 rounded-[16px] border px-3 py-2 text-xs shadow-xs">
-              <div className="flex h-7 w-7 items-center justify-center rounded-[9px] bg-primary/15 border border-primary/25 text-primary shrink-0">
-                <UsersRound className="h-3.5 w-3.5" />
-              </div>
-              <span className="truncate font-semibold" title={account.name}>
-                {account.name}
-              </span>
-              {accountRole
-                ? (() => {
-                    const meta = ROLE_CHIP[accountRole];
-                    const Icon = meta.icon;
-                    return (
-                      <span
-                        className={`ml-auto inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[9px] font-mono font-bold tracking-wider uppercase ${meta.className}`}
-                      >
-                        <Icon className="size-2.5" />
-                        {meta.label}
-                      </span>
-                    );
-                  })()
-                : null}
-            </div>
-          ) : null}
           <DropdownMenu>
             <DropdownMenuTrigger className="border-border/80 bg-card/75 hover:bg-card focus:bg-card data-popup-open:bg-card flex w-full items-center gap-3 rounded-[18px] border p-2.5 text-left transition-all duration-200 hover:border-primary/40 shadow-xs focus:outline-none">
               <div className="relative size-8 shrink-0">
@@ -358,7 +324,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
                   <p className="text-foreground truncate text-xs sm:text-sm font-bold">
                     {profile?.full_name ?? 'User'}
                   </p>
-                  {!showAccountStrip && accountRole && (
+                  {accountRole && (
                     <span
                       className={`inline-flex shrink-0 items-center gap-0.5 rounded-full border px-1.5 py-0.5 text-[9px] font-mono font-bold uppercase ${ROLE_CHIP[accountRole].className}`}
                     >

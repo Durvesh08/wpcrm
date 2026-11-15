@@ -52,7 +52,7 @@ import { useTotalUnread } from '@/hooks/use-total-unread';
 import { cn } from '@/lib/utils';
 
 const pageTitles: Record<string, string> = {
-  '/dashboard': 'Mission Control',
+  '/dashboard': 'Dashboard',
   '/inbox': 'Inbox',
   '/notifications': 'Notifications',
   '/contacts': 'Contacts',
@@ -421,7 +421,7 @@ function getPageTitle(pathname: string): string {
   const match = Object.entries(pageTitles).find(([path]) =>
     pathname.startsWith(path)
   );
-  return match ? match[1] : 'Mission Control';
+  return match ? match[1] : 'Dashboard';
 }
 
 interface HeaderProps {
@@ -863,7 +863,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
                   </span>
                 </div>
                 <p className="text-muted-foreground truncate text-[11px]">
-                  {account?.name ?? profile?.email ?? ''}
+                  {profile?.email ?? account?.name ?? ''}
                 </p>
               </div>
               <ChevronDown className="text-muted-foreground hidden h-4 w-4 sm:block" />

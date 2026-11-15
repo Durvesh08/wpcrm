@@ -2,7 +2,7 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is(.dark *, [data-mode="dark"] *, [data-mode="dark"]));
 
 @theme inline {
   --color-background: var(--background);
@@ -117,32 +117,32 @@ html[data-mode='dark'] {
 }
 
 html[data-mode='light'] {
-  --background: oklch(0.978 0.006 250);
-  --foreground: oklch(0.18 0.02 260);
-  --card: oklch(1 0 0 / 0.82);
-  --card-2: oklch(0.965 0.008 250 / 0.75);
-  --card-foreground: oklch(0.18 0.02 260);
-  --popover: oklch(1 0 0 / 0.94);
-  --popover-foreground: oklch(0.18 0.02 260);
-  --secondary: oklch(0.955 0.008 250);
-  --secondary-foreground: oklch(0.22 0.02 260);
-  --muted: oklch(0.955 0.008 250);
-  --muted-foreground: oklch(0.48 0.025 250);
-  --accent: oklch(0.94 0.012 250);
-  --accent-foreground: oklch(0.20 0.02 260);
+  --background: oklch(0.86 0.024 240);
+  --foreground: oklch(0.15 0.02 260);
+  --card: oklch(1 0 0 / 0.68);
+  --card-2: oklch(0.96 0.015 240 / 0.60);
+  --card-foreground: oklch(0.15 0.02 260);
+  --popover: oklch(1 0 0 / 0.95);
+  --popover-foreground: oklch(0.15 0.02 260);
+  --secondary: oklch(0.93 0.015 240 / 0.7);
+  --secondary-foreground: oklch(0.18 0.02 260);
+  --muted: oklch(0.90 0.020 240 / 0.55);
+  --muted-foreground: oklch(0.38 0.025 245);
+  --accent: oklch(0.90 0.020 235 / 0.7);
+  --accent-foreground: oklch(0.18 0.02 260);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.89 0.008 250 / 0.65);
-  --input: oklch(0.89 0.008 250 / 0.65);
+  --border: oklch(0.78 0.022 240 / 0.55);
+  --input: oklch(0.78 0.022 240 / 0.55);
   --chart-2: oklch(0.6 0.1 260);
   --chart-3: oklch(0.7 0.06 260);
   --chart-4: oklch(0.8 0.04 260);
   --chart-5: oklch(0.87 0.03 260);
   --radius: 0.75rem;
-  --sidebar: oklch(0.985 0.005 250 / 0.85);
-  --sidebar-foreground: oklch(0.18 0.02 260);
-  --sidebar-accent: oklch(0.94 0.012 250);
-  --sidebar-accent-foreground: oklch(0.20 0.02 260);
-  --sidebar-border: oklch(0.89 0.008 250 / 0.65);
+  --sidebar: oklch(0.93 0.018 240 / 0.75);
+  --sidebar-foreground: oklch(0.15 0.02 260);
+  --sidebar-accent: oklch(0.88 0.022 240 / 0.6);
+  --sidebar-accent-foreground: oklch(0.15 0.02 260);
+  --sidebar-border: oklch(0.78 0.022 240 / 0.55);
 }
 
 /* ---- ACCENT: primary color ---- */
@@ -254,11 +254,13 @@ html[data-theme='rose'] {
     overscroll-behavior: none;
   }
   html[data-mode='light'] body {
-    background-color: #F8FAFC;
+    background-color: #cad6e4;
     background-image:
-      radial-gradient(at 10% 12%, rgba(215, 250, 0, 0.05) 0px, transparent 45%),
-      radial-gradient(at 90% 88%, rgba(147, 197, 253, 0.20) 0px, transparent 50%),
-      radial-gradient(at 50% 50%, rgba(255, 255, 255, 0.85) 0px, transparent 70%);
+      radial-gradient(at 0% 0%, rgba(182, 208, 234, 0.9) 0px, transparent 55%),
+      radial-gradient(at 100% 0%, rgba(195, 218, 242, 0.8) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(172, 200, 228, 0.9) 0px, transparent 55%),
+      radial-gradient(at 0% 100%, rgba(188, 212, 238, 0.85) 0px, transparent 50%),
+      radial-gradient(at 50% 50%, rgba(218, 235, 250, 0.65) 0px, transparent 65%);
     background-attachment: fixed;
   }
   html[data-mode='dark'] body {
@@ -419,14 +421,14 @@ html[data-mode='light'][data-theme='whatsapp'] .zovaix-whatsapp-chat-surface {
 
 html[data-mode='light'] .zovaix-glass-panel,
 html[data-mode='light'] .zovaix-glass-card {
-  background: rgba(255, 255, 255, 0.80);
-  border: 1px solid rgba(0, 0, 0, 0.055);
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.65);
   box-shadow:
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.95),
-    0 4px 20px -2px rgba(15, 23, 42, 0.04),
-    0 1px 3px 0 rgba(15, 23, 42, 0.02);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.95),
+    0 8px 32px -4px rgba(15, 23, 42, 0.08),
+    0 2px 6px 0 rgba(15, 23, 42, 0.03);
+  backdrop-filter: blur(32px) saturate(190%);
+  -webkit-backdrop-filter: blur(32px) saturate(190%);
 }
 
 html[data-mode='light'] .zovaix-premium-hover:hover {
@@ -586,16 +588,16 @@ html[data-mode='dark'] .zovaix-premium-hover:hover {
 }
 
 .bento-card-white {
-  background-color: rgba(255, 255, 255, 0.82);
+  background-color: rgba(255, 255, 255, 0.70);
   color: #0f172a;
   border-radius: 28px;
-  border: 1px solid rgba(0, 0, 0, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.7);
   box-shadow:
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.95),
-    0 4px 20px -2px rgba(15, 23, 42, 0.04),
-    0 1px 3px 0 rgba(15, 23, 42, 0.02);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.95),
+    0 10px 32px -4px rgba(15, 23, 42, 0.07),
+    0 2px 8px 0 rgba(15, 23, 42, 0.03);
+  backdrop-filter: blur(32px) saturate(190%);
+  -webkit-backdrop-filter: blur(32px) saturate(190%);
 }
 
 html[data-mode='dark'] .bento-card-white {
