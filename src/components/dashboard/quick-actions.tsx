@@ -56,17 +56,17 @@ export function QuickActions() {
           <Link
             key={a.href}
             href={a.href}
-            className="zovaix-glass-panel zovaix-premium-hover group flex items-center gap-3 rounded-[22px] p-3.5 sm:p-4 transition-all duration-200"
+            className="bento-card-white group flex items-center gap-3 p-3.5 sm:p-4 transition-all duration-200 hover:scale-[1.02] hover:shadow-md"
           >
             <div
-              className={`flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${a.gradient} text-white shadow-lg ${a.shadow} transition-transform duration-200 group-hover:scale-105`}
+              className={`flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${a.gradient} text-white shadow-xs transition-transform duration-200 group-hover:scale-105`}
             >
               <Icon className="h-5 w-5 stroke-[2.25]" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-foreground truncate text-xs sm:text-sm font-semibold tracking-tight">{a.label}</p>
+              <p className="text-foreground truncate text-xs sm:text-sm font-bold tracking-tight">{a.label}</p>
               <p className="text-muted-foreground hidden sm:block truncate text-xs mt-0.5">
-                Launch workflow
+                Quick Action
               </p>
             </div>
           </Link>

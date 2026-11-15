@@ -417,7 +417,7 @@ export default function ContactsPage() {
             <Button
               variant="outline"
               onClick={handleExportCsv}
-              className="border-border text-muted-foreground hover:bg-muted"
+              className="rounded-full border-border/70 text-muted-foreground hover:bg-muted hover:text-foreground"
             >
               <Download className="size-4 mr-1.5" />
               Export CSV
@@ -427,9 +427,9 @@ export default function ContactsPage() {
             <Button
               variant="outline"
               onClick={() => setCustomFieldsOpen(true)}
-              className="border-border text-muted-foreground hover:bg-muted"
+              className="rounded-full border-border/70 text-muted-foreground hover:bg-muted hover:text-foreground"
             >
-              <SlidersHorizontal className="size-4" />
+              <SlidersHorizontal className="size-4 mr-1.5" />
               Custom fields
             </Button>
           )}
@@ -438,18 +438,18 @@ export default function ContactsPage() {
             canAct={canEdit}
             gateReason="add or import contacts"
             onClick={() => setImportOpen(true)}
-            className="border-border text-muted-foreground hover:bg-muted"
+            className="rounded-full border-border/70 text-muted-foreground hover:bg-muted hover:text-foreground"
           >
-            <Upload className="size-4" />
+            <Upload className="size-4 mr-1.5" />
             Import
           </GatedButton>
           <GatedButton
             canAct={canEdit}
             gateReason="add or import contacts"
             onClick={openAddForm}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground"
+            className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-sm px-4.5 active:scale-95 transition-all"
           >
-            <Plus className="size-4" />
+            <Plus className="size-4 mr-1.5" />
             Add Contact
           </GatedButton>
         </div>
@@ -459,17 +459,15 @@ export default function ContactsPage() {
       <div className="space-y-2">
         <div className="flex flex-col sm:flex-row gap-2">
           <div className="relative w-full max-w-sm">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
-                // Reset pagination when the query changes — the result
-                // set shrinks/grows, page N may no longer be valid.
                 setPage(0);
               }}
               placeholder="Search by name, phone, or email..."
-              className="pl-8 bg-card border-border text-foreground placeholder:text-muted-foreground"
+              className="pl-9 h-10 rounded-full bg-card/70 border-border/70 text-foreground placeholder:text-muted-foreground shadow-sm focus:border-primary/50"
             />
           </div>
 
@@ -478,14 +476,14 @@ export default function ContactsPage() {
               render={
                 <Button
                   variant="outline"
-                  className="border-border text-muted-foreground hover:bg-muted shrink-0"
+                  className="rounded-full border-border/70 text-muted-foreground hover:bg-muted shrink-0 h-10 px-4"
                 />
               }
             >
-              <Filter className="size-4" />
+              <Filter className="size-4 mr-1.5" />
               Filter by tags
               {selectedTagIds.length > 0 && (
-                <span className="ml-1 inline-flex items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-semibold text-primary-foreground">
+                <span className="ml-1.5 inline-flex items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-semibold text-primary-foreground">
                   {selectedTagIds.length}
                 </span>
               )}
@@ -604,12 +602,12 @@ export default function ContactsPage() {
       {/* Mobile Glass Contact Cards (<md) */}
       <div className="space-y-3 block md:hidden">
         {loading ? (
-          <div className="zovaix-glass-card flex flex-col items-center justify-center rounded-2xl p-8 text-center">
+          <div className="bento-card-white flex flex-col items-center justify-center rounded-[22px] p-8 text-center">
             <Loader2 className="size-6 animate-spin text-primary mb-2" />
             <p className="text-sm text-muted-foreground">Loading contacts...</p>
           </div>
         ) : contacts.length === 0 ? (
-          <div className="zovaix-glass-card flex flex-col items-center justify-center rounded-2xl p-8 text-center">
+          <div className="bento-card-white flex flex-col items-center justify-center rounded-[22px] p-8 text-center">
             <Users className="size-8 text-muted-foreground mb-2" />
             <p className="text-sm text-muted-foreground">
               {hasActiveFilters
@@ -623,9 +621,9 @@ export default function ContactsPage() {
                 variant="outline"
                 size="sm"
                 onClick={openAddForm}
-                className="mt-3 border-border text-muted-foreground hover:bg-muted"
+                className="mt-3 rounded-full border-border/70 text-muted-foreground hover:bg-muted"
               >
-                <Plus className="size-3.5" />
+                <Plus className="size-3.5 mr-1" />
                 Add your first contact
               </GatedButton>
             )}
@@ -635,7 +633,7 @@ export default function ContactsPage() {
             <div
               key={contact.id}
               onClick={() => openDetail(contact.id)}
-              className="bg-card/80 border border-border/60 shadow-sm zovaix-touch-press relative cursor-pointer rounded-2xl p-4 transition-all"
+              className="bento-card-white relative cursor-pointer rounded-[22px] p-4.5 transition-all hover:border-primary/40 active:scale-[0.99]"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
@@ -649,7 +647,7 @@ export default function ContactsPage() {
                       aria-label={`Select ${contact.name || contact.phone}`}
                     />
                   </div>
-                  <div className="bg-primary/10 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold">
+                  <div className="bg-primary/15 text-primary flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-sm font-semibold border border-primary/20">
                     {(contact.name || contact.phone || '?').charAt(0).toUpperCase()}
                   </div>
                   <div className="min-w-0">
@@ -666,7 +664,7 @@ export default function ContactsPage() {
                   {canViewRawPhoneNumbers && (
                     <a
                       href={`tel:${contact.phone}`}
-                      className="text-muted-foreground hover:text-foreground inline-flex h-8 w-8 items-center justify-center rounded-lg bg-muted/60"
+                      className="text-muted-foreground hover:text-foreground inline-flex h-8 w-8 items-center justify-center rounded-full bg-muted/60"
                       title="Call"
                     >
                       <Phone className="h-3.5 w-3.5" />
@@ -676,7 +674,7 @@ export default function ContactsPage() {
                     size="icon-xs"
                     variant="default"
                     onClick={() => router.push(`/inbox?phone=${encodeURIComponent(contact.phone)}`)}
-                    className="h-8 w-8 rounded-lg"
+                    className="h-8 w-8 rounded-full"
                     title="Chat on WhatsApp"
                   >
                     <MessageSquare className="h-3.5 w-3.5" />
@@ -687,7 +685,7 @@ export default function ContactsPage() {
                         <Button
                           variant="ghost"
                           size="icon-xs"
-                          className="text-muted-foreground hover:text-foreground h-8 w-8 rounded-lg"
+                          className="text-muted-foreground hover:text-foreground h-8 w-8 rounded-full"
                         />
                       }
                     >
@@ -757,7 +755,7 @@ export default function ContactsPage() {
       </div>
 
       {/* Desktop Table (md+) */}
-      <div className="hidden md:block rounded-lg border border-border overflow-x-auto">
+      <div className="hidden md:block bento-card-white rounded-[26px] overflow-hidden shadow-sm">
         <Table>
           <TableHeader>
             <TableRow className="border-border hover:bg-transparent">

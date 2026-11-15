@@ -54,8 +54,8 @@ export function ActivityFeed({ items, loading }: ActivityFeedProps) {
     i === 0 || totalLoaded > PAGE_SIZES[i - 1]
 
   return (
-    <section className="zovaix-premium-panel overflow-hidden rounded-[24px]">
-      <header className="flex items-center justify-between border-b border-border px-5 py-4">
+    <section className="bento-card-white overflow-hidden rounded-[26px]">
+      <header className="flex items-center justify-between border-b border-border/50 px-5 py-4 bg-muted/20">
         <h2 className="text-sm font-semibold text-foreground">
           Recent Activity
         </h2>

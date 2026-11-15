@@ -49,16 +49,16 @@ export function DealCard({ deal, stage, onEdit, isOverlay }: DealCardProps) {
         e.stopPropagation();
         onEdit(deal);
       }}
-      className={`group relative w-full cursor-pointer rounded-xl border pl-4 pr-3 py-3 text-left shadow-sm transition-all ${isRotting ? 'border-rose-500/30 bg-rose-500/10' : 'border-border/50 bg-muted/70'} ${
+      className={`group relative w-full cursor-pointer rounded-[20px] border pl-4 pr-3 py-3 text-left shadow-sm transition-all ${isRotting ? 'border-rose-500/30 bg-rose-500/10' : 'border-border/60 bg-card/85 backdrop-blur-sm'} ${
         isOverlay
-          ? "shadow-xl"
-          : "hover:-translate-y-0.5 hover:border-border hover:bg-muted hover:shadow-lg"
+          ? "shadow-xl ring-2 ring-primary/40"
+          : "hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
       }`}
     >
       {/* 4px left accent bar using stage color */}
       <span
         aria-hidden
-        className="absolute left-0 top-0 h-full w-1 rounded-l-xl"
+        className="absolute left-0 top-0 h-full w-1 rounded-l-[20px]"
         style={{ backgroundColor: stage?.color ?? "#94a3b8" }}
       />
 

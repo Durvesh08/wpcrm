@@ -149,17 +149,17 @@ html[data-mode='light'] {
 
 :root,
 html[data-theme='zovaix'] {
-  --primary: oklch(0.80 0.17 215);
-  --primary-foreground: oklch(0.08 0.02 260);
-  --primary-hover: oklch(0.86 0.14 215);
-  --primary-soft: oklch(0.80 0.17 215 / 0.15);
-  --primary-soft-2: oklch(0.80 0.17 215 / 0.28);
-  --ring: oklch(0.80 0.17 215);
-  --chart-1: oklch(0.80 0.17 215);
-  --chart-2: oklch(0.72 0.24 290);
-  --sidebar-primary: oklch(0.80 0.17 215);
-  --sidebar-primary-foreground: oklch(0.08 0.02 260);
-  --sidebar-ring: oklch(0.80 0.17 215);
+  --primary: oklch(0.92 0.22 125);
+  --primary-foreground: oklch(0.10 0.03 125);
+  --primary-hover: oklch(0.95 0.20 125);
+  --primary-soft: oklch(0.92 0.22 125 / 0.18);
+  --primary-soft-2: oklch(0.92 0.22 125 / 0.32);
+  --ring: oklch(0.92 0.22 125);
+  --chart-1: oklch(0.92 0.22 125);
+  --chart-2: oklch(0.65 0.18 160);
+  --sidebar-primary: oklch(0.92 0.22 125);
+  --sidebar-primary-foreground: oklch(0.10 0.03 125);
+  --sidebar-ring: oklch(0.92 0.22 125);
 }
 
 html[data-theme='whatsapp'] {

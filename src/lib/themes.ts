@@ -72,9 +72,9 @@ export interface ThemeMeta {
 export const THEMES: ReadonlyArray<ThemeMeta> = [
   {
     id: 'zovaix',
-    name: 'ZOVAIX',
-    tagline: 'A crisp cyan signal for the ZOVAIX workspace.',
-    swatch: 'oklch(0.78 0.08 220)',
+    name: 'ZOVAIX Lime',
+    tagline: 'The signature high-impact electric lime & slate aesthetic.',
+    swatch: 'oklch(0.92 0.22 125)',
   },
   {
     id: 'whatsapp',

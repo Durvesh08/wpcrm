@@ -29,24 +29,24 @@ export function MetricCard({
   subtitle,
 }: MetricCardProps) {
   return (
-    <div className="zovaix-glass-card zovaix-premium-hover zovaix-kpi-glow zovaix-enter relative flex flex-col justify-between overflow-hidden rounded-[24px] p-5 sm:p-5.5 transition-all duration-300">
+    <div className="bento-card-white relative flex flex-col justify-between overflow-hidden p-5 sm:p-6 transition-all duration-300 hover:scale-[1.01] hover:shadow-lg">
       <div>
         <div className="flex items-start justify-between gap-2">
-          <p className="text-muted-foreground text-xs sm:text-sm font-medium tracking-wide">
+          <p className="text-muted-foreground text-xs sm:text-sm font-semibold tracking-tight">
             {title}
           </p>
-          <div className="zovaix-icon-tile relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-primary-foreground shadow-md">
+          <div className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary shadow-xs">
             <Icon className="h-4.5 w-4.5" />
           </div>
         </div>
-        <p className="text-foreground relative z-10 mt-3.5 text-2xl sm:text-3xl lg:text-[32px] font-bold tracking-tight tabular-nums">
+        <p className="text-foreground relative z-10 mt-3 text-2xl sm:text-3xl font-extrabold tracking-tight tabular-nums">
           {value}
         </p>
       </div>
       {delta ? (
         <DeltaRow sign={delta.sign} label={delta.label} />
       ) : subtitle ? (
-        <p className="text-muted-foreground relative z-10 mt-3.5 text-xs sm:text-sm font-medium">
+        <p className="text-muted-foreground relative z-10 mt-3 text-xs sm:text-sm font-medium">
           {subtitle}
         </p>
       ) : null}
@@ -57,16 +57,16 @@ export function MetricCard({
 function DeltaRow({ sign, label }: { sign: number; label: string }) {
   const tone =
     sign > 0
-      ? 'border-emerald-500/30 bg-emerald-500/15 text-emerald-400'
+      ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold'
       : sign < 0
-        ? 'border-rose-500/30 bg-rose-500/15 text-rose-400'
-        : 'border-border/60 bg-muted/40 text-muted-foreground';
+        ? 'bg-rose-500/15 text-rose-600 dark:text-rose-400 font-bold'
+        : 'bg-muted text-muted-foreground font-medium';
   const Arrow = sign > 0 ? ArrowUp : sign < 0 ? ArrowDown : Minus;
   return (
-    <div className="relative z-10 mt-3.5 flex items-center">
+    <div className="relative z-10 mt-3 flex items-center">
       <span
         className={cn(
-          'inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold tabular-nums backdrop-blur-sm',
+          'inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs tabular-nums',
           tone
         )}
       >

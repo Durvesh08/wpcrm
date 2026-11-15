@@ -46,22 +46,22 @@ export function ConversationsChart({ series, loading, range, onRangeChange }: Co
   }, [data])
 
   return (
-    <section className="zovaix-glass-panel zovaix-enter flex h-full flex-col overflow-hidden rounded-[24px]">
-      <header className="flex items-center justify-between border-b border-border/50 px-5 py-4 bg-card/25 backdrop-blur-md">
+    <section className="bento-card-white flex h-full flex-col overflow-hidden">
+      <header className="flex items-center justify-between border-b border-border/50 px-5 py-4 bg-muted/20">
         <div>
-          <h2 className="text-sm font-semibold text-foreground tracking-tight">Conversations Over Time</h2>
+          <h2 className="text-sm font-bold text-foreground tracking-tight">Conversations Over Time</h2>
           <p className="mt-0.5 text-xs text-muted-foreground">Daily message volume by direction</p>
         </div>
-        <div className="flex items-center gap-1 rounded-xl bg-background/60 border border-border/50 p-1">
+        <div className="flex items-center gap-1 rounded-full bg-muted/60 p-1">
           {[7, 30, 90].map((r) => (
             <button
               key={r}
               type="button"
               onClick={() => onRangeChange(r as RangeDays)}
               className={cn(
-                'rounded-lg px-2.5 py-1 text-xs font-medium transition-all duration-200',
+                'rounded-full px-3 py-1 text-xs font-bold transition-all duration-200',
                 range === r
-                  ? 'bg-primary text-primary-foreground font-semibold shadow-sm shadow-primary/25'
+                  ? 'bg-primary text-primary-foreground shadow-xs'
                   : 'text-muted-foreground hover:text-foreground hover:bg-card/50',
               )}
             >

@@ -319,7 +319,7 @@ export default function PipelinesPage() {
           {/* Pipeline selector dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger
-              className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors data-[popup-open]:bg-muted"
+              className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/70 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors data-[popup-open]:bg-muted shadow-sm"
             >
               <GitBranch className="h-4 w-4 text-primary" />
               <span className="font-semibold">
@@ -329,7 +329,7 @@ export default function PipelinesPage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="start"
-              className="w-64 border-border bg-popover text-popover-foreground"
+              className="w-64 border-border bg-popover text-popover-foreground rounded-2xl p-1"
             >
               {pipelines.length === 0 && (
                 <DropdownMenuItem disabled className="text-muted-foreground">
@@ -342,7 +342,7 @@ export default function PipelinesPage() {
                   onClick={() => setSelectedPipelineId(p.id)}
                   className={
                     p.id === selectedPipelineId
-                      ? "text-primary"
+                      ? "text-primary font-semibold"
                       : "text-popover-foreground"
                   }
                 >
@@ -370,7 +370,7 @@ export default function PipelinesPage() {
             canAct={canEditSettings}
             gateReason="create pipelines"
             onClick={() => setNewPipelineOpen(true)}
-            className="border-border bg-card text-foreground hover:bg-muted"
+            className="rounded-full border-border/70 bg-card/70 text-foreground hover:bg-muted shadow-sm"
           >
             <Plus className="mr-1 h-4 w-4" />
             Add Pipeline
@@ -380,7 +380,7 @@ export default function PipelinesPage() {
             gateReason="create deals"
             disabled={!selectedPipelineId || stages.length === 0}
             onClick={() => handleAddDeal()}
-            className="bg-primary text-primary-foreground hover:bg-primary/90"
+            className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-4 shadow-sm active:scale-95 transition-all"
           >
             <Plus className="mr-1 h-4 w-4" />
             Add Deal
