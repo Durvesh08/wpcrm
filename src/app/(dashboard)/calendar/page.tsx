@@ -33,7 +33,6 @@ import {
   Video,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 
@@ -75,11 +74,11 @@ const kindIcon: Record<Kind, typeof Clock3> = {
   note: StickyNote,
 };
 const kindTone: Record<Kind, string> = {
-  follow_up: 'bg-primary/12 text-primary border-primary/20',
-  call: 'bg-sky-500/12 text-sky-400 border-sky-500/20',
-  whatsapp: 'bg-emerald-500/12 text-emerald-400 border-emerald-500/20',
-  meeting: 'bg-violet-500/12 text-violet-400 border-violet-500/20',
-  note: 'bg-amber-500/12 text-amber-400 border-amber-500/20',
+  follow_up: 'bg-primary/15 text-primary border-primary/25',
+  call: 'bg-sky-500/15 text-sky-400 border-sky-500/25',
+  whatsapp: 'bg-primary/15 text-primary border-primary/25',
+  meeting: 'bg-violet-500/15 text-violet-400 border-violet-500/25',
+  note: 'bg-amber-400/15 text-amber-300 border-amber-400/25',
 };
 const statusLabel: Record<Status, string> = {
   scheduled: 'Scheduled',
@@ -158,6 +157,7 @@ export default function CalendarPage() {
     const status = item.status ?? (item.completed_at ? 'completed' : 'scheduled');
     return status === 'scheduled' && parseISO(item.due_at).getTime() < Date.now();
   }).length;
+  const todayEvents = reminders.filter((item) => isToday(parseISO(item.due_at))).length;
 
   const assigneeName = (userId?: string | null) => {
     const profile = profiles.find((item) => item.user_id === userId);
@@ -237,135 +237,210 @@ export default function CalendarPage() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl space-y-5">
-      <div className="zovaix-enter flex flex-wrap items-end justify-between gap-4">
+    <div className="mx-auto max-w-7xl space-y-6">
+      {/* Top Header */}
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-primary text-xs font-semibold tracking-[0.18em] uppercase">
-            Team planner
-          </p>
-          <h1 className="mt-1 text-2xl font-semibold text-foreground">
-            Calendar
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_rgba(215,250,0,0.6)]" />
+            <p className="text-primary text-xs font-mono font-bold tracking-[0.2em] uppercase">
+              Team Planner & Agendas
+            </p>
+          </div>
+          <h1 className="mt-1 text-2xl sm:text-3xl font-black tracking-tight text-foreground">
+            Calendar & Tasks
           </h1>
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Book calls, meetings, WhatsApp follow-ups, and next-step tasks with
-            owner, reminder, reschedule, cancel, and no-show tracking.
+          <p className="mt-1 max-w-2xl text-xs sm:text-sm text-muted-foreground">
+            Book calls, meetings, WhatsApp follow-ups, and next-step actions with owner, reminder, and status tracking.
           </p>
         </div>
-        <Link href="/inbox">
-          <Button className="rounded-xl">
-            <MessageSquare className="mr-2 h-4 w-4" />
+        <div className="flex items-center gap-3">
+          <Link
+            href="/inbox"
+            className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-card/80 px-4 py-2.5 text-xs font-bold text-foreground hover:bg-card hover:border-primary/40 transition-all shadow-xs"
+          >
+            <MessageSquare className="h-4 w-4 text-primary" />
             Open inbox
-          </Button>
-        </Link>
+          </Link>
+        </div>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-3">
-        {[
-          { label: 'Scheduled', value: scheduledEvents, icon: CalendarDays },
-          { label: 'Overdue', value: overdueEvents, icon: Clock3 },
-          { label: 'Today', value: reminders.filter((item) => isToday(parseISO(item.due_at))).length, icon: Sparkles },
-        ].map((metric) => {
-          const Icon = metric.icon;
-          return (
-            <div
-              key={metric.label}
-              className="zovaix-glass-panel rounded-2xl border border-border/70 p-4"
-            >
-              <div className="flex items-center justify-between">
-                <p className="text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase">
-                  {metric.label}
-                </p>
-                <Icon className="h-4 w-4 text-primary" />
-              </div>
-              <p className="mt-2 text-2xl font-semibold text-foreground">
-                {metric.value}
-              </p>
+      {/* Top 3 Bento Stat Capsules */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        {/* Scheduled */}
+        <div className="group relative overflow-hidden rounded-[22px] bg-card/75 border border-border/80 p-5 shadow-xs transition-all duration-200 hover:border-primary/40 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
+              Scheduled Items
+            </span>
+            <div className="flex h-10 w-10 items-center justify-center rounded-[13px] bg-primary/15 border border-primary/25 text-primary group-hover:scale-105 transition-transform">
+              <CalendarDays className="h-5 w-5" />
             </div>
-          );
-        })}
+          </div>
+          <div className="mt-3 flex items-baseline justify-between">
+            <p className="font-mono text-3xl xl:text-4xl font-black tracking-tight text-foreground">
+              {scheduledEvents}
+            </p>
+            <span className="rounded-full bg-primary/10 border border-primary/20 px-2.5 py-0.5 text-[10px] font-mono font-bold text-primary">
+              Active agendas
+            </span>
+          </div>
+        </div>
+
+        {/* Overdue */}
+        <div className="group relative overflow-hidden rounded-[22px] bg-card/75 border border-border/80 p-5 shadow-xs transition-all duration-200 hover:border-rose-500/40 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
+              Overdue Tasks
+            </span>
+            <div className="flex h-10 w-10 items-center justify-center rounded-[13px] bg-rose-500/15 border border-rose-500/25 text-rose-400 group-hover:scale-105 transition-transform">
+              <Clock3 className="h-5 w-5" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline justify-between">
+            <p className="font-mono text-3xl xl:text-4xl font-black tracking-tight text-foreground">
+              {overdueEvents}
+            </p>
+            <span className={cn(
+              "rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold border",
+              overdueEvents > 0
+                ? "bg-rose-500/15 border-rose-500/30 text-rose-400"
+                : "bg-muted/80 border-border text-muted-foreground"
+            )}>
+              {overdueEvents > 0 ? "Requires action" : "All clear"}
+            </span>
+          </div>
+        </div>
+
+        {/* Today */}
+        <div className="group relative overflow-hidden rounded-[22px] bg-card/75 border border-border/80 p-5 shadow-xs transition-all duration-200 hover:border-amber-400/40 hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
+              Due Today
+            </span>
+            <div className="flex h-10 w-10 items-center justify-center rounded-[13px] bg-amber-400/15 border border-amber-400/25 text-amber-300 group-hover:scale-105 transition-transform">
+              <Sparkles className="h-5 w-5" />
+            </div>
+          </div>
+          <div className="mt-3 flex items-baseline justify-between">
+            <p className="font-mono text-3xl xl:text-4xl font-black tracking-tight text-foreground">
+              {todayEvents}
+            </p>
+            <span className="rounded-full bg-amber-400/10 border border-amber-400/20 px-2.5 py-0.5 text-[10px] font-mono font-bold text-amber-300">
+              Today&apos;s queue
+            </span>
+          </div>
+        </div>
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_22rem]">
-        <section className="zovaix-premium-panel zovaix-enter overflow-hidden rounded-[24px]">
-          <div className="relative border-b border-border/80 px-5 py-4">
-            <div className="zovaix-soft-grid pointer-events-none absolute inset-0 opacity-40" />
-            <div className="relative flex items-center justify-between gap-3">
+      {/* Main Grid: Calendar on Left, Scheduler Sidecar on Right */}
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_23rem]">
+        {/* Calendar Surface */}
+        <section className="relative overflow-hidden rounded-[26px] bg-card/75 border border-border/80 backdrop-blur-xl shadow-xs">
+          {/* Calendar Header */}
+          <div className="flex items-center justify-between gap-3 border-b border-border/80 px-5 sm:px-6 py-4 bg-muted/20">
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setMonth((value) => subMonths(value, 1))}
-                className="zovaix-premium-hover text-muted-foreground hover:text-foreground inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border/70 bg-card/70"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-[11px] border border-border/80 bg-card/80 text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
                 aria-label="Previous month"
               >
-                <ChevronLeft className="h-5 w-5" />
+                <ChevronLeft className="h-4 w-4" />
               </button>
-              <div className="text-center">
-                <h2 className="text-lg font-semibold">
-                  {format(month, 'MMMM yyyy')}
-                </h2>
-              <p className="text-xs text-muted-foreground">
-                {openEvents} open item{openEvents === 1 ? '' : 's'}
-              </p>
-              </div>
               <button
                 type="button"
                 onClick={() => setMonth((value) => addMonths(value, 1))}
-                className="zovaix-premium-hover text-muted-foreground hover:text-foreground inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border/70 bg-card/70"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-[11px] border border-border/80 bg-card/80 text-muted-foreground hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
                 aria-label="Next month"
               >
-                <ChevronRight className="h-5 w-5" />
+                <ChevronRight className="h-4 w-4" />
               </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const now = new Date();
+                  setMonth(startOfMonth(now));
+                  setSelectedDay(now);
+                }}
+                className="rounded-full border border-border/80 bg-card/70 px-3 py-1 text-xs font-bold text-muted-foreground hover:text-foreground hover:bg-card transition-all"
+              >
+                Today
+              </button>
+            </div>
+
+            <div className="text-center">
+              <h2 className="text-base sm:text-lg font-bold text-foreground">
+                {format(month, 'MMMM yyyy')}
+              </h2>
+            </div>
+
+            <div className="flex items-center">
+              <span className="rounded-full bg-primary/10 border border-primary/20 px-2.5 py-0.5 text-[11px] font-mono font-bold text-primary">
+                {openEvents} open item{openEvents === 1 ? '' : 's'}
+              </span>
             </div>
           </div>
 
-          <div className="grid grid-cols-7 border-b border-border/70 bg-card/35">
+          {/* Weekday Row */}
+          <div className="grid grid-cols-7 border-b border-border/70 bg-muted/30">
             {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
               <p
                 key={day}
-                className="py-3 text-center text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
+                className="py-2.5 text-center text-[10px] sm:text-[11px] font-mono font-bold tracking-wider text-muted-foreground uppercase"
               >
                 {day}
               </p>
             ))}
           </div>
 
+          {/* Days Grid */}
           <div className="grid grid-cols-7">
             {days.map((day) => {
               const events = reminders.filter(
                 (item) => isSameDay(parseISO(item.due_at), day) && !item.completed_at
               );
               const selected = isSameDay(day, selectedDay);
+              const isCurrentDay = isToday(day);
               const muted = !isSameMonth(day, month);
+
               return (
                 <button
                   key={day.toISOString()}
                   type="button"
                   onClick={() => setSelectedDay(day)}
                   className={cn(
-                    'group min-h-16 border-r border-b border-border/60 p-1 text-left transition-all hover:bg-muted/50 sm:min-h-24 sm:p-2',
-                    selected && 'bg-primary/10 ring-1 ring-inset ring-primary/40',
+                    'group relative min-h-16 border-r border-b border-border/60 p-1.5 text-left transition-all hover:bg-muted/40 sm:min-h-24 sm:p-2.5',
+                    selected && 'bg-primary/10 ring-1 ring-inset ring-primary/50',
                     muted && 'opacity-35'
                   )}
                 >
-                  <span
-                    className={cn(
-                      'inline-flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full text-[11px] sm:text-xs font-medium transition-transform group-hover:scale-105',
-                      isToday(day)
-                        ? 'bg-primary text-primary-foreground'
-                        : selected
-                          ? 'bg-primary/15 text-primary'
-                          : 'text-foreground'
+                  <div className="flex items-center justify-between">
+                    <span
+                      className={cn(
+                        'inline-flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-full text-[11px] sm:text-xs font-mono font-bold transition-transform group-hover:scale-105',
+                        isCurrentDay
+                          ? 'bg-primary text-primary-foreground font-black shadow-[0_0_12px_rgba(215,250,0,0.5)]'
+                          : selected
+                            ? 'bg-primary/20 text-primary border border-primary/30'
+                            : 'text-foreground'
+                      )}
+                    >
+                      {format(day, 'd')}
+                    </span>
+                    {events.length > 0 && (
+                      <span className="hidden sm:inline-block h-1.5 w-1.5 rounded-full bg-primary" />
                     )}
-                  >
-                    {format(day, 'd')}
-                  </span>
-                  <div className="mt-1 sm:mt-2 space-y-1">
+                  </div>
+
+                  <div className="mt-1 sm:mt-1.5 space-y-1">
                     {events.slice(0, 2).map((item) => {
                       const Icon = kindIcon[item.kind];
                       return (
                         <span
                           key={item.id}
                           className={cn(
-                            'flex items-center gap-1 truncate rounded-md border px-1 py-0.5 sm:px-1.5 sm:py-1 text-[9px] sm:text-[10px]',
+                            'flex items-center gap-1 truncate rounded-[7px] border px-1 py-0.5 sm:px-1.5 sm:py-0.5 text-[9px] sm:text-[10px] font-medium transition-transform group-hover:scale-[1.01]',
                             kindTone[item.kind]
                           )}
                         >
@@ -373,15 +448,15 @@ export default function CalendarPage() {
                           <span className="hidden sm:inline truncate">
                             {item.contacts?.name || item.title}
                           </span>
-                          <span className="sm:hidden text-[8px] font-semibold">
+                          <span className="sm:hidden text-[8px] font-bold">
                             {item.kind === 'meeting' ? 'M' : item.kind === 'call' ? 'C' : item.kind === 'whatsapp' ? 'W' : 'T'}
                           </span>
                         </span>
                       );
                     })}
                     {events.length > 2 && (
-                      <span className="block px-0.5 text-[8px] sm:text-[10px] text-muted-foreground">
-                        +{events.length - 2}
+                      <span className="block px-0.5 text-[8px] sm:text-[10px] font-mono text-muted-foreground">
+                        +{events.length - 2} more
                       </span>
                     )}
                   </div>
@@ -391,42 +466,50 @@ export default function CalendarPage() {
           </div>
         </section>
 
-        <aside className="zovaix-glass-panel zovaix-enter rounded-[24px] p-4">
-          <div className="flex items-center gap-3">
-            <span className="zovaix-icon-tile inline-flex h-10 w-10 items-center justify-center rounded-2xl text-primary-foreground">
-              <CalendarDays className="h-4 w-4" />
-            </span>
-            <div>
-              <h2 className="font-semibold">
-                {format(selectedDay, 'EEE, MMM d')}
+        {/* Right Scheduler Sidecar */}
+        <aside className="space-y-4 rounded-[26px] bg-card/75 border border-border/80 backdrop-blur-xl p-5 sm:p-6 shadow-xs">
+          {/* Sidecar Header */}
+          <div className="flex items-center gap-3 pb-3 border-b border-border/70">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-primary text-primary-foreground font-black text-sm shadow-[0_0_12px_rgba(215,250,0,0.35)]">
+              {format(selectedDay, 'd')}
+            </div>
+            <div className="min-w-0 flex-1">
+              <h2 className="text-sm font-bold text-foreground truncate">
+                {format(selectedDay, 'EEEE, MMM d')}
               </h2>
-              <p className="text-xs text-muted-foreground">
-                Add a task, call, or meeting
+              <p className="text-[11px] text-muted-foreground truncate">
+                Schedule task, call, or meeting
               </p>
             </div>
           </div>
 
-          <div className="mt-5 space-y-3">
-            <label className="grid gap-1.5 text-xs font-medium text-muted-foreground">
-              Type
+          {/* Form */}
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
+                Type
+              </label>
               <select
                 value={kind}
                 onChange={(event) => setKind(event.target.value as Kind)}
-                className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground outline-none focus:border-primary"
+                className="h-10 w-full rounded-[14px] border border-border/80 bg-background/80 px-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
               >
-                <option value="follow_up">Follow-up</option>
-                <option value="call">Contact call</option>
-                <option value="whatsapp">WhatsApp follow-up</option>
-                <option value="meeting">Meeting booking</option>
-                <option value="note">Contact note</option>
+                <option value="follow_up">Follow-up Task</option>
+                <option value="call">Phone Call</option>
+                <option value="whatsapp">WhatsApp Follow-up</option>
+                <option value="meeting">Video Meeting</option>
+                <option value="note">Internal Note</option>
               </select>
-            </label>
-            <label className="grid gap-1.5 text-xs font-medium text-muted-foreground">
-              Contact
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
+                Contact
+              </label>
               <select
                 value={contactId}
                 onChange={(event) => setContactId(event.target.value)}
-                className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground outline-none focus:border-primary"
+                className="h-10 w-full rounded-[14px] border border-border/80 bg-background/80 px-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
               >
                 <option value="">Choose contact</option>
                 {contacts.map((contact) => (
@@ -435,13 +518,16 @@ export default function CalendarPage() {
                   </option>
                 ))}
               </select>
-            </label>
-            <label className="grid gap-1.5 text-xs font-medium text-muted-foreground">
-              Assigned team member
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
+                Assignee
+              </label>
               <select
                 value={assignedUserId}
                 onChange={(event) => setAssignedUserId(event.target.value)}
-                className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground outline-none focus:border-primary"
+                className="h-10 w-full rounded-[14px] border border-border/80 bg-background/80 px-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
               >
                 <option value="">Assign to me</option>
                 {profiles.map((profile) => (
@@ -450,9 +536,12 @@ export default function CalendarPage() {
                   </option>
                 ))}
               </select>
-            </label>
-            <label className="grid gap-1.5 text-xs font-medium text-muted-foreground">
-              Title
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
+                Title
+              </label>
               <input
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
@@ -465,120 +554,139 @@ export default function CalendarPage() {
                       ? 'Note to remember'
                       : 'Follow-up task'
                 }
-                className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground outline-none focus:border-primary"
+                className="h-10 w-full rounded-[14px] border border-border/80 bg-background/80 px-3 text-xs text-foreground placeholder:text-muted-foreground/60 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
               />
-            </label>
+            </div>
+
             {kind === 'meeting' && (
               <>
-                <label className="grid gap-1.5 text-xs font-medium text-muted-foreground">
-                  Meeting link
+                <div className="space-y-1">
+                  <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
+                    Meeting URL
+                  </label>
                   <input
                     value={meetingUrl}
                     onChange={(event) => setMeetingUrl(event.target.value)}
                     placeholder="https://meet.google.com/..."
-                    className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground outline-none focus:border-primary"
+                    className="h-10 w-full rounded-[14px] border border-border/80 bg-background/80 px-3 text-xs text-foreground placeholder:text-muted-foreground/60 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                   />
-                </label>
-                <label className="grid gap-1.5 text-xs font-medium text-muted-foreground">
-                  Location
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
+                    Location
+                  </label>
                   <input
                     value={meetingLocation}
                     onChange={(event) => setMeetingLocation(event.target.value)}
-                    placeholder="Google Meet, office, phone call..."
-                    className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground outline-none focus:border-primary"
+                    placeholder="Google Meet, Office, Call"
+                    className="h-10 w-full rounded-[14px] border border-border/80 bg-background/80 px-3 text-xs text-foreground placeholder:text-muted-foreground/60 outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                   />
-                </label>
+                </div>
               </>
             )}
-            <label className="grid gap-1.5 text-xs font-medium text-muted-foreground">
-              Time
-              <input
-                type="time"
-                value={time}
-                onChange={(event) => setTime(event.target.value)}
-                className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground outline-none focus:border-primary"
-              />
-            </label>
-            <label className="grid gap-1.5 text-xs font-medium text-muted-foreground">
-              Reminder
-              <select
-                value={reminderMinutesBefore}
-                onChange={(event) => setReminderMinutesBefore(event.target.value)}
-                className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground outline-none focus:border-primary"
-              >
-                <option value="0">At time</option>
-                <option value="15">15 min before</option>
-                <option value="30">30 min before</option>
-                <option value="60">1 hour before</option>
-                <option value="1440">1 day before</option>
-              </select>
-            </label>
-            <Button
-              className="w-full rounded-xl"
+
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
+                  Time
+                </label>
+                <input
+                  type="time"
+                  value={time}
+                  onChange={(event) => setTime(event.target.value)}
+                  className="h-10 w-full rounded-[14px] border border-border/80 bg-background/80 px-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
+                  Alert
+                </label>
+                <select
+                  value={reminderMinutesBefore}
+                  onChange={(event) => setReminderMinutesBefore(event.target.value)}
+                  className="h-10 w-full rounded-[14px] border border-border/80 bg-background/80 px-3 text-xs text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                >
+                  <option value="0">At time</option>
+                  <option value="15">15m before</option>
+                  <option value="30">30m before</option>
+                  <option value="60">1h before</option>
+                  <option value="1440">1d before</option>
+                </select>
+              </div>
+            </div>
+
+            <button
+              type="button"
               disabled={saving}
               onClick={() => void save()}
+              className="mt-2 w-full rounded-full bg-primary text-primary-foreground hover:brightness-105 font-black h-11 text-xs shadow-sm hover:shadow-[0_0_16px_rgba(215,250,0,0.35)] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus className="h-4 w-4" />
               {saving ? 'Saving...' : `Add ${kindLabel[kind]}`}
-            </Button>
+            </button>
           </div>
 
-          <div className="mt-5 border-t border-border/70 pt-4">
-            <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-              Scheduled
-            </p>
+          {/* Scheduled items on this date */}
+          <div className="pt-4 border-t border-border/70">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
+                Scheduled ({selectedEvents.length})
+              </p>
+            </div>
+
             {loading ? (
-              <div className="mt-3 space-y-2">
-                <div className="h-16 animate-pulse rounded-xl bg-muted" />
-                <div className="h-16 animate-pulse rounded-xl bg-muted" />
+              <div className="space-y-2">
+                <div className="h-16 animate-pulse rounded-[16px] bg-muted/60" />
+                <div className="h-16 animate-pulse rounded-[16px] bg-muted/60" />
               </div>
             ) : selectedEvents.length === 0 ? (
-              <div className="mt-3 rounded-2xl border border-dashed border-border bg-card/45 p-4 text-center">
+              <div className="rounded-[18px] border border-dashed border-border/80 bg-background/40 p-4 text-center">
                 <Sparkles className="mx-auto h-5 w-5 text-primary" />
-                <p className="mt-2 text-sm font-medium text-foreground">
-                  Nothing planned
+                <p className="mt-2 text-xs font-bold text-foreground">
+                  Nothing scheduled
                 </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Add a call, note, or follow-up for this date.
+                <p className="mt-0.5 text-[11px] text-muted-foreground">
+                  Add a follow-up, call, or meeting above.
                 </p>
               </div>
             ) : (
-              <div className="mt-3 space-y-2">
+              <div className="space-y-2.5 max-h-[22rem] overflow-y-auto pr-1">
                 {selectedEvents.map((item) => {
                   const Icon = kindIcon[item.kind];
+                  const isScheduled = (item.status ?? (item.completed_at ? 'completed' : 'scheduled')) === 'scheduled';
+
                   return (
                     <div
                       key={item.id}
                       className={cn(
-                        'rounded-2xl border border-border/70 bg-background/40 p-3',
-                        item.completed_at && 'opacity-55'
+                        'rounded-[18px] border border-border/80 bg-background/70 p-3 transition-all hover:border-border',
+                        item.completed_at && 'opacity-60'
                       )}
                     >
-                      <div className="flex items-start gap-2">
-                        <span
+                      <div className="flex items-start gap-2.5">
+                        <div
                           className={cn(
-                            'mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border',
+                            'mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] border',
                             kindTone[item.kind]
                           )}
                         >
                           <Icon className="h-4 w-4" />
-                        </span>
+                        </div>
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium">
+                          <p className="truncate text-xs font-bold text-foreground">
                             {item.title}
                           </p>
-                          <p className="mt-0.5 text-xs text-muted-foreground">
-                            {item.contacts?.name ||
-                              item.contacts?.phone ||
-                              'Contact'}{' '}
-                            · {format(parseISO(item.due_at), 'h:mm a')}
+                          <p className="mt-0.5 text-[11px] text-muted-foreground truncate">
+                            {item.contacts?.name || item.contacts?.phone || 'Contact'}{' '}
+                            · <span className="font-mono">{format(parseISO(item.due_at), 'h:mm a')}</span>
                           </p>
-                          <div className="mt-2 flex flex-wrap gap-1.5 text-[10px] text-muted-foreground">
-                            <span className="rounded-full border border-border/70 px-2 py-0.5">
+                          <div className="mt-1.5 flex flex-wrap gap-1.5 text-[9px] font-mono">
+                            <span className="rounded-full border border-border/80 bg-card px-2 py-0.5 text-muted-foreground">
                               {statusLabel[item.status ?? (item.completed_at ? 'completed' : 'scheduled')]}
                             </span>
-                            <span className="inline-flex items-center gap-1 rounded-full border border-border/70 px-2 py-0.5">
-                              <UserRound className="h-3 w-3" />
+                            <span className="inline-flex items-center gap-1 rounded-full border border-border/80 bg-card px-2 py-0.5 text-muted-foreground">
+                              <UserRound className="h-2.5 w-2.5" />
                               {assigneeName(item.assigned_user_id)}
                             </span>
                           </div>
@@ -587,52 +695,53 @@ export default function CalendarPage() {
                               href={item.meeting_url}
                               target="_blank"
                               rel="noreferrer"
-                              className="mt-2 inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                              className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-medium text-primary hover:underline"
                             >
                               <LinkIcon className="h-3 w-3" />
                               Open meeting link
                             </a>
                           )}
                           {item.meeting_location && (
-                            <p className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground">
+                            <p className="mt-1 inline-flex items-center gap-1 text-[11px] text-muted-foreground">
                               <MapPin className="h-3 w-3" />
                               {item.meeting_location}
                             </p>
                           )}
                         </div>
                       </div>
-                      {(item.status ?? (item.completed_at ? 'completed' : 'scheduled')) === 'scheduled' && (
-                        <div className="mt-3 grid grid-cols-2 gap-2">
+
+                      {isScheduled && (
+                        <div className="mt-2.5 grid grid-cols-2 gap-1.5">
                           <button
                             type="button"
                             onClick={() => void updateStatus(item.id, 'completed')}
-                            className="inline-flex items-center justify-center gap-1 rounded-lg border border-border bg-card px-2 py-1.5 text-xs hover:bg-primary/10 hover:text-primary"
+                            className="inline-flex items-center justify-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2 py-1 text-[11px] font-bold text-primary hover:bg-primary hover:text-primary-foreground transition-all"
                           >
-                            <CheckCircle2 className="h-3.5 w-3.5" />
+                            <CheckCircle2 className="h-3 w-3" />
                             Done
                           </button>
                           <button
                             type="button"
                             onClick={() => void reschedule(item)}
-                            className="inline-flex items-center justify-center gap-1 rounded-lg border border-border bg-card px-2 py-1.5 text-xs hover:bg-muted"
+                            className="inline-flex items-center justify-center gap-1 rounded-full border border-border/80 bg-card px-2 py-1 text-[11px] font-bold text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
                           >
-                            <RotateCcw className="h-3.5 w-3.5" />
+                            <RotateCcw className="h-3 w-3" />
                             Reschedule
                           </button>
                           <button
                             type="button"
                             onClick={() => void updateStatus(item.id, 'no_show')}
-                            className="inline-flex items-center justify-center gap-1 rounded-lg border border-border bg-card px-2 py-1.5 text-xs hover:bg-amber-500/10 hover:text-amber-500"
+                            className="inline-flex items-center justify-center gap-1 rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-1 text-[11px] font-bold text-amber-300 hover:bg-amber-400/20 transition-all"
                           >
-                            <Clock3 className="h-3.5 w-3.5" />
+                            <Clock3 className="h-3 w-3" />
                             No-show
                           </button>
                           <button
                             type="button"
                             onClick={() => void updateStatus(item.id, 'cancelled')}
-                            className="inline-flex items-center justify-center gap-1 rounded-lg border border-border bg-card px-2 py-1.5 text-xs hover:bg-destructive/10 hover:text-destructive"
+                            className="inline-flex items-center justify-center gap-1 rounded-full border border-rose-500/30 bg-rose-500/10 px-2 py-1 text-[11px] font-bold text-rose-400 hover:bg-rose-500/20 transition-all"
                           >
-                            <CalendarX2 className="h-3.5 w-3.5" />
+                            <CalendarX2 className="h-3 w-3" />
                             Cancel
                           </button>
                         </div>

@@ -76,6 +76,11 @@ const THEME_BOOT_SCRIPT = `
     var THEME_DEFAULT = ${JSON.stringify(DEFAULT_THEME)};
     var THEMES = ${JSON.stringify(THEME_IDS)};
     var savedTheme = localStorage.getItem(THEME_KEY);
+    // Upgrade legacy stored themes to the modern Neo-Bento Electric Lime ('zovaix') signature theme
+    if (savedTheme === 'whatsapp' || savedTheme === 'emerald') {
+      savedTheme = 'zovaix';
+      try { localStorage.setItem(THEME_KEY, 'zovaix'); } catch (_err) {}
+    }
     d.dataset.theme = THEMES.indexOf(savedTheme) !== -1 ? savedTheme : THEME_DEFAULT;
 
     var MODE_KEY = ${JSON.stringify(MODE_STORAGE_KEY)};

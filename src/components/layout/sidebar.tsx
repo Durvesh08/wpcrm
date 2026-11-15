@@ -310,11 +310,13 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
         </nav>
 
         {/* User section */}
-        <div className="border-border/50 bg-sidebar/40 shrink-0 border-t p-3 backdrop-blur-md">
+        <div className="border-border/70 bg-sidebar/50 shrink-0 border-t p-3 backdrop-blur-md space-y-2">
           {showAccountStrip && account?.name ? (
-            <div className="border-border/70 bg-card/60 text-muted-foreground mb-2 flex items-center gap-2 rounded-xl border px-3 py-2 text-xs">
-              <UsersRound className="size-3.5 shrink-0" />
-              <span className="truncate" title={account.name}>
+            <div className="border-border/80 bg-card/75 text-foreground flex items-center gap-2.5 rounded-[16px] border px-3 py-2 text-xs shadow-xs">
+              <div className="flex h-7 w-7 items-center justify-center rounded-[9px] bg-primary/15 border border-primary/25 text-primary shrink-0">
+                <UsersRound className="h-3.5 w-3.5" />
+              </div>
+              <span className="truncate font-semibold" title={account.name}>
                 {account.name}
               </span>
               {accountRole
@@ -323,9 +325,9 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
                     const Icon = meta.icon;
                     return (
                       <span
-                        className={`ml-auto inline-flex shrink-0 items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] font-bold tracking-wider uppercase ${meta.className}`}
+                        className={`ml-auto inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[9px] font-mono font-bold tracking-wider uppercase ${meta.className}`}
                       >
-                        <Icon className="size-3" />
+                        <Icon className="size-2.5" />
                         {meta.label}
                       </span>
                     );
@@ -334,37 +336,37 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
             </div>
           ) : null}
           <DropdownMenu>
-            <DropdownMenuTrigger className="border-border/70 bg-card/60 hover:bg-card focus:bg-card data-popup-open:bg-card flex w-full items-center gap-3 rounded-[18px] border px-3 py-2.5 text-left transition-all duration-200 hover:border-primary/40 focus:outline-none">
+            <DropdownMenuTrigger className="border-border/80 bg-card/75 hover:bg-card focus:bg-card data-popup-open:bg-card flex w-full items-center gap-3 rounded-[18px] border p-2.5 text-left transition-all duration-200 hover:border-primary/40 shadow-xs focus:outline-none">
               <div className="relative size-8 shrink-0">
-                <Avatar className="size-8">
+                <Avatar className="size-8 rounded-[10px]">
                   {profile?.avatar_url ? (
                     <AvatarImage
                       src={profile.avatar_url}
                       alt={profile.full_name ?? 'Avatar'}
                     />
                   ) : null}
-                  <AvatarFallback className="bg-[#D7FA00]/20 text-[#D7FA00] text-sm font-bold">
+                  <AvatarFallback className="bg-primary/20 text-primary text-xs font-mono font-black rounded-[10px]">
                     {profile?.full_name?.charAt(0)?.toUpperCase() ??
                       profile?.email?.charAt(0)?.toUpperCase() ??
                       'U'}
                   </AvatarFallback>
                 </Avatar>
-                <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-[#D7FA00] ring-2 ring-background" />
+                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-background shadow-[0_0_6px_rgba(215,250,0,0.6)]" />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-1">
-                  <p className="text-foreground truncate text-sm font-bold">
+                  <p className="text-foreground truncate text-xs sm:text-sm font-bold">
                     {profile?.full_name ?? 'User'}
                   </p>
                   {!showAccountStrip && accountRole && (
                     <span
-                      className={`inline-flex shrink-0 items-center gap-0.5 rounded-full border px-1.5 py-0.5 text-[9px] font-extrabold uppercase ${ROLE_CHIP[accountRole].className}`}
+                      className={`inline-flex shrink-0 items-center gap-0.5 rounded-full border px-1.5 py-0.5 text-[9px] font-mono font-bold uppercase ${ROLE_CHIP[accountRole].className}`}
                     >
                       {ROLE_CHIP[accountRole].label}
                     </span>
                   )}
                 </div>
-                <p className="text-muted-foreground truncate text-xs">
+                <p className="text-muted-foreground truncate text-[11px] font-mono">
                   {profile?.email ?? ''}
                 </p>
               </div>

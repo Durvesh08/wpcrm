@@ -1,74 +1,75 @@
 'use client';
 
 import Link from 'next/link';
-import { UserPlus, BriefcaseBusiness, RadioTower, WandSparkles } from 'lucide-react';
+import { UserPlus, BriefcaseBusiness, RadioTower, WandSparkles, ArrowUpRight } from 'lucide-react';
 import type { ComponentType } from 'react';
 
-// Quick-action shortcuts. Each navigates to the page that owns the
-// relevant "create" flow. We deliberately don't try to auto-open any
-// modal on the target page — that'd require touching those pages,
-// which is out of scope here.
 interface Action {
   label: string;
+  sublabel: string;
   href: string;
   icon: ComponentType<{ className?: string }>;
-  gradient: string;
-  shadow: string;
+  tone: string;
 }
 
 const ACTIONS: Action[] = [
   {
     label: 'New Contact',
+    sublabel: 'Customer CRM',
     href: '/contacts',
     icon: UserPlus,
-    gradient: 'from-emerald-400 via-teal-400 to-cyan-500',
-    shadow: 'shadow-emerald-500/25',
+    tone: 'bg-primary/15 border border-primary/25 text-primary',
   },
   {
     label: 'New Deal',
+    sublabel: 'Sales Pipeline',
     href: '/pipelines',
     icon: BriefcaseBusiness,
-    gradient: 'from-blue-400 via-indigo-500 to-violet-600',
-    shadow: 'shadow-blue-500/25',
+    tone: 'bg-sky-500/15 border border-sky-500/25 text-sky-400',
   },
   {
     label: 'New Broadcast',
+    sublabel: 'Bulk Outreach',
     href: '/broadcasts/new',
     icon: RadioTower,
-    gradient: 'from-amber-400 via-orange-400 to-amber-600',
-    shadow: 'shadow-amber-500/25',
+    tone: 'bg-amber-400/15 border border-amber-400/25 text-amber-300',
   },
   {
     label: 'New Automation',
+    sublabel: 'Trigger & Action',
     href: '/automations/new',
     icon: WandSparkles,
-    gradient: 'from-violet-400 via-purple-500 to-fuchsia-500',
-    shadow: 'shadow-purple-500/25',
+    tone: 'bg-violet-500/15 border border-violet-500/25 text-violet-400',
   },
 ];
 
 export function QuickActions() {
   return (
-    <div className="grid grid-cols-2 gap-2.5 sm:gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 xl:grid-cols-4">
       {ACTIONS.map((a) => {
         const Icon = a.icon;
         return (
           <Link
             key={a.href}
             href={a.href}
-            className="bento-card-white group flex items-center gap-3 p-3.5 sm:p-4 transition-all duration-200 hover:scale-[1.02] hover:shadow-md"
+            className="group relative flex items-center justify-between overflow-hidden rounded-[22px] bg-card/75 border border-border/80 backdrop-blur-xl p-4 shadow-xs transition-all duration-200 hover:border-primary/40 hover:shadow-md hover:scale-[1.01]"
           >
-            <div
-              className={`flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${a.gradient} text-white shadow-xs transition-transform duration-200 group-hover:scale-105`}
-            >
-              <Icon className="h-5 w-5 stroke-[2.25]" />
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div
+                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] ${a.tone} transition-transform duration-200 group-hover:scale-105`}
+              >
+                <Icon className="h-5 w-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors">
+                  {a.label}
+                </p>
+                <p className="truncate text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-muted-foreground mt-0.5">
+                  {a.sublabel}
+                </p>
+              </div>
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-foreground truncate text-xs sm:text-sm font-bold tracking-tight">{a.label}</p>
-              <p className="text-muted-foreground hidden sm:block truncate text-xs mt-0.5">
-                Quick Action
-              </p>
-            </div>
+            <ArrowUpRight className="h-4 w-4 text-muted-foreground/50 transition-all duration-200 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0 ml-1" />
           </Link>
         );
       })}

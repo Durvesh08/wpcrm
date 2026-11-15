@@ -163,17 +163,17 @@ html[data-theme='zovaix'] {
 }
 
 html[data-theme='whatsapp'] {
-  --primary: oklch(0.72 0.19 156);
-  --primary-foreground: oklch(0.12 0.025 170);
-  --primary-hover: oklch(0.78 0.17 156);
-  --primary-soft: oklch(0.72 0.19 156 / 0.15);
-  --primary-soft-2: oklch(0.72 0.19 156 / 0.28);
-  --ring: oklch(0.72 0.19 156);
-  --chart-1: oklch(0.72 0.19 156);
-  --chart-2: oklch(0.75 0.16 195);
-  --sidebar-primary: oklch(0.72 0.19 156);
-  --sidebar-primary-foreground: oklch(0.12 0.025 170);
-  --sidebar-ring: oklch(0.72 0.19 156);
+  --primary: oklch(0.92 0.22 125);
+  --primary-foreground: oklch(0.10 0.03 125);
+  --primary-hover: oklch(0.95 0.20 125);
+  --primary-soft: oklch(0.92 0.22 125 / 0.18);
+  --primary-soft-2: oklch(0.92 0.22 125 / 0.32);
+  --ring: oklch(0.92 0.22 125);
+  --chart-1: oklch(0.92 0.22 125);
+  --chart-2: oklch(0.65 0.18 160);
+  --sidebar-primary: oklch(0.92 0.22 125);
+  --sidebar-primary-foreground: oklch(0.10 0.03 125);
+  --sidebar-ring: oklch(0.92 0.22 125);
 }
 
 html[data-theme='violet'] {
@@ -190,17 +190,17 @@ html[data-theme='violet'] {
 }
 
 html[data-theme='emerald'] {
-  --primary: oklch(0.72 0.20 160);
-  --primary-foreground: oklch(0.12 0.02 160);
-  --primary-hover: oklch(0.78 0.18 160);
-  --primary-soft: oklch(0.72 0.20 160 / 0.15);
-  --primary-soft-2: oklch(0.72 0.20 160 / 0.28);
-  --ring: oklch(0.72 0.20 160);
-  --chart-1: oklch(0.72 0.20 160);
-  --chart-2: oklch(0.76 0.16 195);
-  --sidebar-primary: oklch(0.72 0.20 160);
-  --sidebar-primary-foreground: oklch(0.12 0.02 160);
-  --sidebar-ring: oklch(0.72 0.20 160);
+  --primary: oklch(0.92 0.22 125);
+  --primary-foreground: oklch(0.10 0.03 125);
+  --primary-hover: oklch(0.95 0.20 125);
+  --primary-soft: oklch(0.92 0.22 125 / 0.18);
+  --primary-soft-2: oklch(0.92 0.22 125 / 0.32);
+  --ring: oklch(0.92 0.22 125);
+  --chart-1: oklch(0.92 0.22 125);
+  --chart-2: oklch(0.65 0.18 160);
+  --sidebar-primary: oklch(0.92 0.22 125);
+  --sidebar-primary-foreground: oklch(0.10 0.03 125);
+  --sidebar-ring: oklch(0.92 0.22 125);
 }
 
 html[data-theme='cobalt'] {

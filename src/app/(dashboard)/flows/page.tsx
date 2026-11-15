@@ -204,12 +204,12 @@ export default function FlowsPage() {
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-semibold text-foreground">Flows</h1>
-            <span className="inline-flex items-center rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-300">
+            <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">Flows</h1>
+            <span className="inline-flex items-center rounded-full border border-amber-500/40 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-amber-300">
               Beta
             </span>
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
             Build branching, button-driven WhatsApp conversations. Useful for
             menus, FAQs, and triage before a human steps in.
           </p>
@@ -218,8 +218,9 @@ export default function FlowsPage() {
           canAct={canCreate}
           gateReason="create flows"
           onClick={() => setCreateOpen(true)}
+          className="rounded-full bg-primary text-primary-foreground font-black px-4 py-2 text-xs shadow-xs hover:shadow-[0_0_14px_rgba(215,250,0,0.3)] transition-all cursor-pointer"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-4 w-4 mr-1" />
           New flow
         </GatedButton>
       </header>
@@ -330,14 +331,14 @@ function EmptyState({
   canCreate: boolean;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card/50 px-6 py-16 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
-        <Workflow className="h-6 w-6 text-muted-foreground" />
+    <div className="flex flex-col items-center justify-center rounded-[28px] border border-border/80 bg-card/75 backdrop-blur-xl px-6 py-16 text-center shadow-xs">
+      <div className="flex h-16 w-16 items-center justify-center rounded-[20px] bg-primary/15 border border-primary/25 text-primary shadow-xs">
+        <Workflow className="h-8 w-8" />
       </div>
-      <h2 className="mt-4 text-base font-medium text-foreground">
+      <h2 className="mt-5 text-lg font-bold text-foreground">
         No flows yet
       </h2>
-      <p className="mt-1 max-w-md text-sm text-muted-foreground">
+      <p className="mt-1.5 max-w-md text-xs sm:text-sm text-muted-foreground">
         Build your first conversation — a welcome menu, an order lookup, an FAQ
         bot. Customers tap buttons; the bot routes them to the right answer (or
         the right agent).
@@ -346,9 +347,9 @@ function EmptyState({
         canAct={canCreate}
         gateReason="create flows"
         onClick={onCreate}
-        className="mt-5"
+        className="mt-6 rounded-full bg-primary text-primary-foreground font-black px-6 py-2.5 text-xs shadow-xs hover:shadow-[0_0_16px_rgba(215,250,0,0.35)] transition-all cursor-pointer"
       >
-        <Plus className="h-4 w-4" />
+        <Plus className="h-4 w-4 mr-1.5" />
         Create your first flow
       </GatedButton>
     </div>
@@ -372,18 +373,20 @@ function FlowCard({
         ? Archive
         : PauseCircle;
   return (
-    <div className="flex flex-col rounded-lg border border-border bg-card p-4 transition-colors hover:border-border">
+    <div className="flex flex-col rounded-[22px] border border-border/80 bg-card/75 backdrop-blur-xl p-5 transition-all hover:border-primary/40 hover:shadow-md shadow-xs">
       <div className="flex items-start justify-between gap-2">
-        <div className="flex min-w-0 items-center gap-2">
-          <Workflow className="h-4 w-4 shrink-0 text-primary" />
-          <h3 className="truncate text-sm font-semibold text-foreground">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-primary/15 border border-primary/25 text-primary shrink-0">
+            <Workflow className="h-4 w-4" />
+          </div>
+          <h3 className="truncate text-sm font-bold text-foreground">
             {flow.name}
           </h3>
         </div>
         <Badge
           variant="outline"
           className={cn(
-            "shrink-0 gap-1 text-[10px]",
+            "shrink-0 gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold",
             STATUS_COLORS[flow.status],
           )}
         >
@@ -392,29 +395,29 @@ function FlowCard({
         </Badge>
       </div>
 
-      <p className="mt-2 line-clamp-2 text-xs text-muted-foreground">
+      <p className="mt-3 line-clamp-2 text-xs text-muted-foreground">
         {flow.description || triggerSummary}
       </p>
 
-      <div className="mt-4 flex items-center gap-3 text-[11px] text-muted-foreground">
-        <span className="inline-flex items-center gap-1">
+      <div className="mt-4 flex items-center gap-3 text-[11px] font-mono text-muted-foreground">
+        <span className="inline-flex items-center gap-1 rounded-full bg-muted/60 px-2.5 py-0.5">
           <MessageSquare className="h-3 w-3" />
           {flow.execution_count} {flow.execution_count === 1 ? "run" : "runs"}
         </span>
       </div>
 
-      <div className="mt-4 flex items-center justify-end gap-2 border-t border-border pt-3">
-        <Button variant="ghost" size="sm" onClick={onEdit}>
-          <Pencil className="h-3.5 w-3.5" />
+      <div className="mt-4 flex items-center justify-end gap-2 border-t border-border/70 pt-3">
+        <Button variant="ghost" size="sm" onClick={onEdit} className="rounded-full text-xs font-bold hover:bg-muted">
+          <Pencil className="h-3.5 w-3.5 mr-1" />
           Edit
         </Button>
         <Button
           variant="ghost"
           size="sm"
           onClick={onDelete}
-          className="text-red-400 hover:bg-red-500/10 hover:text-red-300"
+          className="rounded-full text-xs font-bold text-red-400 hover:bg-red-500/10 hover:text-red-300"
         >
-          <Trash2 className="h-3.5 w-3.5" />
+          <Trash2 className="h-3.5 w-3.5 mr-1" />
           Delete
         </Button>
       </div>

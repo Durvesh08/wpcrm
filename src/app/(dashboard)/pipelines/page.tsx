@@ -319,10 +319,10 @@ export default function PipelinesPage() {
           {/* Pipeline selector dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger
-              className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-card/70 px-4 py-2 text-sm text-foreground hover:bg-muted transition-colors data-[popup-open]:bg-muted shadow-sm"
+              className="inline-flex items-center gap-2.5 rounded-full border border-border/80 bg-card/80 px-4 py-2 text-sm font-bold text-foreground hover:bg-muted hover:border-primary/40 transition-all shadow-xs"
             >
               <GitBranch className="h-4 w-4 text-primary" />
-              <span className="font-semibold">
+              <span className="font-bold">
                 {selectedPipeline?.name ?? "Select Pipeline"}
               </span>
               <ChevronDown className="h-4 w-4 text-muted-foreground" />
@@ -370,7 +370,7 @@ export default function PipelinesPage() {
             canAct={canEditSettings}
             gateReason="create pipelines"
             onClick={() => setNewPipelineOpen(true)}
-            className="rounded-full border-border/70 bg-card/70 text-foreground hover:bg-muted shadow-sm"
+            className="rounded-full border-border/80 bg-card/80 text-foreground hover:bg-muted hover:border-primary/40 font-semibold px-4 shadow-xs transition-all"
           >
             <Plus className="mr-1 h-4 w-4" />
             Add Pipeline

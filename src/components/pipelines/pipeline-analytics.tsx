@@ -93,84 +93,241 @@ export function PipelineAnalytics({ stages, deals }: PipelineAnalyticsProps) {
 
   return (
     <TooltipProvider>
-      <div className="grid grid-cols-2 gap-3.5 rounded-[26px] border border-border/70 bg-card/40 p-4 sm:grid-cols-3 xl:grid-cols-6 backdrop-blur-xl shadow-xs">
-        <Metric
-          icon={<BarChart3 className="h-3.5 w-3.5 text-muted-foreground" />}
-          label="Total Deals"
-          value={String(stats.totalCount)}
-          tooltip="Count of every deal in this pipeline that isn't marked as Lost. Won deals are still included."
-        />
-        <Metric
-          icon={<DollarSign className="h-3.5 w-3.5 text-primary" />}
-          label="Pipeline Value"
-          value={formatCurrency(stats.totalValue, defaultCurrency)}
-          tooltip="Sum of the dollar values of all deals in this pipeline, excluding deals marked as Lost."
-        />
-        <Metric
-          icon={<Target className="h-3.5 w-3.5 text-blue-400" />}
-          label="Avg Deal Size"
-          value={formatCurrency(stats.avgValue, defaultCurrency)}
-          tooltip="Pipeline Value divided by Total Deals — the average value of a single non-lost deal."
-        />
-        <Metric
-          icon={<TrendingUp className="h-3.5 w-3.5 text-purple-400" />}
-          label="Weighted Value"
-          value={formatCurrency(stats.weightedValue, defaultCurrency)}
-          tooltip="Expected revenue: each open deal's value × its stage probability. First stage ≈ 10%, stages progress up to 90%, Won = 100%. Lost deals are excluded."
-        />
-        <Metric
-          icon={<Trophy className="h-3.5 w-3.5 text-primary" />}
-          label="Won This Month"
-          value={String(stats.wonThisMonth)}
-          tooltip="Deals marked as Won since the first day of the current month."
-        />
-        <Metric
-          icon={<XCircle className="h-3.5 w-3.5 text-red-400" />}
-          label="Lost This Month"
-          value={String(stats.lostThisMonth)}
-          tooltip="Deals marked as Lost since the first day of the current month."
-        />
+      <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 xl:grid-cols-6 mb-2">
+        {/* 1. Total Deals */}
+        <div className="rounded-[22px] bg-card/75 border border-border/80 p-4 flex flex-col justify-between shadow-xs hover:border-primary/40 hover:-translate-y-0.5 transition-all group relative overflow-hidden backdrop-blur-xl">
+          <div className="flex items-center justify-between gap-1 mb-2">
+            <span className="text-[10px] sm:text-[11px] font-bold tracking-wider text-muted-foreground uppercase truncate">
+              Total Deals
+            </span>
+            <div className="flex items-center gap-1">
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      type="button"
+                      aria-label="How Total Deals is calculated"
+                      className="text-muted-foreground/60 hover:text-foreground"
+                    />
+                  }
+                >
+                  <Info className="h-3 w-3" />
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs text-left">
+                  Count of every active deal in this pipeline, excluding Lost deals.
+                </TooltipContent>
+              </Tooltip>
+              <div className="w-8 h-8 rounded-[11px] bg-muted/70 border border-border/60 flex items-center justify-center text-primary group-hover:scale-105 transition-transform shrink-0">
+                <BarChart3 className="w-4 h-4" />
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="text-2xl sm:text-3xl font-black text-foreground font-mono tracking-tight">
+              {stats.totalCount}
+            </div>
+          </div>
+          <div className="mt-3 pt-2.5 border-t border-border/50 flex items-center justify-between text-[10px] text-muted-foreground font-medium">
+            <span>In active pipeline</span>
+            <span className="font-mono text-primary font-bold">{sortedStages.length} stages</span>
+          </div>
+        </div>
+
+        {/* 2. Pipeline Value (Hero Card with Electric Lime Glow) */}
+        <div className="rounded-[22px] bg-gradient-to-br from-card/90 via-card/70 to-primary/10 border border-primary/40 p-4 flex flex-col justify-between shadow-xs shadow-primary/5 hover:border-primary hover:-translate-y-0.5 transition-all group relative overflow-hidden backdrop-blur-xl">
+          <div className="flex items-center justify-between gap-1 mb-2">
+            <span className="text-[10px] sm:text-[11px] font-bold tracking-wider text-primary uppercase truncate">
+              Pipeline Value
+            </span>
+            <div className="flex items-center gap-1">
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      type="button"
+                      aria-label="How Pipeline Value is calculated"
+                      className="text-primary/60 hover:text-primary"
+                    />
+                  }
+                >
+                  <Info className="h-3 w-3" />
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs text-left">
+                  Sum of values of all active deals in this pipeline (excluding Lost).
+                </TooltipContent>
+              </Tooltip>
+              <div className="w-8 h-8 rounded-[11px] bg-primary text-primary-foreground flex items-center justify-center shadow-xs shrink-0">
+                <DollarSign className="w-4 h-4 stroke-[2.5]" />
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="text-2xl sm:text-3xl font-black text-foreground font-mono tracking-tight truncate">
+              {formatCurrency(stats.totalValue, defaultCurrency)}
+            </div>
+          </div>
+          <div className="mt-3 pt-2.5 border-t border-primary/20 flex items-center justify-between text-[10px] text-primary font-medium">
+            <span>Gross pipeline</span>
+            <span className="font-mono font-bold">100% target</span>
+          </div>
+        </div>
+
+        {/* 3. Avg Deal Size */}
+        <div className="rounded-[22px] bg-card/75 border border-border/80 p-4 flex flex-col justify-between shadow-xs hover:border-primary/40 hover:-translate-y-0.5 transition-all group relative overflow-hidden backdrop-blur-xl">
+          <div className="flex items-center justify-between gap-1 mb-2">
+            <span className="text-[10px] sm:text-[11px] font-bold tracking-wider text-muted-foreground uppercase truncate">
+              Avg Deal Size
+            </span>
+            <div className="flex items-center gap-1">
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      type="button"
+                      aria-label="How Avg Deal Size is calculated"
+                      className="text-muted-foreground/60 hover:text-foreground"
+                    />
+                  }
+                >
+                  <Info className="h-3 w-3" />
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs text-left">
+                  Pipeline Value divided by Total Deals — average value per deal.
+                </TooltipContent>
+              </Tooltip>
+              <div className="w-8 h-8 rounded-[11px] bg-muted/70 border border-border/60 flex items-center justify-center text-blue-400 group-hover:scale-105 transition-transform shrink-0">
+                <Target className="w-4 h-4" />
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="text-2xl sm:text-3xl font-black text-foreground font-mono tracking-tight truncate">
+              {formatCurrency(stats.avgValue, defaultCurrency)}
+            </div>
+          </div>
+          <div className="mt-3 pt-2.5 border-t border-border/50 flex items-center justify-between text-[10px] text-muted-foreground font-medium">
+            <span>Per active deal</span>
+            <span className="font-mono text-foreground font-semibold">Average</span>
+          </div>
+        </div>
+
+        {/* 4. Weighted Value */}
+        <div className="rounded-[22px] bg-card/75 border border-border/80 p-4 flex flex-col justify-between shadow-xs hover:border-primary/40 hover:-translate-y-0.5 transition-all group relative overflow-hidden backdrop-blur-xl">
+          <div className="flex items-center justify-between gap-1 mb-2">
+            <span className="text-[10px] sm:text-[11px] font-bold tracking-wider text-muted-foreground uppercase truncate">
+              Weighted Value
+            </span>
+            <div className="flex items-center gap-1">
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      type="button"
+                      aria-label="How Weighted Value is calculated"
+                      className="text-muted-foreground/60 hover:text-foreground"
+                    />
+                  }
+                >
+                  <Info className="h-3 w-3" />
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs text-left">
+                  Expected revenue: deal value × stage probability (10% to 90%, Won = 100%).
+                </TooltipContent>
+              </Tooltip>
+              <div className="w-8 h-8 rounded-[11px] bg-muted/70 border border-border/60 flex items-center justify-center text-purple-400 group-hover:scale-105 transition-transform shrink-0">
+                <TrendingUp className="w-4 h-4" />
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="text-2xl sm:text-3xl font-black text-foreground font-mono tracking-tight truncate">
+              {formatCurrency(stats.weightedValue, defaultCurrency)}
+            </div>
+          </div>
+          <div className="mt-3 pt-2.5 border-t border-border/50 flex items-center justify-between text-[10px] text-muted-foreground font-medium">
+            <span>Probability weighted</span>
+            <span className="font-mono text-purple-400 font-bold">Confidence</span>
+          </div>
+        </div>
+
+        {/* 5. Won This Month */}
+        <div className="rounded-[22px] bg-card/75 border border-border/80 p-4 flex flex-col justify-between shadow-xs hover:border-emerald-500/40 hover:-translate-y-0.5 transition-all group relative overflow-hidden backdrop-blur-xl">
+          <div className="flex items-center justify-between gap-1 mb-2">
+            <span className="text-[10px] sm:text-[11px] font-bold tracking-wider text-emerald-400 uppercase truncate">
+              Won Month
+            </span>
+            <div className="flex items-center gap-1">
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      type="button"
+                      aria-label="How Won This Month is calculated"
+                      className="text-emerald-400/60 hover:text-emerald-400"
+                    />
+                  }
+                >
+                  <Info className="h-3 w-3" />
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs text-left">
+                  Deals marked as Won since the first day of the current month.
+                </TooltipContent>
+              </Tooltip>
+              <div className="w-8 h-8 rounded-[11px] bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-transform shrink-0">
+                <Trophy className="w-4 h-4" />
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="text-2xl sm:text-3xl font-black text-foreground font-mono tracking-tight">
+              {stats.wonThisMonth}
+            </div>
+          </div>
+          <div className="mt-3 pt-2.5 border-t border-border/50 flex items-center justify-between text-[10px] text-emerald-400 font-medium">
+            <span>Closed wins</span>
+            <span className="font-mono font-bold">This Month</span>
+          </div>
+        </div>
+
+        {/* 6. Lost This Month */}
+        <div className="rounded-[22px] bg-card/75 border border-border/80 p-4 flex flex-col justify-between shadow-xs hover:border-rose-500/40 hover:-translate-y-0.5 transition-all group relative overflow-hidden backdrop-blur-xl">
+          <div className="flex items-center justify-between gap-1 mb-2">
+            <span className="text-[10px] sm:text-[11px] font-bold tracking-wider text-rose-400 uppercase truncate">
+              Lost Month
+            </span>
+            <div className="flex items-center gap-1">
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      type="button"
+                      aria-label="How Lost This Month is calculated"
+                      className="text-rose-400/60 hover:text-rose-400"
+                    />
+                  }
+                >
+                  <Info className="h-3 w-3" />
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs text-left">
+                  Deals marked as Lost since the first day of the current month.
+                </TooltipContent>
+              </Tooltip>
+              <div className="w-8 h-8 rounded-[11px] bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400 group-hover:scale-105 transition-transform shrink-0">
+                <XCircle className="w-4 h-4" />
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="text-2xl sm:text-3xl font-black text-foreground font-mono tracking-tight">
+              {stats.lostThisMonth}
+            </div>
+          </div>
+          <div className="mt-3 pt-2.5 border-t border-border/50 flex items-center justify-between text-[10px] text-rose-400 font-medium">
+            <span>Lost deals</span>
+            <span className="font-mono font-bold">This Month</span>
+          </div>
+        </div>
       </div>
     </TooltipProvider>
-  );
-}
-
-function Metric({
-  icon,
-  label,
-  value,
-  tooltip,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  tooltip: string;
-}) {
-  return (
-    <div className="bento-card-white flex flex-col justify-between rounded-[20px] p-3.5 transition-all hover:border-primary/40 shadow-xs">
-      <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20">
-          {icon}
-        </span>
-        <span className="truncate">{label}</span>
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <button
-                type="button"
-                aria-label={`How ${label} is calculated`}
-                className="ml-auto text-muted-foreground hover:text-foreground focus:outline-none"
-              />
-            }
-          >
-            <Info className="h-3 w-3" />
-          </TooltipTrigger>
-          <TooltipContent side="top" className="max-w-xs text-left">
-            {tooltip}
-          </TooltipContent>
-        </Tooltip>
-      </div>
-      <p className="mt-2 text-base font-black tracking-tight text-foreground truncate">{value}</p>
-    </div>
   );
 }

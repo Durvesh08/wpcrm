@@ -203,41 +203,73 @@ function StageColumn({
   const { setNodeRef, isOver } = useDroppable({ id: stage.id });
 
   return (
-    // On mobile each column is `w-[85vw]` (with a reasonable min/max)
-    // so the next column's edge peeks in — a "there's more here" hint.
-    // snap-start lands each column cleanly when swiping. On lg+ we
-    // restore the flex-1 share-the-row behavior. The droppable ref is
-    // on the inner messages region below — intentionally NOT here, so
-    // a drag over the column header doesn't highlight the whole column.
-    <div className="bento-card-white flex w-[85vw] min-w-[260px] max-w-[320px] shrink-0 snap-start flex-col rounded-[26px] p-4.5 lg:w-auto lg:max-w-none lg:flex-1 lg:basis-[260px] lg:shrink lg:snap-none">
-      {/* 3px colored top border — sits above the column's padding */}
-      <div
-        className="-mx-4.5 -mt-4.5 h-[3px] rounded-t-[26px]"
-        style={{ backgroundColor: stage.color }}
-      />
-      <div className="flex items-center justify-between pt-3">
-        <h3 className="truncate text-sm font-semibold text-foreground">
-          {stage.name}
-        </h3>
-        <span className="shrink-0 rounded-full bg-muted/80 px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
-          {deals.length}
-        </span>
+    <div className="flex w-[85vw] min-w-[280px] max-w-[340px] shrink-0 snap-start flex-col rounded-[26px] bg-card/65 border border-border/75 p-4.5 shadow-sm backdrop-blur-xl lg:w-auto lg:max-w-none lg:flex-1 lg:basis-[280px] lg:shrink lg:snap-none transition-all">
+      {/* Stage Header */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <span
+            className="h-2.5 w-2.5 rounded-full shrink-0"
+            style={{
+              backgroundColor: stage.color,
+              boxShadow: `0 0 10px ${stage.color}80`,
+            }}
+          />
+          <h3 className="truncate text-sm font-bold text-foreground">
+            {stage.name}
+          </h3>
+          <span className="px-2 py-0.5 rounded-[8px] bg-muted/80 text-foreground text-xs font-mono font-bold border border-border/60">
+            {deals.length}
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className="text-xs font-mono font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-[8px] border border-primary/20">
+            {formatCurrency(totalValue, currency)}
+          </span>
+          <button
+            type="button"
+            onClick={() => onAddDeal(stage.id)}
+            className="w-7 h-7 rounded-[9px] bg-muted/60 hover:bg-primary hover:text-primary-foreground text-muted-foreground flex items-center justify-center transition-all shadow-xs"
+            title="Add Deal"
+          >
+            <Plus className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
-      <p className="text-xs text-muted-foreground font-medium mt-0.5">
-        {formatCurrency(totalValue, currency)}
-      </p>
 
+      {/* Stage Color Progress Bar */}
+      <div className="w-full h-1 bg-muted/40 rounded-full overflow-hidden mt-2.5 mb-3">
+        <div
+          className="h-full rounded-full transition-all duration-300"
+          style={{
+            backgroundColor: stage.color,
+            width: deals.length > 0 ? '100%' : '15%',
+          }}
+        />
+      </div>
+
+      {/* Cards Stack / Drop Target */}
       <div
         ref={setNodeRef}
-        className={`mt-3 flex flex-1 flex-col gap-2 rounded-2xl transition-all ${
+        className={`flex flex-1 flex-col gap-2.5 min-h-[160px] rounded-2xl transition-all ${
           isOver
             ? "bg-primary/5 outline outline-2 outline-dashed outline-primary outline-offset-2"
             : ""
         }`}
       >
         {deals.length === 0 ? (
-          <div className="flex flex-1 items-center justify-center rounded-2xl border-2 border-dashed border-border/60 py-10 text-xs text-muted-foreground">
-            Drop a deal here
+          <div
+            onClick={() => onAddDeal(stage.id)}
+            className="flex flex-1 flex-col items-center justify-center rounded-[20px] border border-dashed border-border/80 bg-muted/15 p-6 text-center group cursor-pointer hover:border-primary/50 hover:bg-primary/[0.03] transition-all"
+          >
+            <div className="w-9 h-9 rounded-[12px] bg-muted/60 text-muted-foreground group-hover:text-primary group-hover:bg-primary/15 flex items-center justify-center mb-2 transition-all">
+              <Plus className="w-4 h-4" />
+            </div>
+            <p className="text-xs font-semibold text-foreground/80 group-hover:text-primary transition-colors">
+              No deals in this stage
+            </p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">
+              Drag a deal here or tap +
+            </p>
           </div>
         ) : (
           deals.map((deal) => (
@@ -251,15 +283,14 @@ function StageColumn({
         )}
       </div>
 
-      <Button
-        variant="ghost"
-        size="sm"
+      <button
+        type="button"
         onClick={() => onAddDeal(stage.id)}
-        className="mt-3 w-full justify-center rounded-full border border-dashed border-border/70 bg-transparent text-muted-foreground hover:border-primary/50 hover:bg-muted/60 hover:text-foreground transition-all"
+        className="mt-3 w-full py-2.5 rounded-full border border-dashed border-border/80 bg-muted/30 text-xs font-bold text-muted-foreground hover:border-primary/50 hover:bg-primary hover:text-primary-foreground transition-all flex items-center justify-center gap-1.5 shadow-2xs"
       >
-        <Plus className="mr-1 h-3.5 w-3.5" />
+        <Plus className="h-3.5 w-3.5" />
         Add Deal
-      </Button>
+      </button>
     </div>
   );
 }
