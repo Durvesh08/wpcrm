@@ -77,34 +77,41 @@ interface NavItem {
   href: string;
   label: string;
   icon: typeof LayoutDashboard;
-  /**
-   * When true, the nav row renders a small "Beta" chip after the label.
-   * Purely informational — doesn't affect routing or access.
-   */
   beta?: boolean;
 }
 
-const navItems: NavItem[] = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/inbox', label: 'Inbox', icon: MessageSquare },
-  { href: '/notifications', label: 'Notifications', icon: Bell },
-  { href: '/contacts', label: 'Contacts', icon: Users },
-  { href: '/pipelines', label: 'Pipelines', icon: GitBranch },
-  { href: '/calendar', label: 'Calendar & Tasks', icon: CalendarDays },
-  { href: '/broadcasts', label: 'Broadcasts', icon: Radio },
-  { href: '/automations', label: 'Automations', icon: Zap },
-  { href: '/flows', label: 'Flows', icon: Workflow, beta: true },
-  { href: '/agents', label: 'AI Agents', icon: Bot },
-];
+interface NavSection {
+  title: string;
+  items: NavItem[];
+}
 
-const bottomNavItems = [
-  { href: '/settings', label: 'Settings', icon: Settings },
-];
-
-const favoriteItems = [
-  { href: '/inbox', label: 'Inbox' },
-  { href: '/dashboard', label: 'Mission Control' },
-  { href: '/agents', label: 'AI Workspace' },
+const navSections: NavSection[] = [
+  {
+    title: 'Core',
+    items: [
+      { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { href: '/inbox', label: 'Inbox', icon: MessageSquare },
+      { href: '/pipelines', label: 'Pipelines', icon: GitBranch },
+      { href: '/contacts', label: 'Contacts', icon: Users },
+    ],
+  },
+  {
+    title: 'Operations',
+    items: [
+      { href: '/calendar', label: 'Calendar & Tasks', icon: CalendarDays },
+      { href: '/broadcasts', label: 'Broadcasts', icon: Radio },
+      { href: '/automations', label: 'Automations', icon: Zap },
+      { href: '/flows', label: 'Flows', icon: Workflow, beta: true },
+    ],
+  },
+  {
+    title: 'Intelligence & Settings',
+    items: [
+      { href: '/agents', label: 'AI Agents', icon: Bot },
+      { href: '/notifications', label: 'Notifications', icon: Bell },
+      { href: '/settings', label: 'Settings', icon: Settings },
+    ],
+  },
 ];
 
 interface SidebarProps {
@@ -214,168 +221,109 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
         </div>
 
         {/* Main navigation */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4">
-          <div className="zovaix-glass-panel mb-5 rounded-2xl p-3">
-            <p className="text-muted-foreground text-[11px] font-medium tracking-[0.22em] uppercase">
-              Favorites
-            </p>
-            <div className="mt-2.5 space-y-1">
-              {favoriteItems.map((fav) => {
-                const isActive = pathname.startsWith(fav.href);
-                return (
-                  <Link
-                    key={fav.href}
-                    href={fav.href}
-                    className={cn(
-                      'zovaix-premium-hover flex items-center justify-between rounded-xl px-2.5 py-2 text-xs font-medium transition-colors',
-                      isActive
-                        ? 'border-primary/30 bg-primary/15 text-primary font-semibold border shadow-sm shadow-primary/15'
-                        : 'text-muted-foreground hover:bg-card/70 hover:text-foreground'
-                    )}
-                  >
-                    <span>{fav.label}</span>
-                    <ChevronRight className="h-4 w-4 opacity-60" />
-                  </Link>
-                );
-              })}
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
+          {navSections.map((section) => (
+            <div key={section.title}>
+              <p className="text-muted-foreground/80 mb-2 px-3 text-[11px] font-bold tracking-[0.2em] uppercase">
+                {section.title}
+              </p>
+              <ul className="flex flex-col gap-1">
+                {section.items.map((item) => {
+                  const isActive =
+                    pathname === item.href ||
+                    (item.href !== '/dashboard' && pathname.startsWith(item.href));
+
+                  const showUnreadDot =
+                    item.href === '/inbox' && totalUnread > 0;
+
+                  const showNotificationBadge =
+                    item.href === '/notifications' && unreadNotifications > 0;
+
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          'group flex items-center gap-3 rounded-[16px] px-3 py-2.5 text-sm font-semibold transition-all duration-200',
+                          isActive
+                            ? 'bg-[#D7FA00] text-[#0D120D] shadow-[0_4px_16px_rgba(215,250,0,0.22)] font-extrabold'
+                            : 'text-muted-foreground hover:bg-card/70 hover:translate-x-1 hover:text-foreground'
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            'flex h-8 w-8 items-center justify-center rounded-[10px] transition-all shrink-0',
+                            isActive
+                              ? 'bg-[#0D120D] text-[#D7FA00] shadow-xs'
+                              : 'bg-card/60 border border-border/60 text-muted-foreground group-hover:text-foreground group-hover:border-border'
+                          )}
+                        >
+                          <item.icon className="h-4 w-4" />
+                        </span>
+                        <span className="flex-1 truncate">{item.label}</span>
+                        {item.beta && (
+                          <span
+                            aria-label="Beta feature"
+                            className={cn(
+                              'rounded-full px-1.5 py-0.5 text-[9px] font-semibold tracking-wider uppercase',
+                              isActive
+                                ? 'bg-[#0D120D]/20 text-[#0D120D]'
+                                : 'border border-amber-500/40 bg-amber-500/10 text-amber-300'
+                            )}
+                          >
+                            Beta
+                          </span>
+                        )}
+                        {showUnreadDot && (
+                          <span
+                            aria-label={`${totalUnread} unread conversation${totalUnread === 1 ? '' : 's'}`}
+                            className={cn(
+                              'flex items-center justify-center rounded-full px-2 py-0.5 text-[10px] font-bold tabular-nums',
+                              isActive
+                                ? 'bg-[#0D120D] text-[#D7FA00]'
+                                : 'bg-[#D7FA00] text-[#0D120D]'
+                            )}
+                          >
+                            {totalUnread > 99 ? '99+' : totalUnread}
+                          </span>
+                        )}
+                        {showNotificationBadge && (
+                          <span
+                            aria-label={`${unreadNotifications} unread notification${unreadNotifications === 1 ? '' : 's'}`}
+                            className={cn(
+                              'flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold tabular-nums',
+                              isActive
+                                ? 'bg-[#0D120D] text-[#D7FA00]'
+                                : 'bg-[#D7FA00] text-[#0D120D]'
+                            )}
+                          >
+                            {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                          </span>
+                        )}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
-          </div>
-
-          <p className="text-muted-foreground mb-2 px-3 text-[11px] font-medium tracking-[0.22em] uppercase">
-            Workspace
-          </p>
-          <ul className="flex flex-col gap-1">
-            {navItems.map((item) => {
-              const isActive =
-                pathname === item.href ||
-                (item.href !== '/dashboard' && pathname.startsWith(item.href));
-
-              const showUnreadDot =
-                item.href === '/inbox' && totalUnread > 0 && !isActive;
-
-              // Unlike the inbox dot, the notifications count stays visible
-              // even while the page is active — it reflects unread state
-              // (cleared by marking notifications read), not "currently
-              // viewing this section".
-              const showNotificationBadge =
-                item.href === '/notifications' && unreadNotifications > 0;
-
-              return (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className={cn(
-                      // Taller on mobile so fingers can hit the row reliably (≥44px).
-                      'group flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition-all duration-200 lg:py-2.5',
-                      isActive
-                        ? 'border-primary/25 bg-primary/15 text-primary border shadow-sm shadow-primary/15 font-semibold'
-                        : 'text-muted-foreground hover:bg-card/70 hover:translate-x-1 hover:text-foreground'
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        'flex h-9 w-9 items-center justify-center rounded-xl border transition-all',
-                        isActive
-                          ? 'zovaix-icon-tile text-primary-foreground'
-                          : 'bg-card/50 group-hover:border-border/70 group-hover:bg-card border-transparent'
-                      )}
-                    >
-                      <item.icon className="h-4 w-4" />
-                    </span>
-                    <span className="flex-1">{item.label}</span>
-                    {item.beta && (
-                      <span
-                        aria-label="Beta feature"
-                        className="rounded-full border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-semibold tracking-wider text-amber-300 uppercase"
-                      >
-                        Beta
-                      </span>
-                    )}
-                    {showUnreadDot && (
-                      <span
-                        aria-label={`${totalUnread} unread conversation${totalUnread === 1 ? '' : 's'}`}
-                        className="relative flex h-2 w-2"
-                      >
-                        <span className="bg-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
-                        <span className="bg-primary relative inline-flex h-2 w-2 rounded-full" />
-                      </span>
-                    )}
-                    {showNotificationBadge && (
-                      <span
-                        aria-label={`${unreadNotifications} unread notification${unreadNotifications === 1 ? '' : 's'}`}
-                        className="bg-primary text-primary-foreground flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-semibold"
-                      >
-                        {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                      </span>
-                    )}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-
-          <div className="border-border/70 my-4 border-t" />
-
-          <ul className="flex flex-col gap-1">
-            {bottomNavItems.map((item) => {
-              const isActive = pathname.startsWith(item.href);
-              return (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className={cn(
-                      'flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition-all lg:py-2.5',
-                      isActive
-                        ? 'border-primary/25 bg-primary/15 text-primary border shadow-sm shadow-primary/15 font-semibold'
-                        : 'text-muted-foreground hover:bg-card/70 hover:translate-x-1 hover:text-foreground'
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        'flex h-9 w-9 items-center justify-center rounded-xl border',
-                        isActive
-                          ? 'zovaix-icon-tile text-primary-foreground'
-                          : 'bg-card/50 border-transparent'
-                      )}
-                    >
-                      <item.icon className="h-4 w-4" />
-                    </span>
-                    {item.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+          ))}
         </nav>
 
         {/* User section */}
         <div className="border-border/50 bg-sidebar/40 shrink-0 border-t p-3 backdrop-blur-md">
-          {/* Account name display — surfaced only when the account
-              name differs from the user's own name (see
-              `showAccountStrip`). For a default solo account the two
-              match, so we hide it to avoid duplicating the user name
-              below; for renamed or shared accounts it tells the user
-              which account they're acting in. */}
           {showAccountStrip && account?.name ? (
-            <div className="border-border/70 bg-card/55 text-muted-foreground mb-2 flex items-center gap-2 rounded-xl border px-3 py-2 text-xs">
+            <div className="border-border/70 bg-card/60 text-muted-foreground mb-2 flex items-center gap-2 rounded-xl border px-3 py-2 text-xs">
               <UsersRound className="size-3.5 shrink-0" />
-              {/* `title=` exposes the full name on hover when it
-                  gets truncated (long account names + narrow
-                  sidebars). Cheap a11y win. */}
               <span className="truncate" title={account.name}>
                 {account.name}
               </span>
               {accountRole
-                ? // Always render the chip — owners used to be
-                  // invisible here, which made them indistinguishable
-                  // from admins at a glance. Now everyone sees their
-                  // role (with a colour cue) regardless of tier.
-                  (() => {
+                ? (() => {
                     const meta = ROLE_CHIP[accountRole];
                     const Icon = meta.icon;
                     return (
                       <span
-                        className={`ml-auto inline-flex shrink-0 items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] font-medium tracking-wider uppercase ${meta.className}`}
+                        className={`ml-auto inline-flex shrink-0 items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] font-bold tracking-wider uppercase ${meta.className}`}
                       >
                         <Icon className="size-3" />
                         {meta.label}
@@ -386,24 +334,36 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
             </div>
           ) : null}
           <DropdownMenu>
-            <DropdownMenuTrigger className="border-border/70 bg-card/55 hover:bg-card focus:bg-card data-popup-open:bg-card flex w-full items-center gap-3 rounded-2xl border px-3 py-2.5 text-left transition-colors focus:outline-none">
-              <Avatar className="size-8 shrink-0">
-                {profile?.avatar_url ? (
-                  <AvatarImage
-                    src={profile.avatar_url}
-                    alt={profile.full_name ?? 'Avatar'}
-                  />
-                ) : null}
-                <AvatarFallback className="bg-primary/10 text-primary text-sm font-medium">
-                  {profile?.full_name?.charAt(0)?.toUpperCase() ??
-                    profile?.email?.charAt(0)?.toUpperCase() ??
-                    'U'}
-                </AvatarFallback>
-              </Avatar>
+            <DropdownMenuTrigger className="border-border/70 bg-card/60 hover:bg-card focus:bg-card data-popup-open:bg-card flex w-full items-center gap-3 rounded-[18px] border px-3 py-2.5 text-left transition-all duration-200 hover:border-primary/40 focus:outline-none">
+              <div className="relative size-8 shrink-0">
+                <Avatar className="size-8">
+                  {profile?.avatar_url ? (
+                    <AvatarImage
+                      src={profile.avatar_url}
+                      alt={profile.full_name ?? 'Avatar'}
+                    />
+                  ) : null}
+                  <AvatarFallback className="bg-[#D7FA00]/20 text-[#D7FA00] text-sm font-bold">
+                    {profile?.full_name?.charAt(0)?.toUpperCase() ??
+                      profile?.email?.charAt(0)?.toUpperCase() ??
+                      'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-[#D7FA00] ring-2 ring-background" />
+              </div>
               <div className="min-w-0 flex-1">
-                <p className="text-foreground truncate text-sm font-medium">
-                  {profile?.full_name ?? 'User'}
-                </p>
+                <div className="flex items-center justify-between gap-1">
+                  <p className="text-foreground truncate text-sm font-bold">
+                    {profile?.full_name ?? 'User'}
+                  </p>
+                  {!showAccountStrip && accountRole && (
+                    <span
+                      className={`inline-flex shrink-0 items-center gap-0.5 rounded-full border px-1.5 py-0.5 text-[9px] font-extrabold uppercase ${ROLE_CHIP[accountRole].className}`}
+                    >
+                      {ROLE_CHIP[accountRole].label}
+                    </span>
+                  )}
+                </div>
                 <p className="text-muted-foreground truncate text-xs">
                   {profile?.email ?? ''}
                 </p>

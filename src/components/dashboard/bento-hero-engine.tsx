@@ -19,7 +19,7 @@ export function BentoHeroEngine({
   metrics,
   roleLabel,
 }: BentoHeroEngineProps) {
-  const [selectedReport, setSelectedReport] = useState('Revenue Overview');
+  const [selectedReport, setSelectedReport] = useState('/pipelines');
 
   const fullName = profile?.full_name || 'Revenue Lead';
   const initials = fullName
@@ -29,9 +29,9 @@ export function BentoHeroEngine({
     .join('')
     .toUpperCase() || 'WP';
 
-  // Deal goal progress (dynamic based on open deals)
+  // Deal goal progress (dynamic based on real open deals)
   const openDealsCount = metrics?.openDealsCount ?? 0;
-  const targetProgress = Math.min(100, Math.max(20, openDealsCount * 18));
+  const targetProgress = openDealsCount > 0 ? Math.min(100, Math.max(10, openDealsCount * 12)) : 0;
 
   return (
     <div className="bento-card-lime p-6 sm:p-7 flex flex-col justify-between relative overflow-hidden min-h-[340px] group transition-all duration-300">

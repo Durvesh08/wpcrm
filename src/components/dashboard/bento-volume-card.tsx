@@ -9,7 +9,7 @@ interface BentoVolumeCardProps {
 }
 
 export function BentoVolumeCard({
-  pipelineValue = 145000,
+  pipelineValue = 0,
   currency = 'INR',
 }: BentoVolumeCardProps) {
   return (

@@ -878,7 +878,7 @@ function MediaDraftPreview({
           disabled={busy}
           onClick={onSend}
           className={cn(
-            "h-9 w-9 shrink-0 bg-primary p-0 hover:bg-primary/90 disabled:opacity-40",
+            "h-9 w-9 shrink-0 rounded-full bg-[#D7FA00] text-[#0D120D] p-0 hover:bg-[#c6e600] disabled:opacity-40 font-bold shadow-xs transition-all active:scale-95",
             draft.kind === "audio" && "ml-auto",
           )}
         >

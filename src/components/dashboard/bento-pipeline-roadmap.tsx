@@ -9,37 +9,11 @@ interface BentoPipelineRoadmapProps {
 }
 
 export function BentoPipelineRoadmap({ pipeline }: BentoPipelineRoadmapProps) {
-  // Use real stages from Supabase pipeline donut query or sensible defaults
   const totalDeals =
     pipeline?.stages.reduce((sum, s) => sum + s.dealCount, 0) ?? 0;
 
-  const stages = [
-    {
-      name: 'New Inbound',
-      percent: 100,
-      avatars: [{ initials: 'AM', bg: 'bg-[#E47B62]' }],
-      pillColor: 'bg-muted/70 text-foreground',
-    },
-    {
-      name: 'Qualified Leads',
-      percent: 59,
-      avatars: [
-        { initials: 'RJ', bg: 'bg-[#5B8DEF]' },
-        { initials: 'TK', bg: 'bg-[#355A9B]' },
-      ],
-      pillColor: 'bg-muted/80 text-foreground',
-    },
-    {
-      name: 'Proposal Sent',
-      percent: 75,
-      avatars: [
-        { initials: 'AM', bg: 'bg-[#E47B62]' },
-        { initials: 'SD', bg: 'bg-[#6484DF]' },
-        { initials: 'LN', bg: 'bg-[#304B8C]' },
-      ],
-      pillColor: 'bg-[#D7FA00]/25 text-[#0D120D] dark:text-[#D7FA00]',
-    },
-  ];
+  // Real database stages sorted by deal count or natural order
+  const realStages = pipeline?.stages ?? [];
 
   return (
     <div className="bento-card-white p-6 sm:p-7 flex flex-col justify-between min-h-[300px] relative overflow-hidden transition-all duration-300">
@@ -50,65 +24,85 @@ export function BentoPipelineRoadmap({ pipeline }: BentoPipelineRoadmapProps) {
             Pipeline Roadmap
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {totalDeals > 0 ? `${totalDeals} active deals in cycle` : 'Stage velocity & deal milestones'}
+            {totalDeals > 0
+              ? `${totalDeals} active deal${totalDeals === 1 ? '' : 's'} across ${realStages.length} stage${realStages.length === 1 ? '' : 's'}`
+              : 'Real stage velocity & live pipeline status'}
           </p>
         </div>
 
         <Link
           href="/pipelines"
-          className="rounded-full bg-[#111417] text-white hover:bg-black px-4 py-2 text-xs font-semibold flex items-center gap-1.5 shadow-sm active:scale-95 transition-all"
+          className="rounded-full bg-[#111417] text-white hover:bg-black px-4 py-2 text-xs font-bold flex items-center gap-1.5 shadow-xs active:scale-95 transition-all"
         >
           <Plus className="h-3.5 w-3.5" />
           <span>Add deal</span>
         </Link>
       </div>
 
-      {/* Center: Visual Horizontal Capsule Stage Bars & Vertical Milestone Marker */}
+      {/* Center: Real Horizontal Capsule Stage Bars */}
       <div className="my-5 relative">
-        {/* Timeline Vertical Marker Line */}
-        <div className="absolute right-16 sm:right-24 top-0 bottom-6 w-px bg-border/80 flex flex-col items-center z-10">
-          <span className="h-2 w-2 rounded-full bg-foreground" />
-          <div className="w-px flex-1 bg-dashed border-r border-dashed border-muted-foreground/40" />
-        </div>
+        {totalDeals === 0 ? (
+          <div className="rounded-2xl border border-dashed border-border/70 p-6 text-center bg-muted/15 flex flex-col items-center justify-center">
+            <GitBranch className="h-7 w-7 text-muted-foreground/60 mb-2" />
+            <p className="text-xs font-semibold text-foreground">No active deals in pipeline</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              Move leads through stages by creating your first deal.
+            </p>
+            <Link
+              href="/pipelines"
+              className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-primary/15 text-primary border border-primary/25 px-3 py-1 text-xs font-bold hover:bg-primary/20 transition-all"
+            >
+              <Plus className="h-3 w-3" /> Create First Deal
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-3.5">
+            {realStages.map((stage) => {
+              const pct = totalDeals > 0 ? Math.round((stage.dealCount / totalDeals) * 100) : 0;
+              const fillWidth = Math.max(10, pct);
 
-        {/* Capsule Bars Stack */}
-        <div className="space-y-3.5 pr-20 sm:pr-28">
-          {stages.map((stage) => (
-            <div key={stage.name} className="space-y-1">
-              <div className="flex items-center justify-between text-[11px] font-semibold text-muted-foreground">
-                <span>{stage.name}</span>
-                <span className="font-mono">{stage.percent}%</span>
-              </div>
-              <div className="relative h-8 rounded-full bg-muted/30 overflow-hidden flex items-center p-1 border border-border/40">
-                <div
-                  className="h-full rounded-full bg-primary/20 transition-all duration-500 flex items-center justify-end pr-1.5"
-                  style={{ width: `${stage.percent}%` }}
-                >
-                  {/* Stacked Avatar Bubbles inside the bar */}
-                  <div className="flex -space-x-1.5 items-center">
-                    {stage.avatars.map((av, i) => (
+              return (
+                <div key={stage.id} className="space-y-1">
+                  <div className="flex items-center justify-between text-[11px] font-bold text-foreground">
+                    <span className="flex items-center gap-1.5">
                       <span
-                        key={i}
-                        className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-extrabold text-white shadow-xs ${av.bg}`}
-                      >
-                        {av.initials}
-                      </span>
-                    ))}
+                        className="h-2 w-2 rounded-full shrink-0"
+                        style={{ backgroundColor: stage.color || '#D7FA00' }}
+                      />
+                      <span className="truncate">{stage.name}</span>
+                    </span>
+                    <span className="font-mono text-muted-foreground text-[10px]">
+                      {stage.dealCount} deal{stage.dealCount === 1 ? '' : 's'} ({pct}%)
+                    </span>
+                  </div>
+                  <div className="relative h-6 rounded-full bg-muted/40 overflow-hidden flex items-center p-0.5 border border-border/40">
+                    <div
+                      className="h-full rounded-full transition-all duration-700 flex items-center justify-end pr-2"
+                      style={{
+                        width: `${fillWidth}%`,
+                        backgroundColor: stage.color ? `${stage.color}35` : '#D7FA0030',
+                        borderRight: `2px solid ${stage.color || '#D7FA00'}`,
+                      }}
+                    />
                   </div>
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
-        {/* Bottom Horizontal Day Axis */}
-        <div className="mt-4 flex items-center justify-between text-[11px] font-semibold text-muted-foreground border-t border-border/40 pt-2">
-          <span>Mon 12</span>
-          <span>Tue 13</span>
-          <span>Wed 14</span>
-          <span className="text-foreground font-bold">Thu 15</span>
-          <span>Fri 16</span>
-        </div>
+      {/* Bottom Summary Link */}
+      <div className="pt-2 border-t border-border/40 flex items-center justify-between">
+        <span className="text-xs text-muted-foreground font-medium">
+          Automated deal stage tracking
+        </span>
+        <Link
+          href="/pipelines"
+          className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+        >
+          Open Kanban Board <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
       </div>
     </div>
   );
