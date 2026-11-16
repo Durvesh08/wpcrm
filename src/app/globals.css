@@ -350,19 +350,9 @@ html[data-theme='rose'] {
 
 .zovaix-chat-bg {
   background:
-    linear-gradient(
-      135deg,
-      color-mix(in oklch, var(--background), black 10%),
-      var(--background)
-    ),
-    radial-gradient(
-      circle at 1px 1px,
-      color-mix(in oklch, var(--primary), transparent 88%) 1px,
-      transparent 0
-    );
-  background-size:
-    auto,
-    22px 22px;
+    radial-gradient(circle at 50% 0%, color-mix(in oklch, var(--primary) 8%, transparent), transparent 60%),
+    radial-gradient(circle at 10% 90%, color-mix(in oklch, #00f8e7 5%, transparent), transparent 50%),
+    var(--background);
 }
 
 /* Inbox uses the familiar WhatsApp chat texture, but deliberately keeps it
@@ -705,5 +695,299 @@ html[data-mode='dark'] .bento-card-white {
   }
   .zovaix-wordmark::after {
     animation: none;
+  }
+}
+
+/* ZOVAIX Motion Logo Animation Engine */
+.zx-motion-logo {
+  display: block;
+  overflow: visible;
+  shape-rendering: geometricPrecision;
+}
+.zx-motion-logo .sh,
+.zx-motion-logo .fx {
+  opacity: 0;
+}
+.zx-motion-logo .st {
+  opacity: 0.5;
+}
+.zx-motion-logo .fl {
+  transform-box: fill-box;
+  transform-origin: var(--o);
+}
+.zx-motion-logo .ol {
+  fill: none;
+  stroke-width: 9;
+  stroke-linejoin: round;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+}
+.zx-motion-logo:not(.cine) .ob,
+.zx-motion-logo:not(.cine) .fx {
+  display: none;
+}
+.zx-motion-logo .r1 {
+  --d: 0s;
+  --d2: 0s;
+  --dl: 0s;
+  --x: -340px;
+  --y: 0px;
+  --s0: 150px;
+  --s1: 2750px;
+  --o: 50% 100%;
+  --sx: 1;
+  --sy: 0.02;
+  --ox: 360px;
+  --oy: 0px;
+}
+.zx-motion-logo .r2 {
+  --d: 0.16s;
+  --d2: 0.4s;
+  --dl: 0.55s;
+  --x: 280px;
+  --y: -260px;
+  --s0: 2350px;
+  --s1: 900px;
+  --o: 100% 0%;
+  --sx: 0.02;
+  --sy: 0.02;
+  --ox: -300px;
+  --oy: 280px;
+}
+.zx-motion-logo .r3 {
+  --d: 0.32s;
+  --d2: 0.8s;
+  --dl: 1.1s;
+  --x: -340px;
+  --y: 0px;
+  --s0: 1000px;
+  --s1: 3100px;
+  --o: 50% 0%;
+  --sx: 1;
+  --sy: 0.02;
+  --ox: 360px;
+  --oy: 0px;
+}
+
+/* Cinematic mode (8s) */
+.zx-motion-logo.cine {
+  animation: zx-pop 8s ease-in-out infinite;
+}
+.zx-motion-logo.cine .rb {
+  animation: zx-rb 8s infinite both;
+  animation-delay: var(--dl);
+}
+.zx-motion-logo.cine .fl {
+  animation: zx-fl 8s infinite both;
+  animation-delay: var(--dl);
+}
+.zx-motion-logo.cine .ol {
+  animation: zx-ol 8s infinite both;
+  animation-delay: var(--dl);
+}
+.zx-motion-logo.cine .fx {
+  animation: zx-fx 8s infinite both;
+  animation-delay: var(--dl);
+}
+.zx-motion-logo.cine .sh {
+  animation: zx-shC 8s cubic-bezier(0.4, 0, 0.2, 1) infinite both;
+  animation-delay: var(--dl);
+}
+.zx-motion-logo.cine .st {
+  animation: zx-st 1.5s linear infinite;
+  animation-delay: var(--sd);
+}
+
+@keyframes zx-rb {
+  0%, 80% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.4);
+  }
+  96%, 100% {
+    transform: translate(var(--ox), var(--oy));
+  }
+}
+@keyframes zx-fl {
+  0%, 16% {
+    opacity: 0;
+    transform: scale(var(--sx), var(--sy));
+    animation-timing-function: cubic-bezier(0.2, 1.25, 0.3, 1);
+  }
+  18% {
+    opacity: 1;
+  }
+  34%, 78% {
+    opacity: 1;
+    transform: none;
+  }
+  94%, 100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+@keyframes zx-ol {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  3% {
+    stroke-dashoffset: 1;
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.5, 0, 0.2, 1);
+  }
+  20% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  30% {
+    opacity: 1;
+  }
+  40%, 100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+@keyframes zx-fx {
+  0%, 36% {
+    opacity: 0;
+  }
+  44%, 74% {
+    opacity: 1;
+  }
+  86%, 100% {
+    opacity: 0;
+  }
+}
+@keyframes zx-shC {
+  0%, 40% {
+    opacity: 0;
+    transform: translateX(var(--s0));
+  }
+  43%, 55% {
+    opacity: 0.9;
+  }
+  58%, 100% {
+    opacity: 0;
+    transform: translateX(var(--s1));
+  }
+}
+@keyframes zx-st {
+  from {
+    transform: translateX(var(--s0));
+  }
+  to {
+    transform: translateX(var(--s1));
+  }
+}
+@keyframes zx-pop {
+  0%, 40% {
+    transform: scale(1);
+  }
+  48% {
+    transform: scale(1.035);
+  }
+  58%, 100% {
+    transform: scale(1);
+  }
+}
+
+/* Once / Reveal mode (runs reveal once on load) */
+.zx-motion-logo.once .rb {
+  animation: zx-in 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--d);
+}
+.zx-motion-logo.once .sh {
+  animation: zx-sh 0.95s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation-delay: calc(1.1s + var(--d2));
+}
+
+/* Loop / Quick Loader mode */
+.zx-motion-logo.loop {
+  animation: zx-br 3.2s ease-in-out 1.1s infinite;
+}
+.zx-motion-logo.loop .rb {
+  animation: zx-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--d);
+}
+.zx-motion-logo.loop .sh {
+  animation: zx-shL 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation-delay: calc(1.1s + var(--d2));
+}
+
+@keyframes zx-in {
+  from {
+    opacity: 0;
+    transform: translate(var(--x), var(--y));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes zx-sh {
+  0% {
+    transform: translateX(var(--s0));
+    opacity: 0;
+  }
+  12%, 80% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateX(var(--s1));
+    opacity: 0;
+  }
+}
+@keyframes zx-shL {
+  0% {
+    transform: translateX(var(--s0));
+    opacity: 0;
+  }
+  4%, 24% {
+    opacity: 0.85;
+  }
+  29%, 100% {
+    transform: translateX(var(--s1));
+    opacity: 0;
+  }
+}
+@keyframes zx-br {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.025);
+  }
+}
+@keyframes zx-soft {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zx-motion-logo .sh,
+  .zx-motion-logo .fx,
+  .zx-motion-logo .ob {
+    display: none;
+  }
+  .zx-motion-logo.cine,
+  .zx-motion-logo.cine .rb {
+    animation: none;
+  }
+  .zx-motion-logo.cine .fl {
+    animation: zx-soft 1.6s ease-in-out infinite alternate;
+  }
+  .zx-motion-logo.once .rb {
+    animation: none;
+  }
+  .zx-motion-logo.loop {
+    animation: none;
+  }
+  .zx-motion-logo.loop .rb {
+    animation: zx-soft 1.6s ease-in-out infinite alternate;
   }
 }
