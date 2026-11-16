@@ -187,8 +187,9 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
                 src="/zovaix-logo.png"
                 alt="ZOVAIX"
                 width={36}
-                height={27}
+                height={28}
                 priority
+                unoptimized
                 className="h-auto w-8 object-contain transition-transform duration-200 group-hover:scale-105"
               />
             </div>

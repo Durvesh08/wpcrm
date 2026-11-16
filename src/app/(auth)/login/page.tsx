@@ -79,8 +79,9 @@ function LoginPageInner() {
               src="/zovaix-logo.png"
               alt="ZOVAIX logo"
               width={144}
-              height={108}
+              height={111}
               priority
+              unoptimized
               className="h-auto w-32 object-contain drop-shadow-md"
             />
           </div>
@@ -105,8 +106,9 @@ function LoginPageInner() {
                 src="/zovaix-logo.png"
                 alt="ZOVAIX logo"
                 width={56}
-                height={42}
+                height={43}
                 priority
+                unoptimized
                 className="h-auto w-14 object-contain"
               />
             </div>
