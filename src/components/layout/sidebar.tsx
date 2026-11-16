@@ -181,14 +181,15 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
         {/* Logo row. On mobile we put a close button here; on desktop the
             close button is hidden since the sidebar is always-visible. */}
         <div className="border-border/50 flex shrink-0 items-center justify-between gap-2 border-b px-4 py-4 bg-sidebar/40">
-          <Link href="/dashboard" className="flex min-w-0 items-center gap-2.5">
-            <div className="border-primary/30 shadow-primary/25 relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-2xl border bg-black shadow-lg transition-transform duration-300 hover:scale-[1.03]">
+          <Link href="/dashboard" className="group flex min-w-0 items-center gap-2.5">
+            <div className="relative flex h-9 w-9 shrink-0 items-center justify-center">
               <Image
                 src="/zovaix-logo.png"
-                alt=""
-                fill
-                sizes="44px"
-                className="object-cover"
+                alt="ZOVAIX"
+                width={36}
+                height={27}
+                priority
+                className="h-auto w-8 object-contain transition-transform duration-200 group-hover:scale-105"
               />
             </div>
             <div className="min-w-0">

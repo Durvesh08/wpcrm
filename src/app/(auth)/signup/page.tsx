@@ -97,14 +97,14 @@ function SignupPageInner() {
         </div>
         <Card className="border-border bg-card/95 w-full max-w-md shadow-2xl shadow-black/10">
           <CardHeader className="items-center text-center">
-            <div className="border-primary/30 shadow-primary/10 relative mb-2 flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl border bg-black shadow-lg">
+            <div className="relative mb-3 flex h-14 w-16 items-center justify-center">
               <Image
                 src="/zovaix-logo.png"
                 alt="ZOVAIX logo"
-                fill
-                sizes="80px"
+                width={56}
+                height={42}
                 priority
-                className="object-cover"
+                className="h-auto w-14 object-contain"
               />
             </div>
             <CheckCircle className="text-primary size-7" />
@@ -142,14 +142,14 @@ function SignupPageInner() {
     <div className="zovaix-chat-bg bg-background text-foreground grid min-h-screen lg:grid-cols-[1.1fr_0.9fr]">
       <section className="border-border relative hidden min-h-screen items-center justify-center overflow-hidden border-r px-10 py-12 lg:flex">
         <div className="relative z-10 flex w-full max-w-xl flex-col items-center text-center">
-          <div className="zovaix-brand-mark border-primary/30 shadow-primary/20 relative mb-8 h-52 w-52 overflow-hidden rounded-[2rem] border bg-black shadow-2xl">
+          <div className="relative mb-6 flex h-28 w-36 items-center justify-center">
             <Image
               src="/zovaix-logo.png"
               alt="ZOVAIX logo"
-              fill
-              sizes="208px"
+              width={144}
+              height={108}
               priority
-              className="object-cover"
+              className="h-auto w-32 object-contain drop-shadow-md"
             />
           </div>
           <div className="border-primary/25 bg-primary/10 text-primary mb-4 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold tracking-wider uppercase">
@@ -168,14 +168,14 @@ function SignupPageInner() {
         </div>
         <Card className="border-border bg-card/95 w-full max-w-md shadow-2xl shadow-black/10">
           <CardHeader className="items-center text-center">
-            <div className="border-primary/30 shadow-primary/10 relative mb-2 flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl border bg-black shadow-lg lg:hidden">
+            <div className="relative mb-3 flex h-14 w-16 items-center justify-center lg:hidden">
               <Image
                 src="/zovaix-logo.png"
                 alt="ZOVAIX logo"
-                fill
-                sizes="80px"
+                width={56}
+                height={42}
                 priority
-                className="object-cover"
+                className="h-auto w-14 object-contain"
               />
             </div>
             <div className="bg-primary/10 mb-2 hidden h-12 w-12 items-center justify-center rounded-xl lg:flex">

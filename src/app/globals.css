@@ -335,7 +335,8 @@ html[data-theme='rose'] {
 }
 
 .zovaix-brand-mark {
-  animation: zovaix-brand-float 5s ease-in-out infinite;
+  /* Static plain logo presentation — floating animation disabled */
+  animation: none;
 }
 
 .zovaix-wordmark {
