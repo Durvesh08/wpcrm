@@ -160,7 +160,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
         aria-label="Close menu"
         onClick={onClose}
         className={cn(
-          'bg-background/70 fixed inset-0 z-40 backdrop-blur-sm transition-opacity lg:hidden',
+          'bg-black/60 fixed inset-0 z-40 backdrop-blur-sm transition-opacity lg:hidden',
           open
             ? 'pointer-events-auto opacity-100'
             : 'pointer-events-none opacity-0'
@@ -170,7 +170,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
       <aside
         className={cn(
           // Mobile: fixed drawer that slides in from the left.
-          'border-border/50 bg-sidebar fixed inset-y-0 left-0 z-50 flex h-full w-72 flex-col border-r shadow-xl shadow-black/20 backdrop-blur-2xl',
+          'border-border/60 bg-sidebar dark:bg-[#070B0E] fixed inset-y-0 left-0 z-50 flex h-full w-72 flex-col border-r shadow-2xl shadow-black/30 backdrop-blur-2xl',
           'transition-transform duration-200 ease-out will-change-transform',
           open ? 'translate-x-0' : '-translate-x-full',
           // Desktop: static, always visible — reset all the mobile framing.
@@ -180,7 +180,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
       >
         {/* Logo row. On mobile we put a close button here; on desktop the
             close button is hidden since the sidebar is always-visible. */}
-        <div className="border-border/50 flex shrink-0 items-center justify-between gap-2 border-b px-4 py-4 bg-sidebar/40">
+        <div className="border-border/60 dark:border-white/[0.08] flex shrink-0 items-center justify-between gap-2 border-b px-4 py-4 bg-sidebar/50 dark:bg-[#070B0E]/60 backdrop-blur-md">
           <Link href="/dashboard" className="group flex min-w-0 items-center gap-2.5">
             <div className="relative flex h-9 w-9 shrink-0 items-center justify-center">
               <Image
@@ -302,7 +302,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
         </nav>
 
         {/* User section */}
-        <div className="border-border/70 bg-sidebar/50 shrink-0 border-t p-3 backdrop-blur-md space-y-2">
+        <div className="border-border/70 dark:border-white/[0.08] bg-sidebar/50 dark:bg-[#070B0E]/80 shrink-0 border-t p-3 backdrop-blur-md space-y-2">
           <DropdownMenu>
             <DropdownMenuTrigger className="border-border/80 bg-card/75 hover:bg-card focus:bg-card data-popup-open:bg-card flex w-full items-center gap-3 rounded-[18px] border p-2.5 text-left transition-all duration-200 hover:border-primary/40 shadow-xs focus:outline-none">
               <div className="relative size-8 shrink-0">

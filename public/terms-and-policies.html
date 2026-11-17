@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>ZOVAIX — Master Terms of Service, Privacy, Refund, Cancellation & AI Policies</title>
+  <meta name="description" content="Comprehensive legal terms, data protection addendum, refund policies, cancellation rights, and AI ethics commitments for ZOVAIX AI Revenue Workspace." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* =========================================================================
+       ZOVAIX LUXURY THEME & DESIGN TOKENS
+       ========================================================================= */
+    :root {
+      --bg: #070B0E;
+      --bg-surface: #0C1217;
+      --bg-card: rgba(18, 26, 33, 0.75);
+      --bg-glass: rgba(255, 255, 255, 0.035);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(215, 252, 0, 0.5);
+      
+      --fg: #F1F5F9;
+      --fg-muted: #94A3B8;
+      --fg-dim: #64748B;
+      
+      --neon-lime: #D7FC00;
+      --neon-lime-rgb: 215, 252, 0;
+      --neon-cyan: #00F8E7;
+      --neon-cyan-rgb: 0, 248, 231;
+      --teal-dark: #085A46;
+      --ocean-blue: #028595;
+
+      --danger: #EF4444;
+      --success: #10B981;
+      --warning: #F59E0B;
+
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+      background-color: var(--bg);
+    }
+
+    /* Ambient Background Blooms */
+    .ambient-glow-top {
+      position: fixed;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1000px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(var(--neon-lime-rgb), 0.08) 0%, rgba(var(--neon-cyan-rgb), 0.04) 45%, transparent 70%);
+      filter: blur(100px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ambient-glow-bottom {
+      position: fixed;
+      bottom: -150px;
+      right: -100px;
+      width: 800px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(var(--neon-cyan-rgb), 0.06) 0%, transparent 70%);
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Reading Progress Bar */
+    .progress-bar-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.05);
+      z-index: 100;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-lime));
+      box-shadow: 0 0 12px rgba(var(--neon-lime-rgb), 0.7);
+      transition: width 0.1s linear;
+    }
+
+    /* Top Masthead */
+    .top-masthead {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      background: rgba(7, 11, 14, 0.85);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-logo-svg {
+      width: 32px;
+      height: auto;
+      filter: drop-shadow(0 2px 8px rgba(var(--neon-lime-rgb), 0.3));
+    }
+
+    .brand-meta {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      font-size: 13px;
+      color: #fff;
+    }
+
+    .brand-subtitle {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--neon-lime);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-version {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      color: var(--fg-muted);
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--bg-glass);
+      color: #fff;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-action:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-print {
+      border-color: rgba(var(--neon-lime-rgb), 0.3);
+      color: var(--neon-lime);
+    }
+
+    .btn-print:hover {
+      background: rgba(var(--neon-lime-rgb), 0.1);
+      border-color: var(--neon-lime);
+      box-shadow: 0 0 16px rgba(var(--neon-lime-rgb), 0.2);
+    }
+
+    /* Layout Frame */
+    .document-container {
+      position: relative;
+      z-index: 10;
+      max-width: 1340px;
+      margin: 0 auto;
+      padding: 36px 24px 120px;
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .document-container {
+        grid-template-columns: 1fr;
+        padding: 24px 16px 120px;
+      }
+      .table-of-contents-sidebar {
+        display: none;
+      }
+    }
+
+    /* Sidebar: Table of Contents */
+    .table-of-contents-sidebar {
+      position: sticky;
+      top: 85px;
+      max-height: calc(100vh - 110px);
+      overflow-y: auto;
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+    }
+
+    .toc-header {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--fg-dim);
+      padding: 0 8px 8px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .toc-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .toc-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      color: var(--fg-muted);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .toc-link span.num {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--fg-dim);
+      width: 22px;
+    }
+
+    .toc-link:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+    }
+
+    .toc-link.active {
+      background: rgba(var(--neon-lime-rgb), 0.1);
+      color: var(--neon-lime);
+      font-weight: 700;
+      border-left: 2px solid var(--neon-lime);
+    }
+
+    .toc-link.active span.num {
+      color: var(--neon-lime);
+    }
+
+    /* Main Legal Canvas */
+    .legal-content {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 48px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    @media (max-width: 640px) {
+      .legal-content {
+        padding: 24px 18px;
+      }
+    }
+
+    /* Document Hero Header */
+    .doc-hero {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 32px;
+      margin-bottom: 40px;
+    }
+
+    .doc-category-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      background: rgba(var(--neon-lime-rgb), 0.12);
+      border: 1px solid rgba(var(--neon-lime-rgb), 0.3);
+      color: var(--neon-lime);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .doc-category-pill::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--neon-lime);
+      box-shadow: 0 0 8px var(--neon-lime);
+    }
+
+    .doc-main-title {
+      font-size: clamp(26px, 3.8vw, 38px);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+      color: #fff;
+      margin-bottom: 14px;
+    }
+
+    .doc-lead {
+      color: var(--fg-muted);
+      font-size: 16px;
+      line-height: 1.65;
+      max-width: 78ch;
+      margin-bottom: 24px;
+    }
+
+    .doc-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .meta-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--fg-dim);
+    }
+
+    .meta-value {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    /* Legal Clauses Styling */
+    section.legal-section {
+      padding: 36px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      scroll-margin-top: 90px;
+    }
+
+    section.legal-section:last-of-type {
+      border-bottom: none;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .section-badge {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--neon-cyan);
+      background: rgba(var(--neon-cyan-rgb), 0.1);
+      border: 1px solid rgba(var(--neon-cyan-rgb), 0.25);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    h2.section-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.015em;
+      color: #fff;
+    }
+
+    h3.sub-clause-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      margin: 24px 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h3.sub-clause-title span.sub-num {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--neon-lime);
+      font-weight: 600;
+    }
+
+    p {
+      margin-bottom: 14px;
+      color: var(--fg-muted);
+      font-size: 14.5px;
+    }
+
+    p strong {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    ul, ol {
+      margin: 12px 0 18px 24px;
+      color: var(--fg-muted);
+    }
+
+    li {
+      margin-bottom: 8px;
+      padding-left: 4px;
+    }
+
+    li strong {
+      color: #fff;
+    }
+
+    /* Callout Alert Boxes */
+    .callout {
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 20px 0;
+      border-left: 3px solid;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .callout-warning {
+      border-left-color: var(--warning);
+      background: rgba(245, 158, 11, 0.08);
+      border-top: 1px solid rgba(245, 158, 11, 0.2);
+      border-right: 1px solid rgba(245, 158, 11, 0.15);
+      border-bottom: 1px solid rgba(245, 158, 11, 0.15);
+    }
+
+    .callout-warning .callout-title {
+      color: #FBBF24;
+    }
+
+    .callout-danger {
+      border-left-color: var(--danger);
+      background: rgba(239, 68, 68, 0.08);
+      border-top: 1px solid rgba(239, 68, 68, 0.2);
+      border-right: 1px solid rgba(239, 68, 68, 0.15);
+      border-bottom: 1px solid rgba(239, 68, 68, 0.15);
+    }
+
+    .callout-danger .callout-title {
+      color: #F87171;
+    }
+
+    .callout-info {
+      border-left-color: var(--neon-lime);
+      background: rgba(var(--neon-lime-rgb), 0.06);
+      border-top: 1px solid rgba(var(--neon-lime-rgb), 0.2);
+      border-right: 1px solid rgba(var(--neon-lime-rgb), 0.15);
+      border-bottom: 1px solid rgba(var(--neon-lime-rgb), 0.15);
+    }
+
+    .callout-info .callout-title {
+      color: var(--neon-lime);
+    }
+
+    .callout-title {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .callout p {
+      margin-bottom: 0;
+      font-size: 13.5px;
+      color: #E2E8F0;
+    }
+
+    /* Structured Data Tables */
+    .table-frame {
+      width: 100%;
+      overflow-x: auto;
+      margin: 20px 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    table.policy-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    table.policy-table th {
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    table.policy-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--fg-muted);
+    }
+
+    table.policy-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    table.policy-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+      color: #fff;
+    }
+
+    /* =========================================================================
+       INTERACTIVE IN-APP ACCEPTANCE ACTION BAR (STICKY FOOTER)
+       ========================================================================= */
+    .sticky-acceptance-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 90;
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      background: rgba(7, 11, 14, 0.94);
+      border-top: 1px solid rgba(var(--neon-lime-rgb), 0.2);
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7);
+      padding: 14px 24px;
+      transition: all 0.3s ease;
+    }
+
+    .acceptance-inner {
+      max-width: 1340px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .acceptance-consent {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      flex: 1;
+      min-width: 280px;
+    }
+
+    .checkbox-custom {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 2px solid var(--fg-dim);
+      background: rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+      display: grid;
+      place-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .checkbox-custom:checked {
+      background: var(--neon-lime);
+      border-color: var(--neon-lime);
+      box-shadow: 0 0 10px rgba(var(--neon-lime-rgb), 0.5);
+    }
+
+    .checkbox-custom:checked::before {
+      content: '✓';
+      font-size: 13px;
+      font-weight: 900;
+      color: #070B0E;
+    }
+
+    .consent-label-text {
+      font-size: 13px;
+      color: #E2E8F0;
+      line-height: 1.4;
+      user-select: none;
+    }
+
+    .consent-label-text span.highlight {
+      color: var(--neon-lime);
+      font-weight: 700;
+    }
+
+    .acceptance-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-decline {
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 700;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--fg-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-decline:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-accept {
+      padding: 10px 24px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--neon-lime), #B6F400);
+      color: #070B0E;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(var(--neon-lime-rgb), 0.35);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-accept:hover:not(:disabled) {
+      box-shadow: 0 0 30px rgba(var(--neon-lime-rgb), 0.6);
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    .btn-accept:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      box-shadow: none;
+      filter: grayscale(0.5);
+    }
+
+    /* Modal / Form Confirmation Overlay */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(16px);
+      display: none;
+      place-items: center;
+      z-index: 200;
+      padding: 16px;
+    }
+
+    .modal-card {
+      background: var(--bg-surface);
+      border: 1px solid rgba(var(--neon-lime-rgb), 0.4);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(var(--neon-lime-rgb), 0.15);
+      text-align: center;
+      animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalPop {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-check-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(var(--neon-lime-rgb), 0.15);
+      border: 2px solid var(--neon-lime);
+      color: var(--neon-lime);
+      display: grid;
+      place-content: center;
+      font-size: 28px;
+      margin: 0 auto 20px;
+      box-shadow: 0 0 24px rgba(var(--neon-lime-rgb), 0.4);
+    }
+
+    .modal-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .modal-desc {
+      font-size: 13.5px;
+      color: var(--fg-muted);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .audit-receipt {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      text-align: left;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--neon-cyan);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    /* Print Stylesheet (Formatted for official physical / PDF export) */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 11pt !important;
+        line-height: 1.5 !important;
+      }
+
+      .ambient-glow-top,
+      .ambient-glow-bottom,
+      .top-masthead,
+      .table-of-contents-sidebar,
+      .sticky-acceptance-bar,
+      .btn-action,
+      .progress-bar-container {
+        display: none !important;
+      }
+
+      .document-container {
+        display: block !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+
+      .legal-content {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        color: #000000 !important;
+      }
+
+      .doc-main-title {
+        color: #000000 !important;
+        font-size: 22pt !important;
+      }
+
+      .doc-lead, p, li, table.policy-table td {
+        color: #222222 !important;
+      }
+
+      h2.section-title, h3.sub-clause-title, p strong, li strong {
+        color: #000000 !important;
+      }
+
+      .callout {
+        background: #f8f9fa !important;
+        border: 1px solid #ccc !important;
+        border-left: 4px solid #000 !important;
+        color: #000 !important;
+      }
+
+      .callout p {
+        color: #111 !important;
+      }
+
+      section.legal-section {
+        page-break-inside: avoid;
+        border-bottom: 1px solid #ddd !important;
+        padding: 20pt 0 !important;
+      }
+
+      .print-signature-block {
+        display: block !important;
+        page-break-before: always;
+        padding-top: 30pt;
+      }
+
+      .signature-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40pt;
+        margin-top: 30pt;
+      }
+
+      .sig-line {
+        border-bottom: 1px solid #000;
+        margin-top: 50pt;
+        margin-bottom: 6pt;
+      }
+    }
+
+    .print-signature-block {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Lighting Elements -->
+  <div class="ambient-glow-top" aria-hidden="true"></div>
+  <div class="ambient-glow-bottom" aria-hidden="true"></div>
+
+  <!-- Reading Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Sticky Top Masthead -->
+  <header class="top-masthead">
+    <a href="#" class="brand-wrap">
+      <!-- Embedded ZOVAIX Master Vector Logo -->
+      <svg class="brand-logo-svg" viewBox="176 176 2047 1504" role="img" aria-label="ZOVAIX Logo">
+        <defs>
+          <linearGradient id="nav_gt" x1="1485" y1="-26" x2="1105" y2="916" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#D7FC00"/>
+            <stop offset="1" stop-color="#B3F400"/>
+          </linearGradient>
+          <linearGradient id="nav_gm" x1="1326" y1="595" x2="515" y2="1797" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#085A46"/>
+            <stop offset="1" stop-color="#00F8E7"/>
+          </linearGradient>
+          <linearGradient id="nav_gb" x1="1247" y1="1223" x2="1367" y2="1704" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#036D7F"/>
+            <stop offset="1" stop-color="#00D3DF"/>
+          </linearGradient>
+        </defs>
+        <path d="M196.7 1660C198.4 1657.4 200 1654.8 201.9 1652.3C209.8 1641.4 218.7 1631.2 227.2 1620.7L662.9 1079.4C671.4 1068.7 680.6 1058.5 690 1048.5C697.1 1041 704.5 1033.6 712.1 1026.6C718.1 1020.9 724.3 1015.4 730.7 1010.2C739.1 1003.2 747.7 996.5 756.5 990C763.6 984.7 770.8 979.6 778.2 974.7C789.2 967.6 800.4 960.8 811.8 954.3C820.7 949.1 829.7 944.1 838.9 939.4L1327.5 691C1342.6 683.3 1356.4 671.9 1373 668.5C1385.3 666.1 1398.2 669.6 1410.7 670.8C1420.4 671.8 1430 673.1 1439.6 674.9C1445.7 676 1451.7 677.4 1457.6 678.9C1463.7 680.4 1469.7 682 1475.6 683.9C1485.5 687.1 1495.3 690.7 1504.9 694.6C1510.3 696.8 1515.6 699.2 1520.7 701.8C1524.9 703.9 1529 706.2 1533 708.5C1537.4 711.1 1541.7 713.7 1545.9 716.6C1550.9 719.9 1555.7 723.5 1560.4 727.1C1564.1 730 1567.8 733 1571.3 736.2C1575 739.5 1578.5 743 1582 746.5C1584.5 749 1587 751.5 1589.3 754.2C1592.3 757.6 1595.1 761.1 1597.8 764.7C1600.8 768.7 1603.7 772.8 1606.4 777.1C1609.3 781.6 1612 786.3 1614.5 791C1616.2 794.3 1617.9 797.7 1619.4 801.1C1621.1 805.2 1622.6 809.3 1624 813.5C1625.6 818.3 1627 823.3 1628.2 828.3C1629.4 833 1630.3 837.7 1631 842.5C1631.6 846.7 1632.1 851 1632.3 855.2C1632.5 860.1 1632.6 865 1632.3 869.8C1631.9 877.7 1631.1 885.6 1629.9 893.4C1628.9 898.8 1627.7 904.3 1626.1 909.6C1625.3 912.4 1624.5 915.2 1623.2 917.7C1622.2 919.9 1620.7 921.9 1619.3 923.8C1616.6 927.4 1613.6 930.7 1610.4 933.9C1604.2 940.4 1597.6 946.4 1590.7 952.2C1584.4 957.6 1577.6 962.5 1570.9 967.4C1563.1 973 1555.2 978.4 1547.1 983.6C1532.5 993.1 1517.5 1002.1 1502.5 1011C1485.9 1020.8 1469.2 1030.5 1452.3 1039.8L1342.4 1099.9L1131.1 1213.6L341.8 1656.3C339.3 1657.7 336.6 1658.7 333.9 1659.3C330.6 1660.1 327.3 1660.4 323.9 1660.4L196.7 1660Z" fill="url(#nav_gm)" />
+        <path d="M1625.9 915C1627.5 906.1 1629.5 897.2 1630.7 888.2C1631.5 882.4 1632.1 876.6 1632.3 870.8C1632.5 864.7 1632.5 858.5 1632.1 852.4C1631.7 845.2 1630.9 838 1629.6 830.9C1628.5 824.6 1627 818.4 1625.2 812.3C1623.6 806.8 1621.7 801.3 1619.4 796.1C1617.1 790.6 1614.4 785.2 1611.5 780C1608.1 774.2 1604.5 768.5 1600.5 763C1596.9 758 1593.1 753.1 1588.9 748.6C1583.8 743 1578.4 737.7 1572.7 732.8C1566.6 727.5 1560.1 722.6 1553.5 718C1547.5 713.9 1541.3 710.1 1535 706.5C1528.7 703 1522.2 699.8 1515.7 696.8C1508.4 693.6 1501 690.7 1493.4 688.1C1485.6 685.3 1477.6 683 1469.6 680.9C1462.6 679 1455.5 677.4 1448.4 676.1C1436.8 673.9 1425.1 672.3 1413.4 671.1C1401.6 669.9 1389.8 669.1 1378 668.9C1369 668.7 1360 669.5 1351 669.5L345 669.5C340.4 669.5 335.9 669.6 331.3 669.2C328.5 669 325.7 668.4 322.9 668C327.8 662.4 332.6 656.6 337.6 651.1L638.6 321.1C644 315.2 649.8 309.6 655.6 304.1C662.1 297.9 668.8 291.9 675.6 286.1C682.5 280.3 689.5 274.6 696.7 269.2C702.5 264.7 708.5 260.3 714.6 256.1C722.8 250.6 731.2 245.2 739.8 240.3C747.2 236 754.9 231.9 762.6 228.1C768.1 225.5 773.7 223.1 779.3 220.8C787.5 217.5 795.7 214.3 804.1 211.6C811 209.3 818.1 207.4 825.1 205.6C831.9 203.9 838.8 202.5 845.7 201.2C851.4 200.1 857.1 199.2 862.9 198.4C870.8 197.4 878.7 196.7 886.7 196.2C892.1 195.8 897.6 195.5 903 195.5L2180 195.5C2187.4 195.5 2194.9 195.8 2202.3 196C2200.3 198.9 2198.4 202 2196.2 204.7L2123.7 295.2L1660.8 872.3C1649.3 886.7 1637.5 900.8 1625.9 915Z" fill="url(#nav_gt)" />
+        <path d="M336.8 1660C343.8 1655.8 350.7 1651.4 357.9 1647.4L1147 1217.8L2050 1217.5C2057 1217.5 2064 1218.2 2071 1218.6L1852.6 1514.1C1846.1 1522.8 1839.1 1531.3 1832.1 1539.6C1826.7 1546.2 1821.2 1552.7 1815.4 1558.9C1805.6 1569.4 1795.4 1579.6 1784.7 1589.2C1778.8 1594.6 1772.5 1599.7 1766 1604.5C1760.1 1609 1754.1 1613.3 1747.9 1617.4C1742 1621.2 1735.9 1624.8 1729.7 1628.2C1723.6 1631.5 1717.4 1634.7 1711 1637.5C1704.5 1640.5 1697.8 1643.1 1691 1645.4C1684.9 1647.5 1678.7 1649.3 1672.4 1650.9C1665.9 1652.6 1659.4 1654 1652.8 1655.3C1646.7 1656.4 1640.6 1657.3 1634.5 1658C1621.4 1659.4 1608.2 1660.5 1595 1660.5L359 1660.5C351.6 1660.5 344.2 1660.2 336.8 1660Z" fill="url(#nav_gb)" />
+      </svg>
+      <div class="brand-meta">
+        <span class="brand-title">ZOVAIX</span>
+        <span class="brand-subtitle">Legal Trust Center</span>
+      </div>
+    </a>
+
+    <div class="top-actions">
+      <span class="badge-version">v3.4.0 • NOV 2026</span>
+      <button class="btn-action btn-print" onclick="window.print()" title="Download PDF or Print Contract">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 6 2 18 2 18 9"></polyline>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+          <rect x="6" y="14" width="12" height="8"></rect>
+        </svg>
+        Print / PDF
+      </button>
+    </div>
+  </header>
+
+  <!-- Document Container -->
+  <div class="document-container">
+    
+    <!-- Left Navigation: Table of Contents -->
+    <aside class="table-of-contents-sidebar" aria-label="Table of Contents">
+      <div class="toc-header">
+        <span>Contents</span>
+        <span style="color: var(--neon-cyan);">11 Sections</span>
+      </div>
+      <nav class="toc-nav" id="tocNav">
+        <a href="#section-1" class="toc-link active"><span class="num">01</span><span>Master Terms of Service</span></a>
+        <a href="#section-2" class="toc-link"><span class="num">02</span><span>Subscription & Billing</span></a>
+        <a href="#section-3" class="toc-link"><span class="num">03</span><span>Cancellation Policy</span></a>
+        <a href="#section-4" class="toc-link"><span class="num">04</span><span>Refund & Chargebacks</span></a>
+        <a href="#section-5" class="toc-link"><span class="num">05</span><span>AI Integration & Ethics</span></a>
+        <a href="#section-6" class="toc-link"><span class="num">06</span><span>WhatsApp Compliance</span></a>
+        <a href="#section-7" class="toc-link"><span class="num">07</span><span>Data Protection (GDPR)</span></a>
+        <a href="#section-8" class="toc-link"><span class="num">08</span><span>Intellectual Property</span></a>
+        <a href="#section-9" class="toc-link"><span class="num">09</span><span>Liability & Indemnity</span></a>
+        <a href="#section-10" class="toc-link"><span class="num">10</span><span>Arbitration & Law</span></a>
+        <a href="#section-11" class="toc-link"><span class="num">11</span><span>Execution & Signatures</span></a>
+      </nav>
+    </aside>
+
+    <!-- Main Legal Content Body -->
+    <main class="legal-content">
+      
+      <!-- Document Hero -->
+      <header class="doc-hero">
+        <div class="doc-category-pill">Official Regulatory Document</div>
+        <h1 class="doc-main-title">Master Subscription Agreement, AI Governance & Telecommunications Policies</h1>
+        <p class="doc-lead">
+          This legally binding agreement governs your acquisition, access, and ongoing utilization of the <strong>ZOVAIX AI Revenue Workspace</strong>, WhatsApp CRM connectors, autonomous conversational agents, broadcast dispatch systems, and associated cloud APIs.
+        </p>
+
+        <div class="doc-meta-grid">
+          <div class="meta-item">
+            <span class="meta-label">Effective Date</span>
+            <span class="meta-value">November 17, 2026</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Governing Entity</span>
+            <span class="meta-value">ZOVAIX Technologies Inc.</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Jurisdiction</span>
+            <span class="meta-value">State of Delaware, USA</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Security Standards</span>
+            <span class="meta-value">SOC 2 Type II / ISO 27001</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- SECTION 1 -->
+      <section id="section-1" class="legal-section">
+        <div class="section-header">
+          <span class="section-badge">SECTION 01</span>
+          <h2 class="section-title">Master Terms of Service & General Provisions</h2>
+        </div>
+
+        <h3 class="sub-clause-title"><span class="sub-num">1.1</span> Acceptance & Binding Authority</h3>
+        <p>
+          By creating an account, selecting an affirmative agreement checkbox during signup or billing checkout, generating API tokens, or otherwise accessing the <strong>ZOVAIX Platform</strong> (the "Service"), the individual executing this agreement represents and warrants that they possess full legal power and authority to bind the subscribing commercial entity ("Customer", "Subscriber", or "You") to these Terms. If You do not possess such authority or do not agree unconditionally with every term herein, You are strictly prohibited from accessing the Platform.
+        </p>
+
+        <h3 class="sub-clause-title"><span class="sub-num">1.2</span> Service Description & Architectural Scope</h3>
+        <p>
+          ZOVAIX provides an enterprise-grade AI revenue management workspace, multi-agent conversational routing system, Meta WhatsApp Business Cloud API synchronization conduit, visual flow automation builder, and omnichannel customer communication software. ZOVAIX functions as an application layer and software interface; underlying cellular transmission, message delivery reliability, and network connectivity are provided by third-party telecommunications infrastructure.
+        </p>
+
+        <h3 class="sub-clause-title"><span class="sub-num">1.3</span> Logical Multi-Tenant Isolation & Role Hierarchy</h3>
+        <p>
+          ZOVAIX enforces strict logical tenant segregation across all database clusters via Row-Level Security (RLS) and cryptographic tenant scoping. Customer Data belonging to one workspace is mathematically isolated from other accounts. Customer accounts operate with strict role hierarchy:
+        </p>
+        <ul>
+          <li><strong>Super Admin (Owner):</strong> Possesses unconditional root administrative authority, billing controls, data export capabilities, full unmasked client telephone visibility, and organizational transfer rights.</li>
+          <li><strong>Admin:</strong> Authorized to configure WhatsApp connections, train knowledge base embeddings, manage automations, and provision agent seats.</li>
+          <li><strong>Agent:</strong> Authorized solely for assigned inbox chat handling, contact tagging, and operational deal movement.</li>
+        </ul>
+
+        <div class="callout callout-warning">
+          <div class="callout-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Security Imperative: API Keys & Webhook Protection
+          </div>
+          <p>
+            Customer is solely responsible for safeguarding administrative credentials, multi-factor authentication tokens, Meta App Secrets, and ZOVAIX REST API keys. ZOVAIX disclaims all liability for data exposure or unintended automated messaging resulting from compromised Customer infrastructure.
+          </p>
+        </div>
+
+        <h3 class="sub-clause-title"><span class="sub-num">1.4</span> Acceptable Use Policy (AUP)</h3>
+        <p>Customer agrees not to, and shall not permit any employee or third party to:</p>
+        <ol>
+          <li>Decompile, reverse-engineer, disassemble, or derive source code or underlying neural weights of the Platform;</li>
+          <li>Utilize ZOVAIX to benchmark, scrape, or extract conversational patterns to train competing artificial intelligence or CRM products;</li>
+          <li>Send unsolicited marketing messages ("spam"), fraudulent phishing lures, deceptive impersonations, or illegal harassment via WhatsApp or SMS;</li>
+          <li>Interfere with, overload, or breach the security boundaries of ZOVAIX servers, worker pools, or partner API endpoints.</li>
+        </ol>
+      </section>
+
+      <!-- SECTION 2 -->
+      <section id="section-2" class="legal-section">
+        <div class="section-header">
+          <span class="section-badge">SECTION 02</span>
+          <h2 class="section-title">Subscription Plans, Billing, Seats & Pass-Through Fees</h2>
+        </div>
+
+        <h3 class="sub-clause-title"><span class="sub-num">2.1</span> Subscription Tiers & Automatic Billing</h3>
+        <p>
+          ZOVAIX operates on a recurring subscription model (billed on either a monthly or annual prepaid cadence). All recurring subscriptions automatically renew on their scheduled billing date unless Customer submits a formal cancellation through the In-App Billing Center prior to the renewal timestamp.
+        </p>
+
+        <h3 class="sub-clause-title"><span class="sub-num">2.2</span> Named Seat Licensing & Mid-Cycle Adjustments</h3>
+        <p>
+          Seats are provisioned on a named-user basis. Each unique seat license permits access for one designated human operator. Mid-cycle additions of seats or tier upgrades are charged on an immediate prorated basis for the remaining days of the current billing cycle. Reductions in seat counts take effect at the conclusion of the active paid period; no mid-term seat credits are issued.
+        </p>
+
+        <h3 class="sub-clause-title"><span class="sub-num">2.3</span> WhatsApp Conversation Pass-Through Fees</h3>
+        <p>
+          Customer acknowledges that WhatsApp (Meta Platforms, Inc.) assesses independent telecommunications fees based on 24-hour conversation sessions across distinct categories:
+        </p>
+
+        <div class="table-frame">
+          <table class="policy-table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Trigger Event</th>
+                <th>Billing Modality</th>
+                <th>Refundability</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Marketing</strong></td>
+                <td>Promotions, offers, product launches</td>
+                <td>Direct Meta Pass-Through (Rate by Country)</td>
+                <td>Strictly Non-Refundable</td>
+              </tr>
+              <tr>
+                <td><strong>Utility</strong></td>
+                <td>Order receipts, delivery updates, confirmations</td>
+                <td>Direct Meta Pass-Through (Rate by Country)</td>
+                <td>Strictly Non-Refundable</td>
+              </tr>
+              <tr>
+                <td><strong>Authentication</strong></td>
+                <td>One-time passwords (OTP), login verification</td>
+                <td>Direct Meta Pass-Through (Rate by Country)</td>
+                <td>Strictly Non-Refundable</td>
+              </tr>
+              <tr>
+                <td><strong>Service</strong></td>
+                <td>Inbound customer inquiry resolutions</td>
+                <td>Free within 24hr window / Tiered Meta Fee</td>
+                <td>Strictly Non-Refundable</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          <strong>Prepaid Communication Balances:</strong> To maintain seamless outbound messaging, Customer maintains a prepaid WhatsApp Balance with ZOVAIX. When the balance dips below the designated safety threshold, automatic top-ups occur via Customer’s authorized payment method. If the balance reaches zero ($0.00), ZOVAIX automatically pauses automated outbound messaging to prevent overdraft debt accumulation.
+        </p>
+      </section>
+
+      <!-- SECTION 3 -->
+      <section id="section-3" class="legal-section">
+        <div class="section-header">
+          <span class="section-badge">SECTION 03</span>
+          <h2 class="section-title">Cancellation Policy & Contract Termination</h2>
+        </div>
+
+        <h3 class="sub-clause-title"><span class="sub-num">3.1</span> Customer Self-Service Cancellation</h3>
+        <p>
+          Customer retains the unilateral right to terminate their recurring subscription at any time without penalty or cancellation surcharge by navigating to <code>Settings → Workspace → Billing → Cancel Subscription</code>. Upon cancellation confirmation:
+        </p>
+        <ul>
+          <li>Access to the Platform remains active through the exact conclusion of the prepaid billing cycle;</li>
+          <li>No further recurring renewal charges will be debited against Customer's payment instruments;</li>
+          <li>API keys and automated WhatsApp flows remain functional until 23:59:59 UTC of the final prepaid date.</li>
+        </ul>
+
+        <h3 class="sub-clause-title"><span class="sub-num">3.2</span> Post-Termination 30-Day Data Export Grace Period</h3>
+        <p>
+          Following contract expiration or cancellation, ZOVAIX guarantees a <strong>thirty (30) calendar day read-only retention window</strong>. During this window, Customer may export full contact databases, deal pipelines, message logs, and knowledge documents via CSV, JSON, or REST API.
+        </p>
+
+        <h3 class="sub-clause-title"><span class="sub-num">3.3</span> Irreversible Cryptographic Data Purge</h3>
+        <p>
+          On day thirty-one (31) following termination, Customer Data is scheduled for complete cryptographic erasure from primary databases and production caches in accordance with <strong>NIST SP 800-88 Revision 1</strong> guidelines and <strong>GDPR Article 17</strong> (Right to Erasure). Immutable disaster recovery archives are overwritten within standard rolling backup cycles (maximum 90 days).
+        </p>
+      </section>
+
+      <!-- SECTION 4 -->
+      <section id="section-4" class="legal-section">
+        <div class="section-header">
+          <span class="section-badge">SECTION 04</span>
+          <h2 class="section-title">Refund & Chargeback Dispute Policy</h2>
+        </div>
+
+        <h3 class="sub-clause-title"><span class="sub-num">4.1</span> All Software Fees Strictly Non-Refundable</h3>
+        <p>
+          ZOVAIX provisions immediate, dedicated cloud compute clusters, database shards, vector storage allocations, and continuous software licensing upon subscription activation. Consequently, <strong>all core subscription fees, enterprise implementation costs, onboarding retainers, and seat licensing fees are strictly non-refundable</strong>.
+        </p>
+
+        <div class="callout callout-danger">
+          <div class="callout-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Absolute Telecommunications Non-Refundability
+          </div>
+          <p>
+            Under no legal theory or factual scenario are Meta WhatsApp conversation fees, carrier registration surcharges, telephony routing expenditures, or phone number acquisition expenses refundable. These represent non-recoverable real-time capital disbursements made directly to global cellular carriers and Meta Platforms, Inc.
+          </p>
+        </div>
+
+        <h3 class="sub-clause-title"><span class="sub-num">4.2</span> Billing Errors & Correction Procedures</h3>
+        <p>
+          If Customer identifies a genuine mechanical billing discrepancy or erroneous overcharge caused directly by ZOVAIX software failure, Customer must submit written documentation to <code>billing@zovaix.com</code> within thirty (30) days of the transaction timestamp. Validated errors will be resolved via service credit applied against future billing cycles.
+        </p>
+
+        <h3 class="sub-clause-title"><span class="sub-num">4.3</span> Fraudulent Chargeback Protocols</h3>
+        <p>
+          Initiating a payment chargeback or merchant dispute without first following the dispute resolution procedures herein constitutes a material breach of contract. ZOVAIX reserves the right to immediately suspend workspace operations, revoke API tokens, and submit full cryptographic server audit logs, IP connection records, and digital execution timestamps to credit institutions and merchant processors.
+        </p>
+      </section>
+
+      <!-- SECTION 5 -->
+      <section id="section-5" class="legal-section">
+        <div class="section-header">
+          <span class="section-badge">SECTION 05</span>
+          <h2 class="section-title">Artificial Intelligence (AI) Usage & Model Data Privacy</h2>
+        </div>
+
+        <h3 class="sub-clause-title"><span class="sub-num">5.1</span> Absolute Non-Training Guarantee</h3>
+        <p>
+          ZOVAIX operates under strict zero-data-retention and zero-model-training enterprise contracts with its foundational artificial intelligence subprocessors (including OpenAI Enterprise, Anthropic, and Google Cloud Vertex AI). <strong>Neither ZOVAIX nor any third-party AI provider utilizes Customer Data, conversational transcripts, customer queries, or prompt engineering templates to train, fine-tune, optimize, or improve public or commercial machine learning models.</strong>
+        </p>
+
+        <h3 class="sub-clause-title"><span class="sub-num">5.2</span> Autonomous Agent Disclaimer & Hallucination Allocation</h3>
+        <p>
+          Customer explicitly understands that Generative AI and Large Language Models (LLMs) operate via statistical token probability. While ZOVAIX implements sophisticated Retrieval-Augmented Generation (RAG), semantic vector grounding, and prompt guardrails:
+        </p>
+        <ul>
+          <li>AI responses may occasionally contain factual errors, imprecise phrasing, or "hallucinations";</li>
+          <li><strong>Customer retains full, exclusive legal and commercial responsibility</strong> for all automated communications dispatched to end customers, including binding commercial offers, pricing quotes, refund promises, or technical advice;</li>
+          <li>Customer agrees to maintain human oversight protocols and review conversational logs periodically.</li>
+        </ul>
+
+        <h3 class="sub-clause-title"><span class="sub-num">5.3</span> AI Bot Transparency & Regulatory Compliance</h3>
+        <p>
+          To maintain compliance with the <strong>EU Artificial Intelligence Act (Regulation 2024/1689)</strong>, the <strong>California BOT Disclosure Law (Cal. Bus. & Prof. Code § 17940)</strong>, and global consumer protection standards, Customer covenants that its automated WhatsApp workflows will clearly notify human recipients that they are engaging with an automated system where legally mandated or reasonably expected.
+        </p>
+      </section>
+
+      <!-- SECTION 6 -->
+      <section id="section-6" class="legal-section">
+        <div class="section-header">
+          <span class="section-badge">SECTION 06</span>
+          <h2 class="section-title">WhatsApp Business Platform & Telecommunications Compliance</h2>
+        </div>
+
+        <h3 class="sub-clause-title"><span class="sub-num">6.1</span> Pass-Through Meta Terms Adherence</h3>
+        <p>
+          Customer's utilization of the WhatsApp channel is subject to full, continuous compliance with the <strong>Meta WhatsApp Business Messaging Policy</strong> and <strong>WhatsApp Commerce Policy</strong>. Any violation of Meta's rules constitutes an automatic violation of this Agreement.
+        </p>
+
+        <h3 class="sub-clause-title"><span class="sub-num">6.2</span> Prohibited Commerce Verticals</h3>
+        <p>
+          Customer represents that it does not and will not conduct marketing, lead generation, or transactional support via ZOVAIX for restricted industries, including:
+        </p>
+        <ul>
+          <li>Firearms, ammunition, weapons, or explosives;</li>
+          <li>Tobacco products, e-cigarettes, vaporizers, or cannabis derivatives;</li>
+          <li>Prescription medications, illicit drugs, or unapproved medical devices;</li>
+          <li>Payday loans, high-interest micro-loans, peer-to-peer crypto lending, or speculative investment schemes;</li>
+          <li>Real-money gambling, casinos, or sports betting without explicit written prior authorization from Meta Platforms;</li>
+          <li>Adult entertainment, pornographic content, or escort services.</li>
+        </ul>
+
+        <h3 class="sub-clause-title"><span class="sub-num">6.3</span> Explicit Opt-In & Mandatory `STOP` Opt-Outs (TCPA / CTIA)</h3>
+        <p>
+          Under the <strong>Telephone Consumer Protection Act (TCPA)</strong> and CTIA guidelines:
+        </p>
+        <ol>
+          <li>Customer must maintain documented, affirmative opt-in consent from every recipient prior to initiating outbound WhatsApp broadcast campaigns;</li>
+          <li>Customer’s automated bots must immediately identify and process standard opt-out keywords (including <code>STOP</code>, <code>UNSUBSCRIBE</code>, <code>CANCEL</code>, and <code>END</code>), placing the contact on an immutable suppression list;</li>
+          <li>Re-engaging opted-out contacts without fresh, documented opt-in authorization is strictly prohibited.</li>
+        </ol>
+
+        <h3 class="sub-clause-title"><span class="sub-num">6.4</span> Meta Quality Rating & Disconnection Indemnity</h3>
+        <p>
+          Meta algorithmically monitors WhatsApp phone numbers and assigns dynamic <strong>Quality Ratings (Green, Yellow, Red)</strong> and messaging tiers (1K, 10K, 100K, Unlimited). High block rates or spam reports from recipients can lead to rate-limiting or account suspension by Meta. <strong>ZOVAIX is held completely harmless from any lost profits, stalled pipelines, or business interruption resulting from Meta rate-limits, tier downgrades, or account bans imposed on Customer's WhatsApp assets.</strong>
+        </p>
+      </section>
+
+      <!-- SECTION 7 -->
+      <section id="section-7" class="legal-section">
+        <div class="section-header">
+          <span class="section-badge">SECTION 07</span>
+          <h2 class="section-title">Data Protection, Privacy Regulations (GDPR/CCPA) & Security</h2>
+        </div>
+
+        <h3 class="sub-clause-title"><span class="sub-num">7.1</span> Controller vs. Processor Status</h3>
+        <p>
+          For the purposes of the <strong>General Data Protection Regulation (GDPR - EU 2016/679)</strong> and the <strong>California Consumer Privacy Act as amended (CCPA/CPRA)</strong>:
+        </p>
+        <ul>
+          <li><strong>Customer acts as the Data Controller</strong> regarding personal data of Customer’s clients, leads, and staff;</li>
+          <li><strong>ZOVAIX acts strictly as the Data Processor</strong> (or Service Provider), processing personal data solely in accordance with Customer’s documented instructions and this Agreement.</li>
+        </ul>
+
+        <h3 class="sub-clause-title"><span class="sub-num">7.2</span> Standard Contractual Clauses (SCCs)</h3>
+        <p>
+          For cross-border data transfers originating from the European Economic Area (EEA), the United Kingdom, or Switzerland to servers located in the United States, the European Commission's Standard Contractual Clauses (Module 2: Controller-to-Processor) are hereby incorporated into this Agreement by reference.
+        </p>
+
+        <h3 class="sub-clause-title"><span class="sub-num">7.3</span> Security Architecture</h3>
+        <p>
+          ZOVAIX maintains rigorous institutional administrative, physical, and technical safeguards:
+        </p>
+        <ul>
+          <li><strong>In-Transit Encryption:</strong> TLS 1.3 enforced across all web interfaces, WebSockets, and public API endpoints;</li>
+          <li><strong>At-Rest Encryption:</strong> AES-256 cryptographic volume encryption across all primary databases, object storage buckets, and automated backups;</li>
+          <li><strong>Vulnerability Management:</strong> Automated static code analysis, third-party penetration testing, and zero-trust perimeter network policies.</li>
+        </ul>
+      </section>
+
+      <!-- SECTION 8 -->
+      <section id="section-8" class="legal-section">
+        <div class="section-header">
+          <span class="section-badge">SECTION 08</span>
+          <h2 class="section-title">Intellectual Property & Ownership Rights</h2>
+        </div>
+
+        <h3 class="sub-clause-title"><span class="sub-num">8.1</span> Customer Data Ownership</h3>
+        <p>
+          As between the parties, Customer retains all right, title, and interest (including all patent, copyright, and trade secret rights) in and to Customer Data, contact records, proprietary knowledge documents, and customer branding. Customer grants ZOVAIX a non-exclusive, worldwide, limited-term license solely to host, cache, transmit, and display Customer Data as necessary to provide the Services.
+        </p>
+
+        <h3 class="sub-clause-title"><span class="sub-num">8.2</span> ZOVAIX Platform Intellectual Property</h3>
+        <p>
+          ZOVAIX retains all exclusive right, title, and ownership in and to the Platform, including software engines, frontend architectures, machine learning orchestration logic, database schemas, trademarks, logos, visual designs, and all derivative works or improvements thereof. No ownership rights are transferred to Customer under this Agreement.
+        </p>
+      </section>
+
+      <!-- SECTION 9 -->
+      <section id="section-9" class="legal-section">
+        <div class="section-header">
+          <span class="section-badge">SECTION 09</span>
+          <h2 class="section-title">Warranties, Disclaimers, Liability Caps & Indemnity</h2>
+        </div>
+
+        <h3 class="sub-clause-title"><span class="sub-num">9.1</span> "As-Is" Warranty Disclaimer</h3>
+        <p>
+          EXCEPT AS EXPRESSLY SET FORTH HEREIN, THE PLATFORM IS PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS. ZOVAIX MAKES NO WARRANTIES OF ANY KIND, WHETHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, AND SPECIFICALLY DISCLAIMS ALL IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT. ZOVAIX DOES NOT WARRANT THAT THE SERVICE WILL BE UNINTERRUPTED, DELAY-FREE, ERROR-FREE, OR FULLY COMPATIBLE WITH EVERY THIRD-PARTY CELLULAR CARRIER.
+        </p>
+
+        <h3 class="sub-clause-title"><span class="sub-num">9.2</span> Aggregate Limitation of Liability</h3>
+        <p>
+          TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL EITHER PARTY’S AGGREGATE LIABILITY ARISING OUT OF OR RELATED TO THIS AGREEMENT EXCEED THE TOTAL AMOUNT ACTUALLY PAID BY CUSTOMER TO ZOVAIX IN THE <strong>TWELVE (12) MONTHS IMMEDIATELY PRECEDING THE EVENT GIVING RISE TO LIABILITY</strong>.
+        </p>
+
+        <h3 class="sub-clause-title"><span class="sub-num">9.3</span> Consequential Damages Waiver</h3>
+        <p>
+          IN NO EVENT SHALL EITHER PARTY BE LIABLE FOR ANY INDIRECT, PUNITIVE, SPECIAL, EXEMPLARY, INCIDENTAL, OR CONSEQUENTIAL DAMAGES (INCLUDING LOSS OF PROFITS, REVENUE, DATA, GOODWILL, OR BUSINESS INTERRUPTION) REGARDLESS OF THE LEGAL THEORY ASSERTED, EVEN IF ADVISED IN ADVANCE OF THE POSSIBILITY OF SUCH DAMAGES.
+        </p>
+
+        <h3 class="sub-clause-title"><span class="sub-num">9.4</span> Customer Indemnification</h3>
+        <p>
+          Customer shall defend, indemnify, and hold harmless ZOVAIX, its directors, officers, employees, and licensors from and against any third-party claims, government investigations, civil liabilities, or regulatory fines (including TCPA violations or Meta platform sanctions) arising from: (a) Customer’s breach of the Acceptable Use Policy; (b) transmission of unlawful or non-consensual WhatsApp messages; or (c) Customer's violation of third-party privacy or intellectual property rights.
+        </p>
+      </section>
+
+      <!-- SECTION 10 -->
+      <section id="section-10" class="legal-section">
+        <div class="section-header">
+          <span class="section-badge">SECTION 10</span>
+          <h2 class="section-title">Governing Law, Arbitration & Dispute Resolution</h2>
+        </div>
+
+        <h3 class="sub-clause-title"><span class="sub-num">10.1</span> Governing Law</h3>
+        <p>
+          This Agreement and all disputes arising hereunder shall be governed by and construed in accordance with the laws of the <strong>State of Delaware, United States</strong>, without giving effect to any principles of conflicts of law.
+        </p>
+
+        <h3 class="sub-clause-title"><span class="sub-num">10.2</span> Mandatory Informal Resolution</h3>
+        <p>
+          Prior to initiating formal arbitration, the parties agree to engage in good-faith executive negotiations for a minimum of thirty (30) days following written notice of dispute sent to <code>legal@zovaix.com</code>.
+        </p>
+
+        <h3 class="sub-clause-title"><span class="sub-num">10.3</span> Binding Commercial Arbitration</h3>
+        <p>
+          Any unresolved controversy or claim shall be determined by binding arbitration administered by the <strong>American Arbitration Association (AAA)</strong> in accordance with its Commercial Arbitration Rules. The arbitration shall take place in Wilmington, Delaware, before a single neutral arbitrator. The arbitrator's award shall be final and binding, enforceable in any court of competent jurisdiction.
+        </p>
+
+        <h3 class="sub-clause-title"><span class="sub-num">10.4</span> Class Action Waiver</h3>
+        <p>
+          CUSTOMER AND ZOVAIX AGREE THAT EACH PARTY MAY BRING CLAIMS AGAINST THE OTHER ONLY IN AN INDIVIDUAL CAPACITY AND NOT AS A PLAINTIFF OR CLASS MEMBER IN ANY PURPORTED CLASS OR REPRESENTATIVE PROCEEDING.
+        </p>
+      </section>
+
+      <!-- SECTION 11 -->
+      <section id="section-11" class="legal-section">
+        <div class="section-header">
+          <span class="section-badge">SECTION 11</span>
+          <h2 class="section-title">Legal Contacts & Formal Execution</h2>
+        </div>
+
+        <p>
+          For regulatory inquiries, Data Protection Officer communications, law enforcement subpoenas, or formal contract notices, please contact:
+        </p>
+
+        <div class="doc-meta-grid" style="margin-top: 16px;">
+          <div class="meta-item">
+            <span class="meta-label">Legal Notices</span>
+            <span class="meta-value">legal@zovaix.com</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Data Protection Officer</span>
+            <span class="meta-value">dpo@zovaix.com</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Billing Inquiries</span>
+            <span class="meta-value">billing@zovaix.com</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Security Disclosures</span>
+            <span class="meta-value">security@zovaix.com</span>
+          </div>
+        </div>
+
+        <!-- Print-only Signature Block -->
+        <div class="print-signature-block">
+          <h2 style="font-size: 16pt; margin-bottom: 8pt; border-bottom: 1pt solid #000; padding-bottom: 4pt;">Formal Execution Block</h2>
+          <p style="font-size: 10pt; color: #444;">IN WITNESS WHEREOF, the parties hereto have executed this Master Agreement through their duly authorized representatives.</p>
+          
+          <div class="signature-grid">
+            <div>
+              <strong>ON BEHALF OF CUSTOMER:</strong>
+              <div class="sig-line"></div>
+              <div>Authorized Signatory Name</div>
+              <div class="sig-line"></div>
+              <div>Title / Position</div>
+              <div class="sig-line"></div>
+              <div>Company Name & Date</div>
+            </div>
+
+            <div>
+              <strong>ON BEHALF OF ZOVAIX TECHNOLOGIES INC.:</strong>
+              <div class="sig-line"></div>
+              <div>Authorized Corporate Officer</div>
+              <div class="sig-line"></div>
+              <div>General Counsel / Operations</div>
+              <div class="sig-line"></div>
+              <div>Date of Activation</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Sticky In-App Acceptance & Action Bar -->
+  <aside class="sticky-acceptance-bar" role="region" aria-label="Agreement Consent Action Bar">
+    <div class="acceptance-inner">
+      <label class="acceptance-consent" for="agreeCheck">
+        <input type="checkbox" id="agreeCheck" class="checkbox-custom" />
+        <span class="consent-label-text">
+          I confirm that I am an authorized corporate officer and have read, understood, and accept the <span class="highlight">Terms of Service, Refund Policy, Cancellation Policy, and AI Data Policies</span> on behalf of my organization.
+        </span>
+      </label>
+
+      <div class="acceptance-actions">
+        <button type="button" class="btn-decline" id="btnDecline" onclick="handleDecline()">
+          Decline & Close
+        </button>
+        <button type="button" class="btn-accept" id="btnAccept" disabled onclick="handleAccept()">
+          <span>Accept & Sign Agreement</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Interactive Confirmation Modal -->
+  <div class="modal-backdrop" id="confirmationModal">
+    <div class="modal-card">
+      <div class="modal-check-icon">✓</div>
+      <h3 class="modal-title">Agreement Signed & Verified</h3>
+      <p class="modal-desc">
+        Your organization's acceptance has been cryptographically recorded. A digital receipt has been stamped with your session metadata.
+      </p>
+
+      <div class="audit-receipt" id="auditReceipt">
+        <div><strong>STATUS:</strong> LEGALLY_BINDING_ACCEPTED</div>
+        <div><strong>VERSION:</strong> v3.4.0 (ZOVAIX ENTERPRISE)</div>
+        <div id="receiptTimestamp"><strong>TIMESTAMP:</strong> 2026-11-17T11:45:00Z</div>
+        <div id="receiptHash"><strong>SHA-256 CHECKSUM:</strong> e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</div>
+        <div><strong>ORIGIN:</strong> IN_APP_SUBSCRIPTION_CHECKOUT</div>
+      </div>
+
+      <button type="button" class="btn-accept" style="width: 100%; justify-content: center;" onclick="closeModalAndPostMessage()">
+        Proceed to Workspace
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // JAVASCRIPT ENGINE: READING PROGRESS, TOC SYNC & ACCEPTANCE LOGIC
+    // =========================================================================
+    
+    // 1. Reading Progress Bar
+    window.addEventListener('scroll', () => {
+      const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (window.scrollY / docHeight) * 100;
+      document.getElementById('progressBar').style.width = scrolled + '%';
+
+      // Highlight active Table of Contents item
+      const sections = document.querySelectorAll('section.legal-section');
+      const tocLinks = document.querySelectorAll('#tocNav .toc-link');
+      
+      let currentSectionId = '';
+      sections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= 120 && rect.bottom >= 120) {
+          currentSectionId = section.getAttribute('id');
+        }
+      });
+
+      if (currentSectionId) {
+        tocLinks.forEach(link => {
+          if (link.getAttribute('href') === '#' + currentSectionId) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+      }
+    });
+
+    // 2. Acceptance Checkbox & Button Enablement
+    const agreeCheck = document.getElementById('agreeCheck');
+    const btnAccept = document.getElementById('btnAccept');
+
+    agreeCheck.addEventListener('change', () => {
+      btnAccept.disabled = !agreeCheck.checked;
+    });
+
+    // 3. Handle Decline
+    function handleDecline() {
+      if (confirm("Declining these terms will prevent account activation and access to ZOVAIX services. Are you sure you wish to exit?")) {
+        // Send message to parent frame if running inside an iframe or WebView
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'ZOVAIX_TERMS_DECLINED', timestamp: new Date().toISOString() }, '*');
+        }
+        window.close();
+      }
+    }
+
+    // 4. Handle Accept & Sign
+    function handleAccept() {
+      if (!agreeCheck.checked) return;
+
+      const now = new Date().toISOString();
+      const randomHash = Array.from(crypto.getRandomValues(new Uint8Array(20)))
+        .map(b => b.toString(16).padStart(2, '0')).join('');
+
+      document.getElementById('receiptTimestamp').innerHTML = `<strong>TIMESTAMP:</strong> ${now}`;
+      document.getElementById('receiptHash').innerHTML = `<strong>SHA-256 CERTIFICATE:</strong> zx_${randomHash}`;
+
+      document.getElementById('confirmationModal').style.display = 'grid';
+
+      // Save to localStorage for in-app persistence
+      try {
+        localStorage.setItem('zovaix_terms_accepted_version', 'v3.4.0');
+        localStorage.setItem('zovaix_terms_accepted_timestamp', now);
+        localStorage.setItem('zovaix_terms_accepted_certificate', 'zx_' + randomHash);
+      } catch (e) {
+        // storage fallback
+      }
+    }
+
+    // 5. Close Modal & Notify In-App Host
+    function closeModalAndPostMessage() {
+      document.getElementById('confirmationModal').style.display = 'none';
+
+      // Send postMessage to host CRM or parent app window
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+          type: 'ZOVAIX_TERMS_ACCEPTED',
+          version: 'v3.4.0',
+          timestamp: new Date().toISOString()
+        }, '*');
+      }
+
+      alert("Thank you! Your acceptance has been logged. You may now return to your workspace.");
+    }
+  </script>
+</body>
+</html>

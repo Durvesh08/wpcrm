@@ -520,7 +520,7 @@ export function Header({ onOpenSidebar }: HeaderProps) {
   };
 
   return (
-    <header className="border-border/50 bg-background/65 sticky top-0 z-20 border-b shadow-lg shadow-black/20 backdrop-blur-md">
+    <header className="border-border/60 dark:border-white/[0.08] bg-white/70 dark:bg-[#070B0E]/80 sticky top-0 z-20 border-b shadow-sm dark:shadow-lg dark:shadow-black/25 backdrop-blur-xl">
       <div className="flex h-16 items-center justify-between gap-2 px-3 sm:px-6 lg:px-7">
         {/* Mobile menu trigger */}
         <div className="flex items-center gap-2 lg:hidden">

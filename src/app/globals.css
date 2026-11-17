@@ -88,12 +88,12 @@
 
 :root,
 html[data-mode='dark'] {
-  --background: oklch(0.105 0.025 260);
+  --background: #070B0E;
   --foreground: oklch(0.985 0.005 170);
-  --card: oklch(0.155 0.032 260);
-  --card-2: oklch(0.20 0.038 260);
+  --card: oklch(0.135 0.025 260);
+  --card-2: oklch(0.18 0.03 260);
   --card-foreground: oklch(0.985 0.005 170);
-  --popover: oklch(0.16 0.032 260);
+  --popover: #0A0E12;
   --popover-foreground: oklch(0.985 0.005 170);
   --secondary: oklch(0.185 0.032 260);
   --secondary-foreground: oklch(0.985 0.005 170);
@@ -102,47 +102,47 @@ html[data-mode='dark'] {
   --accent: oklch(0.22 0.04 260);
   --accent-foreground: oklch(0.985 0.005 170);
   --destructive: oklch(0.62 0.24 25);
-  --border: oklch(0.27 0.035 260 / 0.75);
-  --input: oklch(0.27 0.035 260 / 0.75);
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.08);
   --chart-2: oklch(0.65 0.22 290);
   --chart-3: oklch(0.70 0.18 160);
   --chart-4: oklch(0.75 0.16 70);
   --chart-5: oklch(0.70 0.22 250);
   --radius: 0.75rem;
-  --sidebar: oklch(0.115 0.028 260);
+  --sidebar: #070B0E;
   --sidebar-foreground: oklch(0.985 0.005 170);
-  --sidebar-accent: oklch(0.19 0.035 260);
+  --sidebar-accent: oklch(0.16 0.028 260);
   --sidebar-accent-foreground: oklch(0.985 0.005 170);
-  --sidebar-border: oklch(0.25 0.032 260 / 0.75);
+  --sidebar-border: rgba(255, 255, 255, 0.08);
 }
 
 html[data-mode='light'] {
-  --background: oklch(0.86 0.024 240);
-  --foreground: oklch(0.15 0.02 260);
-  --card: oklch(1 0 0 / 0.68);
-  --card-2: oklch(0.96 0.015 240 / 0.60);
-  --card-foreground: oklch(0.15 0.02 260);
-  --popover: oklch(1 0 0 / 0.95);
-  --popover-foreground: oklch(0.15 0.02 260);
-  --secondary: oklch(0.93 0.015 240 / 0.7);
-  --secondary-foreground: oklch(0.18 0.02 260);
-  --muted: oklch(0.90 0.020 240 / 0.55);
-  --muted-foreground: oklch(0.38 0.025 245);
-  --accent: oklch(0.90 0.020 235 / 0.7);
-  --accent-foreground: oklch(0.18 0.02 260);
+  --background: #DCE5ED;
+  --foreground: #0F172A;
+  --card: rgba(255, 255, 255, 0.78);
+  --card-2: rgba(255, 255, 255, 0.58);
+  --card-foreground: #0F172A;
+  --popover: rgba(255, 255, 255, 0.95);
+  --popover-foreground: #0F172A;
+  --secondary: rgba(255, 255, 255, 0.65);
+  --secondary-foreground: #0F172A;
+  --muted: rgba(225, 235, 245, 0.65);
+  --muted-foreground: #5B6B7F;
+  --accent: rgba(255, 255, 255, 0.85);
+  --accent-foreground: #0F172A;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.78 0.022 240 / 0.55);
-  --input: oklch(0.78 0.022 240 / 0.55);
+  --border: rgba(255, 255, 255, 0.85);
+  --input: rgba(255, 255, 255, 0.85);
   --chart-2: oklch(0.6 0.1 260);
   --chart-3: oklch(0.7 0.06 260);
   --chart-4: oklch(0.8 0.04 260);
   --chart-5: oklch(0.87 0.03 260);
   --radius: 0.75rem;
-  --sidebar: oklch(0.93 0.018 240 / 0.75);
-  --sidebar-foreground: oklch(0.15 0.02 260);
-  --sidebar-accent: oklch(0.88 0.022 240 / 0.6);
-  --sidebar-accent-foreground: oklch(0.15 0.02 260);
-  --sidebar-border: oklch(0.78 0.022 240 / 0.55);
+  --sidebar: rgba(245, 248, 252, 0.85);
+  --sidebar-foreground: #0F172A;
+  --sidebar-accent: rgba(235, 242, 250, 0.75);
+  --sidebar-accent-foreground: #0F172A;
+  --sidebar-border: rgba(255, 255, 255, 0.85);
 }
 
 /* ---- ACCENT: primary color ---- */
@@ -150,6 +150,8 @@ html[data-mode='light'] {
 :root,
 html[data-mode='dark'],
 html[data-mode='dark'][data-theme='zovaix'],
+html[data-mode='light'],
+html[data-mode='light'][data-theme='zovaix'],
 html[data-theme='zovaix'] {
   --primary: oklch(0.92 0.22 125);
   --primary-foreground: oklch(0.10 0.03 125);
@@ -162,22 +164,6 @@ html[data-theme='zovaix'] {
   --sidebar-primary: oklch(0.92 0.22 125);
   --sidebar-primary-foreground: oklch(0.10 0.03 125);
   --sidebar-ring: oklch(0.92 0.22 125);
-}
-
-/* Light mode calibration: vivid high-contrast electric lime for crisp text,
- * icon strokes, and badges on white/glass cards. Dark mode remains 100% untouched. */
-html[data-mode='light'],
-html[data-mode='light'][data-theme='zovaix'] {
-  --primary: oklch(0.48 0.20 132);
-  --primary-foreground: oklch(0.99 0 0);
-  --primary-hover: oklch(0.42 0.20 132);
-  --primary-soft: oklch(0.48 0.20 132 / 0.14);
-  --primary-soft-2: oklch(0.48 0.20 132 / 0.26);
-  --ring: oklch(0.48 0.20 132);
-  --chart-1: oklch(0.48 0.20 132);
-  --sidebar-primary: oklch(0.48 0.20 132);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-ring: oklch(0.48 0.20 132);
 }
 
 html[data-theme='whatsapp'] {
@@ -272,20 +258,20 @@ html[data-theme='rose'] {
     overscroll-behavior: none;
   }
   html[data-mode='light'] body {
-    background-color: #cad6e4;
+    background-color: #dce5ed;
     background-image:
-      radial-gradient(at 0% 0%, rgba(182, 208, 234, 0.9) 0px, transparent 55%),
-      radial-gradient(at 100% 0%, rgba(195, 218, 242, 0.8) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(172, 200, 228, 0.9) 0px, transparent 55%),
-      radial-gradient(at 0% 100%, rgba(188, 212, 238, 0.85) 0px, transparent 50%),
-      radial-gradient(at 50% 50%, rgba(218, 235, 250, 0.65) 0px, transparent 65%);
+      radial-gradient(at 0% 0%, rgba(255, 255, 255, 0.95) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(212, 227, 242, 0.9) 0px, transparent 50%),
+      radial-gradient(at 50% 30%, rgba(255, 255, 255, 0.7) 0px, transparent 55%),
+      radial-gradient(at 100% 100%, rgba(198, 218, 238, 0.9) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, rgba(214, 230, 246, 0.85) 0px, transparent 50%);
     background-attachment: fixed;
   }
   html[data-mode='dark'] body {
-    background-color: oklch(0.105 0.025 260);
+    background-color: #070B0E;
     background-image:
-      radial-gradient(at 10% 12%, rgba(215, 250, 0, 0.03) 0px, transparent 40%),
-      radial-gradient(at 90% 88%, rgba(20, 30, 60, 0.4) 0px, transparent 50%);
+      radial-gradient(at 10% 12%, rgba(215, 250, 0, 0.035) 0px, transparent 40%),
+      radial-gradient(at 90% 88%, rgba(15, 25, 45, 0.45) 0px, transparent 50%);
     background-attachment: fixed;
   }
   html {
@@ -395,11 +381,18 @@ html[data-mode='light'][data-theme='whatsapp'] .zovaix-whatsapp-chat-surface {
 }
 
 html[data-mode='light'] .zovaix-app-shell {
-  background-color: var(--background);
+  background-color: #dce5ed;
   background-image:
-    radial-gradient(ellipse 85% 50% at 50% -10%, rgba(255, 255, 255, 0.75) 0%, transparent 60%),
-    radial-gradient(ellipse 65% 45% at 95% 15%, rgba(180, 205, 235, 0.45) 0%, transparent 55%),
-    radial-gradient(ellipse 55% 40% at 5% 50%, rgba(190, 215, 240, 0.35) 0%, transparent 50%);
+    radial-gradient(ellipse 85% 50% at 50% -10%, rgba(255, 255, 255, 0.95) 0%, transparent 60%),
+    radial-gradient(ellipse 65% 45% at 95% 15%, rgba(210, 226, 242, 0.7) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 40% at 5% 50%, rgba(215, 230, 245, 0.6) 0%, transparent 50%);
+}
+
+html[data-mode='dark'] .zovaix-app-shell {
+  background-color: #070B0E;
+  background-image:
+    radial-gradient(ellipse 85% 50% at 50% -10%, rgba(215, 250, 0, 0.03) 0%, transparent 60%),
+    radial-gradient(ellipse 65% 45% at 95% 15%, rgba(15, 25, 45, 0.35) 0%, transparent 55%);
 }
 
 @media (min-width: 1024px) {
@@ -610,27 +603,27 @@ html[data-mode='light'] .bento-card-lime {
 }
 
 .bento-card-white {
-  background-color: rgba(255, 255, 255, 0.70);
+  background-color: rgba(255, 255, 255, 0.78);
   color: #0f172a;
   border-radius: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.85);
   box-shadow:
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.95),
-    0 10px 32px -4px rgba(15, 23, 42, 0.07),
-    0 2px 8px 0 rgba(15, 23, 42, 0.03);
-  backdrop-filter: blur(32px) saturate(190%);
-  -webkit-backdrop-filter: blur(32px) saturate(190%);
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.98),
+    0 12px 32px -4px rgba(15, 23, 42, 0.06),
+    0 2px 8px 0 rgba(15, 23, 42, 0.02);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
 }
 
 html[data-mode='dark'] .bento-card-white {
-  background-color: rgba(23, 27, 29, 0.78);
+  background-color: rgba(14, 18, 22, 0.82);
   color: #f3f5f4;
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow:
     inset 0 1px 0 0 rgba(255, 255, 255, 0.12),
-    0 12px 32px -8px rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+    0 12px 32px -8px rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
 }
 
 .bento-card-dark {
